@@ -12,17 +12,15 @@
 	import type { LayoutProps } from './$types';
 	import {
 		IconCross,
-		IconSoup,
 		IconJacket,
 		IconHeartHandshake,
 		IconPray,
-		IconSeedling,
 		IconMapPin,
 		IconArrowRight,
 		IconMenu2,
 		IconX,
-		IconBuildingChurch,
-		IconSparkles
+		IconShieldCheck,
+		IconCalendarHeart
 	} from '@tabler/icons-svelte';
 
 	let { children }: LayoutProps = $props();
@@ -188,103 +186,151 @@
 
 		<!-- Site Footer -->
 		<footer class="site-footer">
-			<div class="container footer-grid">
-				<div class="footer-col brand-col">
-					<div class="footer-brand">
-						<span class="brand-icon" aria-hidden="true">
-							<IconCross size={24} stroke={2.2} />
-						</span>
-						<div>
-							<div class="footer-title">{siteConfig.name}</div>
-							<div class="footer-tagline">{siteConfig.slogan}</div>
+			<div class="container">
+				<!-- Tier 1: Stewardship & Direct-Impact Callout Banner -->
+				<div class="footer-cta-banner">
+					<div class="footer-cta-copy">
+						<div class="footer-stewardship-pill">
+							<IconShieldCheck size={15} />
+							<span>100% DIRECT-TO-COMMUNITY STEWARDSHIP</span>
 						</div>
-					</div>
-					<p class="footer-desc">
-						Founded by {siteConfig.founder.name} in {siteConfig.foundingYear} to restore shattered dreams,
-						reawaken God-given purpose through weekly Friday ministry, and serve Connecticut families
-						from Thanksgiving through January 4.
-					</p>
-					<div class="footer-geo">
-						<IconMapPin size={18} />
-						<span>Serving Wolcott, Waterbury, New Haven &amp; Hartford Counties, Connecticut</span>
-					</div>
-				</div>
-
-				<div class="footer-col">
-					<h3 class="footer-heading">Core Pillars &amp; Programs</h3>
-					<ul class="footer-links">
-						<li>
-							<a href={resolve('/programs/friday-ministry')}>
-								<IconSeedling size={16} /> Weekly Friday Ministry
-							</a>
-						</li>
-						<li>
-							<a href={resolve('/programs/holiday-outreach')}>
-								<IconSoup size={16} /> Thanksgiving &amp; Christmas Meals
-							</a>
-						</li>
-						<li>
-							<a href={resolve('/programs/holiday-outreach')}>
-								<IconJacket size={16} /> Children’s Winter Coat Drive
-							</a>
-						</li>
-						<li>
-							<a href={resolve('/restore-your-purpose')}>
-								<IconSparkles size={16} /> Purpose &amp; Vision Restoration
-							</a>
-						</li>
-						<li>
-							<a href={resolve('/prayer-and-support')}>
-								<IconPray size={16} /> Submit a Prayer or Assistance Request
-							</a>
-						</li>
-					</ul>
-				</div>
-
-				<div class="footer-col">
-					<h3 class="footer-heading">Ministry Architecture</h3>
-					<ul class="footer-links">
-						<li><a href={resolve('/')}>Home Hub</a></li>
-						<li><a href={resolve('/about')}>About Courtney Ribeiro</a></li>
-						<li><a href={resolve('/partner')}>Partner &amp; Sponsor Outreach</a></li>
-						<li><a href={resolve('/resources')}>Mustard Seed Devotionals &amp; Blog</a></li>
-						<li><a href={resolve('/sitemap.xml')}>XML Sitemap</a></li>
-					</ul>
-				</div>
-
-				<div class="footer-col">
-					<h3 class="footer-heading">Philanthropy &amp; Authority Bridge</h3>
-					<div class="authority-card">
-						<div class="authority-header">
-							<IconBuildingChurch size={18} />
-							<span>Underwritten Stewardship</span>
-						</div>
-						<p>
-							Proudly underwritten by <strong>{siteConfig.founder.parentOrgName}</strong> and executive
-							coaching partners since 2014. 100% of public outreach gifts go directly to hot holiday meals
-							and children’s winter warmth kits.
+						<h2 class="footer-cta-title">
+							Underwritten by {siteConfig.founder.parentOrgName} Since {siteConfig.foundingYear}
+						</h2>
+						<p class="footer-cta-desc">
+							Administrative overhead is privately underwritten by {siteConfig.founder
+								.parentOrgName} and executive coaching partners so 100% of public outreach gifts go directly
+							to hot holiday meals and brand-new winter coats for Connecticut children.
 						</p>
-						<div class="authority-links">
-							<a href={siteConfig.founder.parentOrgUrl} rel="noopener noreferrer" target="_blank">
-								MWC Digital Agency ↗
-							</a>
-							<a href={siteConfig.founder.coachingUrl} rel="noopener noreferrer" target="_blank">
-								Marketing With Courtney ↗
-							</a>
+					</div>
+
+					<div class="footer-cta-actions">
+						<a href={resolve('/partner')} class="btn btn-gold">
+							<IconHeartHandshake size={18} />
+							<span>Partner With Our Mission</span>
+						</a>
+						<a href={resolve('/prayer-and-support')} class="btn btn-outline-light">
+							<IconPray size={18} />
+							<span>Request Prayer or Support</span>
+						</a>
+					</div>
+				</div>
+
+				<!-- Tier 2: Balanced 4-Column Architectural Navigation Grid -->
+				<div class="footer-grid">
+					<div class="footer-col brand-col">
+						<a href={resolve('/')} class="footer-brand" aria-label="{siteConfig.name} Home">
+							<span class="brand-icon" aria-hidden="true">
+								<IconCross size={24} stroke={2.2} />
+							</span>
+							<div>
+								<div class="footer-title">{siteConfig.name}</div>
+								<div class="footer-tagline">
+									{siteConfig.slogan} • Est. {siteConfig.foundingYear}
+								</div>
+							</div>
+						</a>
+						<p class="footer-desc">
+							Founded by {siteConfig.founder.name} in {siteConfig.foundingYear} to restore shattered dreams,
+							reawaken God-given purpose through weekly Friday ministry, and serve Connecticut families
+							from Thanksgiving through January 4.
+						</p>
+						<div class="footer-geo">
+							<span class="footer-geo-icon" aria-hidden="true">
+								<IconMapPin size={18} />
+							</span>
+							<span>
+								Serving Wolcott, Waterbury, New Haven &amp; Hartford Counties, CT + National Faith
+								Mentorship
+							</span>
+						</div>
+					</div>
+
+					<nav class="footer-col" aria-label="Ministry Programs">
+						<h3 class="footer-heading">Ministry Programs</h3>
+						<ul class="footer-links">
+							<li>
+								<a href={resolve('/programs/friday-ministry')}>Weekly Friday Ministry</a>
+							</li>
+							<li>
+								<a href={resolve('/programs/holiday-outreach')}> Holiday Meals &amp; Coat Drive </a>
+							</li>
+							<li>
+								<a href={resolve('/restore-your-purpose')}>Purpose &amp; Vision Restoration</a>
+							</li>
+							<li>
+								<a href={resolve('/prayer-and-support')}>Submit a Prayer Request</a>
+							</li>
+							<li>
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+								<a href={`${resolve('/prayer-and-support')}?tab=holiday`}>
+									Holiday Family Registration
+								</a>
+							</li>
+						</ul>
+					</nav>
+
+					<nav class="footer-col" aria-label="Explore and Resources">
+						<h3 class="footer-heading">Explore &amp; Resources</h3>
+						<ul class="footer-links">
+							<li><a href={resolve('/')}>Ministry Home</a></li>
+							<li><a href={resolve('/about')}>About Courtney Ribeiro</a></li>
+							<li><a href={resolve('/blog')}>Faith &amp; Purpose Blog</a></li>
+							<li><a href={resolve('/resources')}>Mustard Seed Devotionals</a></li>
+							<li><a href={resolve('/partner')}>Partner &amp; Sponsor Outreach</a></li>
+						</ul>
+					</nav>
+
+					<div class="footer-col rhythm-col">
+						<h3 class="footer-heading">Ministry Rhythm &amp; Covenant</h3>
+						<div class="footer-rhythm-list">
+							<div class="footer-rhythm-card">
+								<div class="rhythm-kicker">
+									<IconCalendarHeart size={15} />
+									<span>Every Friday Year-Round</span>
+								</div>
+								<p>52 Fridays/yr set aside strictly for 1-on-1 prayer, mentorship &amp; care.</p>
+							</div>
+							<div class="footer-rhythm-card">
+								<div class="rhythm-kicker">
+									<IconJacket size={15} />
+									<span>Thanksgiving – January 4</span>
+								</div>
+								<p>40-day annual sabbatical for hot holiday meals &amp; children’s winter coats.</p>
+							</div>
+						</div>
+
+						<div class="footer-ecosystem">
+							<span class="ecosystem-label">Founder &amp; Underwriting Partners</span>
+							<div class="authority-links">
+								<a href={siteConfig.founder.parentOrgUrl} rel="noopener noreferrer" target="_blank">
+									<span>MWC Digital Agency</span>
+									<span aria-hidden="true">↗</span>
+								</a>
+								<a href={siteConfig.founder.coachingUrl} rel="noopener noreferrer" target="_blank">
+									<span>Marketing With Courtney</span>
+									<span aria-hidden="true">↗</span>
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="container footer-bottom">
-				<p>
-					© {new Date().getFullYear()}
-					{siteConfig.name} ({siteConfig.domain}). All rights reserved. Founded by {siteConfig
-						.founder.name}.
-				</p>
-				<p class="scripture-footnote">
-					“Faith the size of a mustard seed moves mountains.” — Matthew 17:20
-				</p>
+				<!-- Tier 3: Bottom Legal, Scripture & Sitemap Bar -->
+				<div class="footer-bottom">
+					<p class="footer-copyright">
+						© {new Date().getFullYear()}
+						{siteConfig.name} ({siteConfig.domain}). All rights reserved. Founded by {siteConfig
+							.founder.name}.
+					</p>
+					<div class="footer-bottom-meta">
+						<p class="scripture-footnote">
+							“Faith the size of a mustard seed moves mountains.” — Matthew 17:20
+						</p>
+						<span class="footer-bottom-sep" aria-hidden="true">•</span>
+						<a href={resolve('/sitemap.xml')} class="footer-sitemap-link">XML Sitemap</a>
+					</div>
+				</div>
 			</div>
 		</footer>
 
@@ -541,64 +587,169 @@
 	}
 
 	.site-footer {
-		background-color: var(--color-navy);
-		color: rgba(255, 255, 255, 0.86);
-		padding: 4.5rem 0 2rem;
+		background:
+			radial-gradient(circle at 88% 12%, rgba(212, 168, 67, 0.12) 0%, transparent 45%),
+			radial-gradient(circle at 12% 85%, rgba(15, 164, 175, 0.1) 0%, transparent 42%),
+			linear-gradient(180deg, #0b1930 0%, var(--color-navy) 100%);
+		color: rgba(255, 255, 255, 0.88);
+		padding: 4rem 0 2.25rem;
 		border-top: 4px solid var(--color-gold);
+	}
+
+	.footer-cta-banner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 2rem;
+		padding: 2rem 2.25rem;
+		margin-bottom: 3.25rem;
+		border-radius: var(--radius-lg);
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.05) 0%,
+			rgba(212, 168, 67, 0.09) 100%
+		);
+		border: 1px solid rgba(212, 168, 67, 0.32);
+		box-shadow: 0 20px 44px -20px rgba(0, 0, 0, 0.45);
+	}
+
+	.footer-cta-copy {
+		max-width: 640px;
+	}
+
+	.footer-stewardship-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.28rem 0.72rem;
+		border-radius: 999px;
+		background: rgba(212, 168, 67, 0.16);
+		border: 1px solid rgba(212, 168, 67, 0.42);
+		color: var(--color-gold);
+		font-size: 0.73rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		margin-bottom: 0.65rem;
+	}
+
+	.footer-cta-title {
+		color: #ffffff;
+		font-size: clamp(1.25rem, 2vw, 1.55rem);
+		line-height: 1.25;
+		margin: 0 0 0.45rem;
+	}
+
+	.footer-cta-desc {
+		margin: 0;
+		font-size: 0.93rem;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.82);
+	}
+
+	.footer-cta-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.85rem;
+		flex-shrink: 0;
 	}
 
 	.footer-grid {
 		display: grid;
-		grid-template-columns: 1.4fr 1fr 0.9fr 1.3fr;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(0, 1.25fr);
 		gap: 2.5rem;
+		align-items: start;
 		padding-bottom: 3rem;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 	}
 
+	.footer-col {
+		min-width: 0;
+	}
+
 	.footer-brand {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
-		gap: 0.75rem;
-		margin-bottom: 1rem;
+		gap: 0.8rem;
+		margin-bottom: 1.05rem;
+		text-decoration: none;
 	}
 
 	.footer-brand .brand-icon {
-		background-color: rgba(212, 168, 67, 0.18);
-		border: 1px solid rgba(212, 168, 67, 0.45);
+		width: 44px;
+		height: 44px;
+		background-color: rgba(212, 168, 67, 0.16);
+		border: 1px solid rgba(212, 168, 67, 0.48);
+		box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.35);
 	}
 
 	.footer-title {
 		font-family: var(--font-heading);
-		font-size: 1.25rem;
+		font-size: 1.22rem;
 		font-weight: 700;
 		color: #ffffff;
+		line-height: 1.2;
 	}
 
 	.footer-tagline {
-		font-size: 0.8rem;
+		font-size: 0.78rem;
 		color: var(--color-gold);
-		font-style: italic;
+		font-weight: 600;
+		margin-top: 0.15rem;
 	}
 
 	.footer-desc {
-		font-size: 0.92rem;
-		color: rgba(255, 255, 255, 0.78);
-		margin-bottom: 1rem;
+		font-size: 0.91rem;
+		line-height: 1.65;
+		color: rgba(255, 255, 255, 0.8);
+		margin: 0 0 1.15rem;
+		max-width: 40ch;
 	}
 
 	.footer-geo {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		font-size: 0.84rem;
-		color: var(--color-gold);
+		display: flex;
+		align-items: flex-start;
+		gap: 0.55rem;
+		padding: 0.75rem 0.9rem;
+		border-radius: var(--radius-sm);
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.11);
+		font-size: 0.82rem;
+		line-height: 1.45;
+		color: rgba(255, 255, 255, 0.9);
 		font-weight: 600;
+		max-width: 40ch;
+	}
+
+	.footer-geo-icon {
+		color: var(--color-gold);
+		flex-shrink: 0;
+		display: inline-flex;
+		margin-top: 0.1rem;
 	}
 
 	.footer-col h3.footer-heading {
 		color: #ffffff;
-		font-size: 1.05rem;
-		margin-bottom: 1.1rem;
+		font-family: var(--font-body);
+		font-size: 0.82rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		margin: 0 0 1.1rem;
+		padding-bottom: 0.65rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+		position: relative;
+	}
+
+	.footer-col h3.footer-heading::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: -1px;
+		width: 32px;
+		height: 2px;
+		background: var(--color-gold);
+		border-radius: 2px;
 	}
 
 	.footer-links {
@@ -607,58 +758,102 @@
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
+		gap: 0.25rem;
 	}
 
 	.footer-links a {
-		color: rgba(255, 255, 255, 0.8);
-		font-size: 0.92rem;
+		color: rgba(255, 255, 255, 0.82);
+		font-size: 0.91rem;
+		font-weight: 500;
 		display: inline-flex;
 		align-items: center;
 		min-height: 36px;
 		padding: 0.2rem 0;
-		gap: 0.45rem;
+		text-decoration: none;
+		transition:
+			color 0.18s ease,
+			transform 0.18s ease;
 	}
 
 	.footer-links a:hover {
 		color: var(--color-gold);
+		transform: translateX(3px);
 	}
 
-	.authority-card {
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		border-radius: var(--radius-md);
-		padding: 1.25rem;
-		font-size: 0.88rem;
+	.footer-rhythm-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.65rem;
+		margin-bottom: 1.1rem;
 	}
 
-	.authority-header {
+	.footer-rhythm-card {
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.11);
+		border-radius: var(--radius-sm);
+		padding: 0.75rem 0.9rem;
+	}
+
+	.rhythm-kicker {
 		display: flex;
 		align-items: center;
-		gap: 0.45rem;
+		gap: 0.4rem;
 		color: var(--color-gold);
+		font-size: 0.8rem;
 		font-weight: 700;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0.25rem;
 	}
 
-	.authority-card p {
-		color: rgba(255, 255, 255, 0.82);
-		margin-bottom: 0.85rem;
+	.footer-rhythm-card p {
+		margin: 0;
+		font-size: 0.81rem;
+		line-height: 1.45;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.footer-ecosystem {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+
+	.ecosystem-label {
+		font-size: 0.74rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: rgba(255, 255, 255, 0.68);
 	}
 
 	.authority-links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.85rem;
+		gap: 0.55rem;
 	}
 
 	.authority-links a {
 		display: inline-flex;
 		align-items: center;
+		gap: 0.35rem;
 		min-height: 36px;
+		padding: 0.35rem 0.75rem;
+		border-radius: 999px;
+		background: rgba(212, 168, 67, 0.1);
+		border: 1px solid rgba(212, 168, 67, 0.35);
 		color: var(--color-gold);
 		font-weight: 700;
-		font-size: 0.84rem;
+		font-size: 0.8rem;
+		text-decoration: none;
+		transition:
+			background-color 0.18s ease,
+			border-color 0.18s ease,
+			color 0.18s ease;
+	}
+
+	.authority-links a:hover {
+		background: var(--color-gold);
+		border-color: var(--color-gold);
+		color: var(--color-navy);
 	}
 
 	.footer-bottom {
@@ -668,17 +863,42 @@
 		justify-content: space-between;
 		flex-wrap: wrap;
 		gap: 1rem;
-		font-size: 0.85rem;
-		color: rgba(255, 255, 255, 0.68);
+		font-size: 0.84rem;
+		color: rgba(255, 255, 255, 0.72);
 	}
 
 	.footer-bottom p {
 		margin: 0;
 	}
 
+	.footer-bottom-meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+
 	.scripture-footnote {
 		color: var(--color-gold);
 		font-style: italic;
+	}
+
+	.footer-bottom-sep {
+		color: rgba(255, 255, 255, 0.35);
+	}
+
+	.footer-sitemap-link {
+		color: rgba(255, 255, 255, 0.82);
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		min-height: 36px;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.footer-sitemap-link:hover {
+		color: var(--color-gold);
 	}
 
 	@media (max-width: 1100px) {
@@ -690,14 +910,95 @@
 			display: inline-flex;
 		}
 
+		.footer-cta-banner {
+			flex-direction: column;
+			align-items: flex-start;
+			padding: 1.75rem;
+		}
+
 		.footer-grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.brand-col {
+			grid-column: 1 / -1;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			gap: 1.25rem 2rem;
+			align-items: start;
+			padding-bottom: 1.5rem;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		}
+
+		.brand-col .footer-brand {
+			grid-column: 1 / -1;
+			margin-bottom: 0;
+		}
+
+		.brand-col .footer-desc {
+			margin-bottom: 0;
+			max-width: none;
+		}
+
+		.brand-col .footer-geo {
+			max-width: none;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.footer-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 2rem 1.5rem;
+		}
+
+		.brand-col {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0.9rem;
+		}
+
+		.rhythm-col {
+			grid-column: 1 / -1;
+		}
+
+		.footer-rhythm-list {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.75rem;
 		}
 	}
 
 	@media (max-width: 640px) {
+		.site-footer {
+			padding: 3rem 0 2rem;
+		}
+
+		.footer-cta-banner {
+			padding: 1.35rem 1.25rem;
+			margin-bottom: 2.25rem;
+		}
+
+		.footer-cta-actions {
+			width: 100%;
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.footer-cta-actions .btn {
+			width: 100%;
+		}
+
 		.footer-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
+			gap: 1.85rem;
+		}
+
+		.footer-rhythm-list {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.footer-bottom {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 
 		.header-cta {

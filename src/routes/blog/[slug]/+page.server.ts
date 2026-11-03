@@ -48,13 +48,13 @@ function lazyifyAndDimensionContentImages(
 		if (!/\bwidth\s*=/i.test(updatedAttrs) || !/\bheight\s*=/i.test(updatedAttrs)) {
 			const srcMatch = updatedAttrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
 			const dims = srcMatch ? mediaDimensionsByUrl.get(srcMatch[1]) : undefined;
-			if (dims) {
-				if (!/\bwidth\s*=/i.test(updatedAttrs)) {
-					updatedAttrs += ` width="${dims.width}"`;
-				}
-				if (!/\bheight\s*=/i.test(updatedAttrs)) {
-					updatedAttrs += ` height="${dims.height}"`;
-				}
+			const resolvedWidth = dims?.width ?? 1200;
+			const resolvedHeight = dims?.height ?? 675;
+			if (!/\bwidth\s*=/i.test(updatedAttrs)) {
+				updatedAttrs += ` width="${resolvedWidth}"`;
+			}
+			if (!/\bheight\s*=/i.test(updatedAttrs)) {
+				updatedAttrs += ` height="${resolvedHeight}"`;
 			}
 		}
 		return `<img${updatedAttrs}>`;

@@ -222,6 +222,7 @@
 	.blog-cover-img {
 		width: 100%;
 		height: 100%;
+		aspect-ratio: 16 / 9;
 		object-fit: cover;
 		object-position: center 22%;
 		display: block;

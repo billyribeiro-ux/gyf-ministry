@@ -18,6 +18,7 @@
 	let isSubmitting = $state(false);
 
 	function switchTab(nextTab: 'prayer' | 'holiday') {
+		if (nextTab === activeTab) return;
 		selectedTabOverride = nextTab;
 		if (typeof window !== 'undefined') {
 			if (nextTab === 'holiday') {

@@ -155,7 +155,7 @@
 				<img
 					src="/images/courtney-outreach-car-clean.webp"
 					width="900"
-					height="900"
+					height="855"
 					loading="lazy"
 					decoding="async"
 					alt="Grow Your Faith Ministries founder Courtney Ribeiro preparing community outreach supplies"
@@ -592,6 +592,7 @@
 	.story-img {
 		width: 100%;
 		height: 100%;
+		aspect-ratio: 4 / 3.8;
 		display: block;
 		object-fit: cover;
 		object-position: center 18%;

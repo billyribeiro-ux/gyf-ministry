@@ -615,7 +615,6 @@
 			aria-hidden="true"
 			width={currentSlide?.aspect === 'portrait' ? 900 : 1200}
 			height={currentSlide?.aspect === 'portrait' ? 1200 : 900}
-			loading="lazy"
 			decoding="async"
 			class="stage-ambient-bg"
 			data-stage-bg
@@ -633,7 +632,6 @@
 				alt={currentSlide?.alt}
 				width={currentSlide?.aspect === 'portrait' ? 900 : 1200}
 				height={currentSlide?.aspect === 'portrait' ? 1200 : 900}
-				loading="lazy"
 				decoding="async"
 				draggable="false"
 				style:object-position={currentSlide?.focus ?? 'center 22%'}
@@ -1066,6 +1064,7 @@
 	.stage-main-img.img-landscape {
 		width: 100%;
 		height: 100%;
+		aspect-ratio: 4 / 3;
 		object-fit: cover;
 		display: block;
 	}
@@ -1075,6 +1074,7 @@
 		width: auto;
 		height: 100%;
 		max-width: 100%;
+		aspect-ratio: 3 / 4;
 		object-fit: contain;
 		display: block;
 		border-left: 1px solid rgba(255, 255, 255, 0.2);
@@ -1304,8 +1304,8 @@
 	}
 
 	.filmstrip-thumb img {
-		width: 100%;
-		height: 100%;
+		width: 56px;
+		height: 42px;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
 		display: block;
@@ -1477,8 +1477,9 @@
 	}
 
 	.lightbox-thumb-img {
-		width: 100%;
-		height: 100%;
+		width: 56px;
+		height: 42px;
+		aspect-ratio: 4 / 3;
 		object-fit: cover;
 		display: block;
 	}

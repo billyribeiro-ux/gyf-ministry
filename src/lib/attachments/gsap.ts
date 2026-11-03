@@ -92,7 +92,7 @@ export function gsapReveal(options: RevealOptions = {}): Attachment<HTMLElement>
 
 		if (targets.length === 0) return;
 
-		gsap.set(targets, { autoAlpha: 0, y });
+		gsap.set(targets, { opacity: 0, y });
 
 		let tween: gsap.core.Tween | null = null;
 
@@ -101,14 +101,14 @@ export function gsapReveal(options: RevealOptions = {}): Attachment<HTMLElement>
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
 						tween = gsap.to(targets, {
-							autoAlpha: 1,
+							opacity: 1,
 							y: 0,
 							duration,
 							delay,
 							stagger: targets.length > 1 ? stagger : 0,
 							ease: 'power3.out',
 							overwrite: 'auto',
-							clearProps: 'transform,opacity,visibility'
+							clearProps: 'transform,opacity'
 						});
 						observer.disconnect();
 						break;

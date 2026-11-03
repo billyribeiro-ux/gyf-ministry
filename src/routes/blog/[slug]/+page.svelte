@@ -1041,6 +1041,10 @@
 	}
 
 	.author-avatar {
+		width: 72px;
+		height: 72px;
+		aspect-ratio: 1 / 1;
+		flex-shrink: 0;
 		border-radius: 50%;
 		object-fit: cover;
 	}
