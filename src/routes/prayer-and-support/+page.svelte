@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import { IconPray, IconJacket, IconSoup, IconHeartHandshake } from '@tabler/icons-svelte';
 
@@ -23,14 +24,14 @@
 	/>
 </svelte:head>
 
-<section class="page-hero">
+<section class="page-hero" {@attach gsapHeroEntrance}>
 	<div class="container">
-		<div class="eyebrow-badge">
+		<div class="eyebrow-badge" data-hero-item>
 			<IconPray size={16} />
 			<span>INTERACTIVE PRAYER &amp; ASSISTANCE INTAKE PORTAL</span>
 		</div>
-		<h1>How Can We Pray For You or Serve Your Family Today?</h1>
-		<p class="lead">
+		<h1 data-hero-item>How Can We Pray For You or Serve Your Family Today?</h1>
+		<p class="lead" data-hero-item>
 			Whether you need immediate spiritual encouragement and prayer on a Friday, or you need to
 			register a family for Thanksgiving and Christmas meals and children’s winter coats in
 			Connecticut, we are here to stand with you.
@@ -39,7 +40,7 @@
 </section>
 
 <section class="section">
-	<div class="container-narrow">
+	<div class="container-narrow" {@attach gsapReveal({ y: 22 })}>
 		<!-- Dual-Tab Interactive Switcher -->
 		<div class="tabs-bar" role="tablist" aria-label="Prayer and Assistance Portal Tabs">
 			<button

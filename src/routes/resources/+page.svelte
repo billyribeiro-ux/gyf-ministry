@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import {
 		IconBible,
@@ -59,14 +60,14 @@
 	/>
 </svelte:head>
 
-<section class="page-hero">
+<section class="page-hero" {@attach gsapHeroEntrance}>
 	<div class="container">
-		<div class="eyebrow-badge">
+		<div class="eyebrow-badge" data-hero-item>
 			<IconBible size={16} />
 			<span>DEVOTIONALS, FAITH RESTORATION &amp; OUTREACH RECAPS</span>
 		</div>
-		<h1>Mustard Seed Faith Devotionals &amp; Community Impact Hub</h1>
-		<p class="lead">
+		<h1 data-hero-item>Mustard Seed Faith Devotionals &amp; Community Impact Hub</h1>
+		<p class="lead" data-hero-item>
 			Practical Christian encouragement for hard times, biblical wisdom on stewarding your God-given
 			talents, and real-time updates from our Friday and holiday outreach in Connecticut.
 		</p>
@@ -75,7 +76,7 @@
 
 <section class="section">
 	<div class="container">
-		<div class="articles-grid">
+		<div class="articles-grid" {@attach gsapReveal({ selector: '.article-card', stagger: 0.12 })}>
 			{#each devotionals as article (article.title)}
 				<article class="card article-card">
 					<div>

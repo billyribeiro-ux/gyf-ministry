@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import { gsapHeroEntrance, gsapReveal, gsapProgressBar } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import {
 		IconSoup,
@@ -54,14 +55,14 @@
 	/>
 </svelte:head>
 
-<section class="page-hero">
+<section class="page-hero" {@attach gsapHeroEntrance}>
 	<div class="container">
-		<div class="eyebrow-badge">
+		<div class="eyebrow-badge" data-hero-item>
 			<IconCalendarHeart size={16} />
 			<span>40-DAY SEASON OF SERVICE • NOV 26 – JAN 4</span>
 		</div>
-		<h1>Warm Meals &amp; Winter Coats: Our Annual Thanksgiving to Jan 4 Outreach</h1>
-		<p class="lead">
+		<h1 data-hero-item>Warm Meals &amp; Winter Coats: Our Annual Thanksgiving to Jan 4 Outreach</h1>
+		<p class="lead" data-hero-item>
 			“I take off from Thanksgiving to January 4 every year to serve in the community and spend time
 			with friends and family. I serve our community by doing Thanksgiving and Christmas outreach…
 			serving a hot holiday meal and purchasing coats, hats, mittens, and blankets for all the
@@ -71,7 +72,7 @@
 </section>
 
 <!-- Live 2026 Campaign Progress Tracker -->
-<section class="campaign-tracker">
+<section class="campaign-tracker" {@attach gsapReveal({ y: 20 })}>
 	<div class="container tracker-card">
 		<div class="tracker-header">
 			<div>
@@ -90,7 +91,7 @@
 			aria-valuemin={0}
 			aria-valuemax={100}
 		>
-			<div class="progress-fill" style="width: 74%"></div>
+			<div class="progress-fill" style="width: 74%" {@attach gsapProgressBar(74)}></div>
 		</div>
 		<div class="tracker-meta">
 			<span
@@ -103,7 +104,10 @@
 
 <!-- Two Flagship Initiatives -->
 <section class="section">
-	<div class="container initiatives-grid">
+	<div
+		class="container initiatives-grid"
+		{@attach gsapReveal({ selector: '.initiative-card', stagger: 0.14 })}
+	>
 		<article class="card initiative-card">
 			<div class="init-icon">
 				<IconSoup size={28} />
