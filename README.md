@@ -43,6 +43,22 @@ npm run dev
 npm run dev -- --open
 ```
 
+## Under-construction deployments on Vercel
+
+Without an external PostgreSQL `DATABASE_URL`, Vercel deployments use an in-memory
+PGlite database initialized with the bundled schema and sample ministry/blog data.
+This lets the unfinished site run without writing to Vercel's read-only application
+filesystem. Local development still stores its database in `.local-pgdata`.
+
+Demo data belongs to each function instance: edits, accounts, and submissions can
+reset when an instance restarts and are not shared across instances or routes.
+Do not use this mode for real registrations, messages, or other data you need to keep.
+
+Before accepting real data, configure an external PostgreSQL `DATABASE_URL`, apply
+the database migrations, configure production authentication secrets and the app
+origin, and redeploy. The local/demo schema and seed are only applied to PGlite,
+not to an external database.
+
 ## Building
 
 To create a production version of your app:
