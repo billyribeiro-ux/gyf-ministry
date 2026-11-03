@@ -1,0 +1,22 @@
+diff --git a/index.js b/index.js
+index 97735c40c33db590307fe70a99f70e85fb40029e..6f97709cd9c03be7c3ee56d09d8da7c02da4f739 100644
+--- a/index.js
++++ b/index.js
+@@ -567,6 +567,17 @@ async function create_function_bundle(builder, entry, dir, config) {
+ 			const match = /Cannot find module '(.+?)' loaded from (.+)/;
+ 			const [, module, importer] = match.exec(error.message) ?? [, error.message, '(unknown)'];
+ 
++			// Sharp 0.34: optional build tools/WASM metadata, plus a platform
++			// token used only to explain a native-load failure. Required native
++			// binaries and every other resolution failure remain visible.
++			const sharp_file = importer.replaceAll('\\', '/');
++			if (
++				(sharp_file.endsWith('/sharp/lib/libvips.js') &&
++					['@img/sharp-libvips-dev/include', '@img/sharp-libvips-dev/cplusplus'].includes(module)) ||
++				(sharp_file.endsWith('/sharp/lib/utility.js') && module === '@img/sharp-wasm32/versions') ||
++				(sharp_file.endsWith('/sharp/lib/sharp.js') && module === '@img/sharp-libvips-\u001a/package')
++			) return;
++
+ 			if (!resolution_failures.has(importer)) {
+ 				resolution_failures.set(importer, []);
+ 			}

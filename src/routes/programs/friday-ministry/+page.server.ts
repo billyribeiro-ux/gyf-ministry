@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { fail } from '@sveltejs/kit';
 import { recordMinistrySubmission } from '#lib/server/submissions.js';
 import type { Actions } from './$types';
@@ -5,12 +6,12 @@ import type { Actions } from './$types';
 export const actions: Actions = {
 	requestFridaySession: async ({ request }) => {
 		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const email = String(data.get('email') ?? '').trim();
-		const phone = String(data.get('phone') ?? '').trim();
-		const city = String(data.get('city') ?? 'Wolcott / Waterbury, CT').trim();
-		const sessionType = String(data.get('sessionType') ?? '1-on-1 Encouragement Call').trim();
-		const details = String(data.get('details') ?? '').trim();
+		const name = textValue(data.get('name'), '').trim();
+		const email = textValue(data.get('email'), '').trim();
+		const phone = textValue(data.get('phone'), '').trim();
+		const city = textValue(data.get('city'), 'Wolcott / Waterbury, CT').trim();
+		const sessionType = textValue(data.get('sessionType'), '1-on-1 Encouragement Call').trim();
+		const details = textValue(data.get('details'), '').trim();
 
 		if (!name || !details) {
 			return fail(400, {

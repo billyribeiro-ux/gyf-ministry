@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types';
@@ -14,8 +15,8 @@ export const load: PageServerLoad = (event) => {
 export const actions: Actions = {
 	signInEmail: async (event) => {
 		const formData = await event.request.formData();
-		const email = formData.get('email')?.toString() ?? '';
-		const password = formData.get('password')?.toString() ?? '';
+		const email = textValue(formData.get('email'));
+		const password = textValue(formData.get('password'));
 
 		try {
 			await auth.api.signInEmail({
@@ -36,9 +37,9 @@ export const actions: Actions = {
 	},
 	signUpEmail: async (event) => {
 		const formData = await event.request.formData();
-		const email = formData.get('email')?.toString() ?? '';
-		const password = formData.get('password')?.toString() ?? '';
-		const name = formData.get('name')?.toString() ?? '';
+		const email = textValue(formData.get('email'));
+		const password = textValue(formData.get('password'));
+		const name = textValue(formData.get('name'));
 
 		try {
 			await auth.api.signUpEmail({

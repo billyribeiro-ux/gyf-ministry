@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { fail } from '@sveltejs/kit';
 import { recordMinistrySubmission } from '#lib/server/submissions.js';
 import type { Actions } from './$types';
@@ -5,16 +6,16 @@ import type { Actions } from './$types';
 export const actions: Actions = {
 	sponsorHoliday: async ({ request }) => {
 		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const email = String(data.get('email') ?? '').trim();
-		const tier = String(data.get('tier') ?? '$65').trim();
-		const city = String(data.get('city') ?? 'Wolcott / Waterbury, CT').trim();
-		const details = String(data.get('details') ?? 'Holiday Outreach Sponsorship').trim();
+		const name = textValue(data.get('name'), '').trim();
+		const email = textValue(data.get('email'), '').trim();
+		const tier = textValue(data.get('tier'), '$65').trim();
+		const city = textValue(data.get('city'), 'Wolcott / Waterbury, CT').trim();
+		const details = textValue(data.get('details'), 'Holiday Outreach Sponsorship').trim();
 
 		if (!name || !email) {
 			return fail(400, {
 				error: 'Please enter your name and email address to complete your sponsorship pledge.',
-				values: { name, email, tier, city, details: String(data.get('details') ?? '').trim() }
+				values: { name, email, tier, city, details: textValue(data.get('details'), '').trim() }
 			});
 		}
 

@@ -8,6 +8,22 @@ import adapter from '@sveltejs/adapter-vercel';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
+	build: {
+		rolldownOptions: {
+			output: {
+				codeSplitting: {
+					groups: [
+						{
+							name: 'editor-prosemirror',
+							test: /node_modules\/.*(?:prosemirror-|orderedmap)/,
+							priority: 20
+						},
+						{ name: 'editor-tiptap', test: /node_modules\/.*@tiptap/, priority: 10 }
+					]
+				}
+			}
+		}
+	},
 	ssr: {
 		// Transform the sanitizer's CJS -> ESM dependency boundary at build time.
 		// Vercel's runtime cannot require htmlparser2's ESM entry directly.

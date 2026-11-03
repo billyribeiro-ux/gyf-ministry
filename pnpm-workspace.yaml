@@ -8,6 +8,8 @@ catalog:
   vite-plus: 1.4.0
   '@vitest/browser-playwright': 5.0.5
 overrides:
+  # NFT currently recognizes Sharp 0.34's entry point; keep build/runtime copies aligned.
+  sharp: ~0.34.5
   vite@*: 'catalog:'
   vitest@*: 'catalog:'
 peerDependencyRules:
@@ -17,3 +19,5 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
+patchedDependencies:
+  '@sveltejs/adapter-vercel@7.0.2': patches/@sveltejs__adapter-vercel@7.0.2.patch
