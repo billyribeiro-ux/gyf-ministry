@@ -200,7 +200,7 @@
 	.featured-grid,
 	.articles-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
 		gap: 1.5rem;
 		margin-top: 1.25rem;
 	}
@@ -263,5 +263,20 @@
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;
 		border: 0;
+	}
+
+	@media (max-width: 480px) {
+		.blog-search-form {
+			flex-direction: column;
+		}
+
+		.category-pill-nav {
+			gap: 0.35rem;
+		}
+
+		.category-pill {
+			padding: 0.4rem 0.75rem;
+			font-size: 0.8rem;
+		}
 	}
 </style>

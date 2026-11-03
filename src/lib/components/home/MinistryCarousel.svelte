@@ -262,6 +262,8 @@
 			src={currentSlide?.url}
 			alt=""
 			aria-hidden="true"
+			width={currentSlide?.aspect === 'portrait' ? 900 : 1200}
+			height={currentSlide?.aspect === 'portrait' ? 1200 : 900}
 			loading="lazy"
 			decoding="async"
 			class="stage-ambient-bg"
@@ -324,6 +326,8 @@
 				<img
 					src={slide.url}
 					alt=""
+					width="56"
+					height="42"
 					loading="lazy"
 					decoding="async"
 					style:object-position={slide.focus ?? 'center 25%'}
@@ -459,6 +463,7 @@
 		inset: 0;
 		width: 100%;
 		height: 100%;
+		aspect-ratio: 4 / 3;
 		object-fit: cover;
 		filter: blur(26px) saturate(1.35) brightness(0.48);
 		transform: scale(1.14);
@@ -643,6 +648,7 @@
 	.filmstrip-thumb img {
 		width: 100%;
 		height: 100%;
+		aspect-ratio: 4 / 3;
 		object-fit: cover;
 		display: block;
 	}
@@ -654,8 +660,10 @@
 
 		.stage-edge-btn {
 			opacity: 1;
-			width: 34px;
-			height: 34px;
+			width: 44px;
+			height: 44px;
+			min-width: 44px;
+			min-height: 44px;
 		}
 	}
 </style>

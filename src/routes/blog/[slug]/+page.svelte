@@ -334,8 +334,8 @@
 						srcset={coverSrcset}
 						sizes={coverSrcset ? '(max-width: 960px) 100vw, 900px' : undefined}
 						alt={data.post.coverImageAlt || data.post.title}
-						width={data.post.coverWidth ?? undefined}
-						height={data.post.coverHeight ?? undefined}
+						width={data.post.coverWidth ?? 1200}
+						height={data.post.coverHeight ?? 675}
 						loading="eager"
 						fetchpriority="high"
 						decoding="async"
@@ -774,6 +774,8 @@
 	.article-cover-img {
 		width: 100%;
 		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
 		border-radius: 14px;
 		border: 1px solid var(--line);
 		display: block;
@@ -1156,7 +1158,7 @@
 
 	.related-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
 		gap: 1.35rem;
 		margin-top: 1.25rem;
 	}

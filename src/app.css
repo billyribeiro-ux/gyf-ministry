@@ -72,6 +72,18 @@
 	box-sizing: border-box;
 }
 
+img,
+picture,
+video,
+canvas {
+	max-width: 100%;
+	height: auto;
+}
+
+svg {
+	vertical-align: middle;
+}
+
 html {
 	scroll-behavior: smooth;
 }
@@ -83,7 +95,20 @@ body {
 	font-family: var(--font-body);
 	font-size: 17px;
 	line-height: 1.65;
+	overflow-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-teal);
+	outline-offset: 3px;
+}
+
+.section-navy :focus-visible,
+.site-footer :focus-visible,
+.announcement-bar :focus-visible,
+.page-hero :focus-visible {
+	outline-color: var(--color-gold);
 }
 
 h1,
@@ -382,4 +407,37 @@ a:hover {
 	border-radius: var(--radius-sm);
 	font-weight: 600;
 	margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+	.container,
+	.container-narrow {
+		padding-left: 1.15rem;
+		padding-right: 1.15rem;
+	}
+
+	.card {
+		padding: 1.45rem 1.2rem;
+	}
+
+	.section,
+	.section-alt,
+	.section-navy {
+		padding: 3.5rem 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
 }

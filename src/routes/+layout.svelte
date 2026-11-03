@@ -68,6 +68,12 @@
 	{/if}
 </svelte:head>
 
+<svelte:window
+	onkeydown={(e) => {
+		if (e.key === 'Escape' && mobileMenuOpen) mobileMenuOpen = false;
+	}}
+/>
+
 {#if !isAdminArea && hasBlogMetaTags && page.data.pageMetaTags}
 	<MetaTags {...page.data.pageMetaTags} />
 {/if}
@@ -75,6 +81,7 @@
 {#if isAdminArea}
 	{@render children()}
 {:else}
+	<a href="#main-content" class="skip-to-content">Skip to main content</a>
 	<div class="site-shell">
 		<!-- 1. Top Announcement Bar (Seasonal Dynamic Banner) -->
 		<aside class="announcement-bar" aria-label="Seasonal Outreach Campaign Announcement">
@@ -123,7 +130,11 @@
 				</nav>
 
 				<div class="header-actions">
-					<a href={resolve('/partner')} class="btn btn-gold header-cta">
+					<a
+						href={resolve('/partner')}
+						class="btn btn-gold header-cta"
+						aria-label="Partner &amp; Donate"
+					>
 						<IconHeartHandshake size={18} />
 						<span>Partner &amp; Donate</span>
 					</a>
@@ -451,8 +462,35 @@
 		font-size: 0.88rem;
 	}
 
+	.skip-to-content {
+		position: fixed;
+		top: 0.5rem;
+		left: 50%;
+		z-index: 2000;
+		padding: 0.65rem 1rem;
+		background: var(--color-gold);
+		color: var(--color-navy);
+		font-weight: 700;
+		font-size: 0.88rem;
+		border-radius: var(--radius-sm);
+		text-decoration: none;
+		transform: translate(-50%, -200%);
+		transition: transform 0.18s ease;
+		box-shadow: var(--shadow-elevated);
+	}
+
+	.skip-to-content:focus-visible {
+		transform: translate(-50%, 0);
+		outline: 3px solid var(--color-navy);
+		outline-offset: 2px;
+	}
+
 	.mobile-toggle {
 		display: none;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
 		background: transparent;
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-sm);

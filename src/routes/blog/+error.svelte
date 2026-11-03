@@ -120,4 +120,15 @@
 		white-space: nowrap;
 		border: 0;
 	}
+
+	@media (max-width: 480px) {
+		.error-box {
+			padding: 1.75rem 1.15rem;
+			margin: 2rem auto;
+		}
+
+		.error-search {
+			flex-direction: column;
+		}
+	}
 </style>

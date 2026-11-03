@@ -296,4 +296,10 @@
 			grid-template-columns: 1fr;
 		}
 	}
+
+	@media (max-width: 480px) {
+		.closing-blessing {
+			padding: 1.5rem 1.15rem;
+		}
+	}
 </style>

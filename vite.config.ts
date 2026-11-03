@@ -258,7 +258,7 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
 				experimental: { async: true }
 			},
-			adapter: adapter(),
+			adapter: adapter({ runtime: 'nodejs24.x' }),
 			preprocess: [mdsvex({ extensions: ['.svx', '.md'] })],
 			extensions: ['.svelte', '.svx', '.md'],
 			experimental: { remoteFunctions: true, forkPreloads: true }

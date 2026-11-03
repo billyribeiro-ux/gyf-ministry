@@ -568,6 +568,8 @@
 						<img
 							src={form.twitterImage || form.ogImage || form.coverImage}
 							alt="Social card preview"
+							width="220"
+							height="124"
 							class="cover-preview-img"
 							loading="lazy"
 						/>
@@ -1042,6 +1044,7 @@
 	.cover-preview-img {
 		width: 100%;
 		height: 100%;
+		aspect-ratio: 16 / 9;
 		object-fit: cover;
 	}
 

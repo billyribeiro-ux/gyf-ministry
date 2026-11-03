@@ -264,6 +264,10 @@
 	border: 1px solid var(--line);
 }
 
+.prose-base img:not([width]):not([height]) {
+	aspect-ratio: 16 / 9;
+}
+
 .prose-base img[data-align='left'],
 .prose-base .blog-image[data-align='left'],
 .prose-base figure[data-align='left'],
