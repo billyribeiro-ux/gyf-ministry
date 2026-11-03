@@ -8,6 +8,11 @@ import adapter from '@sveltejs/adapter-vercel';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
+	ssr: {
+		// Transform the sanitizer's CJS -> ESM dependency boundary at build time.
+		// Vercel's runtime cannot require htmlparser2's ESM entry directly.
+		noExternal: ['sanitize-html', 'htmlparser2']
+	},
 	staged: {
 		'*': 'vp check --fix'
 	},
