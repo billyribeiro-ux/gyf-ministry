@@ -1,0 +1,312 @@
+{
+	"results": [
+		{
+			"route": "/blog",
+			"status": 200,
+			"width": 320,
+			"scrollWidth": 320,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog",
+			"status": 200,
+			"width": 375,
+			"scrollWidth": 375,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog",
+			"status": 200,
+			"width": 768,
+			"scrollWidth": 768,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog",
+			"status": 200,
+			"width": 1440,
+			"scrollWidth": 1440,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=mustard",
+			"status": 200,
+			"width": 320,
+			"scrollWidth": 320,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=mustard",
+			"status": 200,
+			"width": 375,
+			"scrollWidth": 375,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=mustard",
+			"status": 200,
+			"width": 768,
+			"scrollWidth": 768,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=mustard",
+			"status": 200,
+			"width": 1440,
+			"scrollWidth": 1440,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=zzzznonexistent",
+			"status": 200,
+			"width": 320,
+			"scrollWidth": 320,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=zzzznonexistent",
+			"status": 200,
+			"width": 375,
+			"scrollWidth": 375,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=zzzznonexistent",
+			"status": 200,
+			"width": 768,
+			"scrollWidth": 768,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog?search=zzzznonexistent",
+			"status": 200,
+			"width": 1440,
+			"scrollWidth": 1440,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith Restoration & Friday Encouragement Blog",
+			"overflow": []
+		},
+		{
+			"route": "/blog/category/faith-and-vision-restoration",
+			"status": 200,
+			"width": 320,
+			"scrollWidth": 320,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith & Vision Restoration",
+			"overflow": []
+		},
+		{
+			"route": "/blog/category/faith-and-vision-restoration",
+			"status": 200,
+			"width": 375,
+			"scrollWidth": 375,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith & Vision Restoration",
+			"overflow": []
+		},
+		{
+			"route": "/blog/category/faith-and-vision-restoration",
+			"status": 200,
+			"width": 768,
+			"scrollWidth": 768,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith & Vision Restoration",
+			"overflow": []
+		},
+		{
+			"route": "/blog/category/faith-and-vision-restoration",
+			"status": 200,
+			"width": 1440,
+			"scrollWidth": 1440,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Faith & Vision Restoration",
+			"overflow": []
+		},
+		{
+			"route": "/blog/faith-the-size-of-a-mustard-seed-matthew-17-20",
+			"status": 200,
+			"width": 320,
+			"scrollWidth": 320,
+			"background": "rgb(250, 247, 242)",
+			"heading": "What \"Faith the Size of a Mustard Seed\" Really Means When Your World Falls Apart",
+			"overflow": []
+		},
+		{
+			"route": "/blog/faith-the-size-of-a-mustard-seed-matthew-17-20",
+			"status": 200,
+			"width": 375,
+			"scrollWidth": 375,
+			"background": "rgb(250, 247, 242)",
+			"heading": "What \"Faith the Size of a Mustard Seed\" Really Means When Your World Falls Apart",
+			"overflow": []
+		},
+		{
+			"route": "/blog/faith-the-size-of-a-mustard-seed-matthew-17-20",
+			"status": 200,
+			"width": 768,
+			"scrollWidth": 768,
+			"background": "rgb(250, 247, 242)",
+			"heading": "What \"Faith the Size of a Mustard Seed\" Really Means When Your World Falls Apart",
+			"overflow": []
+		},
+		{
+			"route": "/blog/faith-the-size-of-a-mustard-seed-matthew-17-20",
+			"status": 200,
+			"width": 1440,
+			"scrollWidth": 1440,
+			"background": "rgb(250, 247, 242)",
+			"heading": "What \"Faith the Size of a Mustard Seed\" Really Means When Your World Falls Apart",
+			"overflow": []
+		},
+		{
+			"route": "/blog/tag/mustard-seed-faith",
+			"status": 200,
+			"width": 320,
+			"scrollWidth": 320,
+			"background": "rgb(250, 247, 242)",
+			"heading": "#Mustard Seed Faith",
+			"overflow": []
+		},
+		{
+			"route": "/blog/tag/mustard-seed-faith",
+			"status": 200,
+			"width": 375,
+			"scrollWidth": 375,
+			"background": "rgb(250, 247, 242)",
+			"heading": "#Mustard Seed Faith",
+			"overflow": []
+		},
+		{
+			"route": "/blog/tag/mustard-seed-faith",
+			"status": 200,
+			"width": 768,
+			"scrollWidth": 768,
+			"background": "rgb(250, 247, 242)",
+			"heading": "#Mustard Seed Faith",
+			"overflow": []
+		},
+		{
+			"route": "/blog/tag/mustard-seed-faith",
+			"status": 200,
+			"width": 1440,
+			"scrollWidth": 1440,
+			"background": "rgb(250, 247, 242)",
+			"heading": "#Mustard Seed Faith",
+			"overflow": []
+		},
+		{
+			"route": "/blog/zzzzmissing-article",
+			"status": 404,
+			"width": 320,
+			"scrollWidth": 320,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Article not found",
+			"overflow": []
+		},
+		{
+			"route": "/blog/zzzzmissing-article",
+			"status": 404,
+			"width": 375,
+			"scrollWidth": 375,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Article not found",
+			"overflow": []
+		},
+		{
+			"route": "/blog/zzzzmissing-article",
+			"status": 404,
+			"width": 768,
+			"scrollWidth": 768,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Article not found",
+			"overflow": []
+		},
+		{
+			"route": "/blog/zzzzmissing-article",
+			"status": 404,
+			"width": 1440,
+			"scrollWidth": 1440,
+			"background": "rgb(250, 247, 242)",
+			"heading": "Article not found",
+			"overflow": []
+		}
+	],
+	"search": {
+		"url": "http://127.0.0.1:5174/blog?search=mustard",
+		"heading": "Search Results for \"mustard\"",
+		"cards": 1
+	},
+	"palette": [
+		{
+			"selector": ".inner-page",
+			"color": "rgb(30, 41, 59)",
+			"background": "rgb(250, 247, 242)",
+			"font": "17px"
+		},
+		{
+			"selector": ".blog-post-card",
+			"color": "rgb(30, 41, 59)",
+			"background": "rgb(255, 255, 255)",
+			"font": "17px"
+		},
+		{
+			"selector": ".card-title a",
+			"color": "rgb(30, 41, 59)",
+			"background": "rgba(0, 0, 0, 0)",
+			"font": "32px"
+		},
+		{
+			"selector": ".card-excerpt",
+			"color": "rgb(75, 85, 99)",
+			"background": "rgba(0, 0, 0, 0)",
+			"font": "16px"
+		},
+		{
+			"selector": ".card-read-link",
+			"color": "rgb(10, 107, 114)",
+			"background": "rgba(0, 0, 0, 0)",
+			"font": "14px"
+		},
+		{
+			"selector": ".category-pill.is-active",
+			"color": "rgb(15, 32, 60)",
+			"background": "rgba(212, 168, 67, 0.16)",
+			"font": "15.04px"
+		},
+		{
+			"selector": ".blog-search-input",
+			"color": "rgb(30, 41, 59)",
+			"background": "rgb(255, 255, 255)",
+			"font": "14.72px"
+		},
+		{
+			"selector": ".blog-search-btn",
+			"color": "rgb(15, 32, 60)",
+			"background": "rgb(212, 168, 67)",
+			"font": "13.3333px"
+		}
+	],
+	"errors": []
+}
