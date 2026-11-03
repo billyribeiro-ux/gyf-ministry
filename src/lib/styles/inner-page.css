@@ -417,12 +417,16 @@
 
 /* Syntax-highlighted blocks intentionally retain their supplied theme.
    Non-highlighted code follows the light reading surface. */
+.inner-page .prose-base pre.shiki code {
+	color: inherit;
+}
+
 .inner-page .prose-base pre:not(.shiki) {
 	color: var(--color-text);
 }
 
 @media (max-width: 760px) {
-	.inner-page .featured-grid > .blog-post-card:only-child {
+	.inner-page .featured-grid > .blog-post-card:only-child:has(.card-media-link) {
 		grid-template-columns: minmax(0, 1fr);
 	}
 

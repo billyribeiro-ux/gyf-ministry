@@ -1,0 +1,48 @@
+{
+	"featured": [
+		{
+			"width": 320,
+			"columns": "281.219px",
+			"stacked": true,
+			"sideBySide": false
+		},
+		{
+			"width": 375,
+			"columns": "336.219px",
+			"stacked": true,
+			"sideBySide": false
+		},
+		{
+			"width": 760,
+			"columns": "710px",
+			"stacked": true,
+			"sideBySide": false
+		},
+		{
+			"width": 761,
+			"columns": "355.5px 355.5px",
+			"stacked": false,
+			"sideBySide": true
+		},
+		{
+			"width": 1440,
+			"columns": "595px 595px",
+			"stacked": false,
+			"sideBySide": true
+		}
+	],
+	"enlargedTextOverflow": [],
+	"code": {
+		"highlighted": {
+			"background": "rgb(36, 41, 46)",
+			"foreground": "rgb(225, 228, 232)",
+			"token": "rgb(225, 228, 232)",
+			"contrast": 11.500173232431667
+		},
+		"fallback": {
+			"background": "rgb(243, 237, 226)",
+			"foreground": "rgb(30, 41, 59)",
+			"contrast": 12.554790352407775
+		}
+	}
+}

@@ -27,7 +27,7 @@ Category navigation and article links have 44 px minimum target heights. Search 
 
 [Desktop after](desktop.png) · [Mobile after](mobile.png) · [Before](before.png) · [Browser measurements](browser-evidence.json).
 
-The browser measurements precede the final small control-font and enlarged-text wrapping refinements. Normal-width checks were repeated after the control-font change; the enlarged-text check was repeated after the final wrapping correction. Screenshots show the implemented layout; the last metadata-wrapping adjustment only affects enlarged text.
+The initial browser measurements precede the final control-font, wrapping, and review corrections. `regression-evidence.json` records the final assertions: featured cards stack at 320/375/760 px and use two columns at 761/1440 px; enlarged-text blog content does not overflow; plain-text Shiki output retains 11.50:1 contrast and unhighlighted fallback code has 12.55:1 contrast. Screenshots were refreshed after these corrections.
 
 Guidance checked on November 3, 2026: [W3C text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) and [W3C reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html). Branding choices come from the existing site's design tokens and the user's requested visual consistency. There is no claim of measured conversion uplift.
 
