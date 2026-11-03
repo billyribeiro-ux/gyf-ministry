@@ -13,6 +13,7 @@ export const actions: Actions = {
 
 		if (!name || !prayerNeed) {
 			return fail(400, {
+				tab: 'prayer' as const,
 				error: 'Please enter your name and your prayer request.'
 			});
 		}
@@ -45,6 +46,7 @@ export const actions: Actions = {
 
 		if (!name || !phone || !coatSizes) {
 			return fail(400, {
+				tab: 'holiday' as const,
 				error: 'Please provide contact details and children coat sizes for holiday outreach.'
 			});
 		}

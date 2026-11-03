@@ -13,6 +13,7 @@
 	} from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
+	let isSubmitting = $state(false);
 </script>
 
 <svelte:head>
@@ -139,9 +140,22 @@
 		<div class="card">
 			<h3>Partner &amp; Sponsorship Commitment</h3>
 			{#if form?.success}
-				<div class="alert-success">{form.message}</div>
+				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
-			<form method="POST" action="?/submitPartner" use:enhance>
+			{#if form?.error}
+				<div class="alert-error" role="alert">{form.error}</div>
+			{/if}
+			<form
+				method="POST"
+				action="?/submitPartner"
+				use:enhance={() => {
+					isSubmitting = true;
+					return async ({ update }) => {
+						await update();
+						isSubmitting = false;
+					};
+				}}
+			>
 				<div class="form-field">
 					<label for="part-name">Your Name or Company Name *</label>
 					<input
@@ -201,9 +215,19 @@
 						placeholder="Let us know how we can coordinate your sponsorship or coat drive box..."
 					></textarea>
 				</div>
-				<button type="submit" class="btn btn-gold" style="width: 100%">
+				<button
+					type="submit"
+					class="btn btn-gold"
+					style="width: 100%"
+					disabled={isSubmitting}
+					aria-busy={isSubmitting}
+				>
 					<IconJacket size={19} />
-					<span>Become a Monthly Mustard Seed Partner</span>
+					<span
+						>{isSubmitting
+							? 'Submitting Commitment...'
+							: 'Become a Monthly Mustard Seed Partner'}</span
+					>
 				</button>
 			</form>
 		</div>

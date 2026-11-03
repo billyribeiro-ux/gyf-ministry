@@ -146,7 +146,7 @@
 	}
 
 	.blog-post-card.is-featured {
-		border-color: rgba(220, 255, 101, 0.35);
+		border-color: rgba(212, 168, 67, 0.38);
 	}
 
 	.card-media-link {
@@ -183,7 +183,8 @@
 	.card-category-badge {
 		padding: 0.18rem 0.55rem;
 		border-radius: 999px;
-		background: rgba(220, 255, 101, 0.12);
+		background: var(--color-gold-soft);
+		border: 1px solid rgba(212, 168, 67, 0.38);
 		color: var(--acid);
 		text-decoration: none;
 		font-weight: 700;
@@ -263,6 +264,10 @@
 		font-weight: 700;
 		text-decoration: none;
 		white-space: nowrap;
+	}
+
+	.card-read-link:hover {
+		color: var(--btn-acid-hover);
 	}
 
 	@media (prefers-reduced-motion: reduce) {

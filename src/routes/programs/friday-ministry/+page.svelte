@@ -12,6 +12,7 @@
 	} from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
+	let isSubmitting = $state(false);
 </script>
 
 <svelte:head>
@@ -109,10 +110,23 @@
 			</p>
 
 			{#if form?.success}
-				<div class="alert-success">{form.message}</div>
+				<div class="alert-success" role="status">{form.message}</div>
+			{/if}
+			{#if form?.error}
+				<div class="alert-error" role="alert">{form.error}</div>
 			{/if}
 
-			<form method="POST" action="?/requestFridaySession" use:enhance>
+			<form
+				method="POST"
+				action="?/requestFridaySession"
+				use:enhance={() => {
+					isSubmitting = true;
+					return async ({ update }) => {
+						await update();
+						isSubmitting = false;
+					};
+				}}
+			>
 				<div class="form-field">
 					<label for="friday-name">Your Name (or Name of Person Referred) *</label>
 					<input id="friday-name" name="name" type="text" required placeholder="Full Name" />
@@ -159,9 +173,15 @@
 						placeholder="Tell us what season you are walking through and how Courtney can pray for or encourage you this Friday..."
 					></textarea>
 				</div>
-				<button type="submit" class="btn btn-gold" style="width: 100%">
+				<button
+					type="submit"
+					class="btn btn-gold"
+					style="width: 100%"
+					disabled={isSubmitting}
+					aria-busy={isSubmitting}
+				>
 					<IconHeartHandshake size={19} />
-					<span>Request a Friday Session</span>
+					<span>{isSubmitting ? 'Submitting Request...' : 'Request a Friday Session'}</span>
 				</button>
 			</form>
 		</div>

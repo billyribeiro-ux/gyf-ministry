@@ -14,6 +14,7 @@
 	} from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
+	let isSubmitting = $state(false);
 </script>
 
 <svelte:head>
@@ -128,9 +129,22 @@
 		<div class="card">
 			<h3>Get Instant Access to the 7-Day Workbook</h3>
 			{#if form?.success}
-				<div class="alert-success">{form.message}</div>
+				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
-			<form method="POST" action="?/downloadGuide" use:enhance>
+			{#if form?.error}
+				<div class="alert-error" role="alert">{form.error}</div>
+			{/if}
+			<form
+				method="POST"
+				action="?/downloadGuide"
+				use:enhance={() => {
+					isSubmitting = true;
+					return async ({ update }) => {
+						await update();
+						isSubmitting = false;
+					};
+				}}
+			>
 				<div class="form-field">
 					<label for="guide-name">First &amp; Last Name *</label>
 					<input id="guide-name" name="name" type="text" required placeholder="Your Name" />
@@ -155,9 +169,19 @@
 						rows="3"
 						placeholder="Share a dream or calling you want to bring back to life..."></textarea>
 				</div>
-				<button type="submit" class="btn btn-gold" style="width: 100%">
+				<button
+					type="submit"
+					class="btn btn-gold"
+					style="width: 100%"
+					disabled={isSubmitting}
+					aria-busy={isSubmitting}
+				>
 					<IconDownload size={19} />
-					<span>Download the Mustard Seed Vision Guide</span>
+					<span
+						>{isSubmitting
+							? 'Preparing Workbook...'
+							: 'Download the Mustard Seed Vision Guide'}</span
+					>
 				</button>
 			</form>
 		</div>

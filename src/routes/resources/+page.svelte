@@ -14,6 +14,7 @@
 	} from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
+	let isSubmitting = $state(false);
 
 	const devotionals = [
 		{
@@ -128,9 +129,22 @@
 		<div class="card sub-card">
 			<h3>Join the Friday Encouragement List</h3>
 			{#if form?.success}
-				<div class="alert-success">{form.message}</div>
+				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
-			<form method="POST" action="?/subscribeEncouragement" use:enhance>
+			{#if form?.error}
+				<div class="alert-error" role="alert">{form.error}</div>
+			{/if}
+			<form
+				method="POST"
+				action="?/subscribeEncouragement"
+				use:enhance={() => {
+					isSubmitting = true;
+					return async ({ update }) => {
+						await update();
+						isSubmitting = false;
+					};
+				}}
+			>
 				<div class="form-field">
 					<label for="sub-name">First &amp; Last Name *</label>
 					<input id="sub-name" name="name" type="text" required placeholder="Your Name" />
@@ -139,9 +153,16 @@
 					<label for="sub-email">Email Address *</label>
 					<input id="sub-email" name="email" type="email" required placeholder="you@example.com" />
 				</div>
-				<button type="submit" class="btn btn-gold" style="width: 100%">
+				<button
+					type="submit"
+					class="btn btn-gold"
+					style="width: 100%"
+					disabled={isSubmitting}
+					aria-busy={isSubmitting}
+				>
 					<IconMailOpened size={19} />
-					<span>Subscribe to Weekly Friday Encouragement</span>
+					<span>{isSubmitting ? 'Subscribing...' : 'Subscribe to Weekly Friday Encouragement'}</span
+					>
 				</button>
 			</form>
 		</div>

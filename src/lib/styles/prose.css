@@ -163,7 +163,7 @@
 .prose-base .callout--info,
 .prose-base .callout-info {
 	border-left-color: var(--acid);
-	background: rgba(220, 255, 101, 0.06);
+	background: rgba(212, 168, 67, 0.08);
 }
 
 .prose-base div[data-callout='tip'],
@@ -364,7 +364,7 @@
 }
 
 .prose-base .search-result {
-	background: rgba(220, 255, 101, 0.28);
+	background: rgba(212, 168, 67, 0.28);
 	border-radius: 3px;
 }
 

@@ -15,6 +15,7 @@
 
 	let { form }: PageProps = $props();
 	let selectedTier = $state('$65');
+	let isSubmitting = $state(false);
 
 	const tiers = [
 		{
@@ -184,9 +185,22 @@
 			<div class="card">
 				<h3>Complete Your Holiday Sponsorship Pledge ({selectedTier})</h3>
 				{#if form?.success}
-					<div class="alert-success">{form.message}</div>
+					<div class="alert-success" role="status">{form.message}</div>
 				{/if}
-				<form method="POST" action="?/sponsorHoliday" use:enhance>
+				{#if form?.error}
+					<div class="alert-error" role="alert">{form.error}</div>
+				{/if}
+				<form
+					method="POST"
+					action="?/sponsorHoliday"
+					use:enhance={() => {
+						isSubmitting = true;
+						return async ({ update }) => {
+							await update();
+							isSubmitting = false;
+						};
+					}}
+				>
 					<input type="hidden" name="tier" value={selectedTier} />
 					<div class="form-grid">
 						<div class="form-field">
@@ -233,9 +247,19 @@
 							placeholder="Optional encouragement note for a family or specific coat sizes if donating in-kind..."
 						></textarea>
 					</div>
-					<button type="submit" class="btn btn-gold" style="width: 100%">
+					<button
+						type="submit"
+						class="btn btn-gold"
+						style="width: 100%"
+						disabled={isSubmitting}
+						aria-busy={isSubmitting}
+					>
 						<IconHeartHandshake size={20} />
-						<span>Confirm {selectedTier} Holiday Outreach Sponsorship</span>
+						<span
+							>{isSubmitting
+								? 'Submitting Sponsorship...'
+								: `Confirm ${selectedTier} Holiday Outreach Sponsorship`}</span
+						>
 					</button>
 				</form>
 			</div>
@@ -256,7 +280,12 @@
 					Need to register a family to <strong>receive</strong> Thanksgiving/Christmas meals or children’s
 					coats?
 				</p>
-				<a href={resolve('/prayer-and-support')} class="btn btn-navy" style="width: 100%">
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- query-string tab target on resolved route -->
+				<a
+					href={`${resolve('/prayer-and-support')}?tab=holiday`}
+					class="btn btn-navy"
+					style="width: 100%"
+				>
 					Register a Family for Holiday Assistance →
 				</a>
 			</div>

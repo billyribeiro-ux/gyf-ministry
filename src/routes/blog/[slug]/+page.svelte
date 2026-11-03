@@ -686,7 +686,8 @@
 	.article-category-badge {
 		padding: 0.22rem 0.65rem;
 		border-radius: 999px;
-		background: rgba(220, 255, 101, 0.14);
+		background: var(--color-gold-soft);
+		border: 1px solid rgba(212, 168, 67, 0.38);
 		color: var(--acid);
 		text-decoration: none;
 		font-weight: 700;
@@ -926,7 +927,7 @@
 	.toc-item a:hover {
 		color: var(--text);
 		border-left-color: var(--acid);
-		background: rgba(220, 255, 101, 0.08);
+		background: rgba(212, 168, 67, 0.08);
 		font-weight: 700;
 	}
 
@@ -1072,6 +1073,7 @@
 
 	.author-links a {
 		color: var(--acid);
+		font-weight: 600;
 		text-decoration: none;
 		display: inline-flex;
 		align-items: center;
@@ -1122,7 +1124,7 @@
 
 	.prev-next-nav {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
 		gap: 1rem;
 		margin: 2rem 0;
 	}

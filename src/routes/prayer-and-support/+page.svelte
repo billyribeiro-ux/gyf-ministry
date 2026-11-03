@@ -1,11 +1,33 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import { IconPray, IconJacket, IconSoup, IconHeartHandshake } from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
-	let activeTab = $state<'prayer' | 'holiday'>('prayer');
+	let activeTab = $derived<'prayer' | 'holiday'>(
+		form?.tab === 'holiday' || page.url.searchParams.get('tab') === 'holiday' ? 'holiday' : 'prayer'
+	);
+	let isSubmitting = $state(false);
+
+	function handleTabKeydown(event: KeyboardEvent) {
+		const tablist = (event.currentTarget as HTMLElement).parentElement;
+		if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+			event.preventDefault();
+			const nextTab = activeTab === 'prayer' ? 'holiday' : 'prayer';
+			activeTab = nextTab;
+			tablist?.querySelector<HTMLButtonElement>(`#tab-${nextTab}`)?.focus();
+		} else if (event.key === 'Home') {
+			event.preventDefault();
+			activeTab = 'prayer';
+			tablist?.querySelector<HTMLButtonElement>('#tab-prayer')?.focus();
+		} else if (event.key === 'End') {
+			event.preventDefault();
+			activeTab = 'holiday';
+			tablist?.querySelector<HTMLButtonElement>('#tab-holiday')?.focus();
+		}
+	}
 </script>
 
 <svelte:head>
@@ -47,10 +69,12 @@
 				id="tab-prayer"
 				type="button"
 				role="tab"
+				tabindex={activeTab === 'prayer' ? 0 : -1}
 				aria-selected={activeTab === 'prayer'}
 				aria-controls="panel-prayer"
 				class={['tab-btn', { active: activeTab === 'prayer' }]}
 				onclick={() => (activeTab = 'prayer')}
+				onkeydown={handleTabKeydown}
 			>
 				<IconPray size={20} />
 				<span>Tab A: Submit a Prayer Request</span>
@@ -59,10 +83,12 @@
 				id="tab-holiday"
 				type="button"
 				role="tab"
+				tabindex={activeTab === 'holiday' ? 0 : -1}
 				aria-selected={activeTab === 'holiday'}
 				aria-controls="panel-holiday"
 				class={['tab-btn', { active: activeTab === 'holiday' }]}
 				onclick={() => (activeTab = 'holiday')}
+				onkeydown={handleTabKeydown}
 			>
 				<IconJacket size={20} />
 				<span>Tab B: Nominate a Family for Meals &amp; Coats</span>
@@ -70,7 +96,10 @@
 		</div>
 
 		{#if form?.success}
-			<div class="alert-success">{form.message}</div>
+			<div class="alert-success" role="status">{form.message}</div>
+		{/if}
+		{#if form?.error}
+			<div class="alert-error" role="alert">{form.error}</div>
 		{/if}
 
 		{#if activeTab === 'prayer'}
@@ -84,7 +113,17 @@
 					also request a 1-on-1 Friday encouragement follow-up call.
 				</p>
 
-				<form method="POST" action="?/submitPrayer" use:enhance>
+				<form
+					method="POST"
+					action="?/submitPrayer"
+					use:enhance={() => {
+						isSubmitting = true;
+						return async ({ update }) => {
+							await update();
+							isSubmitting = false;
+						};
+					}}
+				>
 					<div class="form-field">
 						<label for="prayer-name">Your Name *</label>
 						<input
@@ -124,9 +163,19 @@
 							placeholder="Share your prayer need, buried dream, or family circumstance..."
 						></textarea>
 					</div>
-					<button type="submit" class="btn btn-gold" style="width: 100%">
+					<button
+						type="submit"
+						class="btn btn-gold"
+						style="width: 100%"
+						disabled={isSubmitting}
+						aria-busy={isSubmitting}
+					>
 						<IconPray size={20} />
-						<span>Submit Prayer or Assistance Request</span>
+						<span
+							>{isSubmitting
+								? 'Submitting Request...'
+								: 'Submit Prayer or Assistance Request'}</span
+						>
 					</button>
 				</form>
 			</div>
@@ -147,7 +196,17 @@
 					brand-new children’s coats, hats, mittens, and blankets.
 				</p>
 
-				<form method="POST" action="?/nominateFamily" use:enhance>
+				<form
+					method="POST"
+					action="?/nominateFamily"
+					use:enhance={() => {
+						isSubmitting = true;
+						return async ({ update }) => {
+							await update();
+							isSubmitting = false;
+						};
+					}}
+				>
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="nom-name">Parent / Guardian or Nominator Name *</label>
@@ -207,9 +266,19 @@
 							placeholder="Let us know if the family needs Thanksgiving meal delivery, Christmas meal delivery, blankets, or specific winter gear..."
 						></textarea>
 					</div>
-					<button type="submit" class="btn btn-gold" style="width: 100%">
+					<button
+						type="submit"
+						class="btn btn-gold"
+						style="width: 100%"
+						disabled={isSubmitting}
+						aria-busy={isSubmitting}
+					>
 						<IconHeartHandshake size={20} />
-						<span>Submit Holiday Meal &amp; Coat Assistance Request</span>
+						<span
+							>{isSubmitting
+								? 'Submitting Request...'
+								: 'Submit Holiday Meal & Coat Assistance Request'}</span
+						>
 					</button>
 				</form>
 			</div>

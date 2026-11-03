@@ -185,7 +185,7 @@
 
 	.sidebar-link.is-active,
 	.sidebar-link:hover {
-		background: rgba(220, 255, 101, 0.14);
+		background: var(--color-gold-soft);
 		color: var(--acid);
 		font-weight: 700;
 	}

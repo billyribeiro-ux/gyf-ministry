@@ -47,6 +47,15 @@
 		{ href: '/resources', label: 'Resources' },
 		{ href: '/blog', label: 'Blog' }
 	] as const;
+
+	function isLinkActive(href: string, pathname: string): boolean {
+		return pathname === href || (href !== '/' && pathname.startsWith(href));
+	}
+
+	$effect(() => {
+		void currentPath;
+		mobileMenuOpen = false;
+	});
 </script>
 
 <svelte:head>
@@ -113,16 +122,11 @@
 
 				<nav class="desktop-nav" aria-label="Primary Ministry Navigation">
 					{#each navLinks as link (link.href)}
+						{@const active = isLinkActive(link.href, currentPath)}
 						<a
 							href={resolve(link.href)}
-							class={[
-								'nav-link',
-								{
-									active:
-										currentPath === link.href ||
-										(link.href !== '/' && currentPath.startsWith(link.href))
-								}
-							]}
+							class={['nav-link', { active }]}
+							aria-current={active ? 'page' : undefined}
 						>
 							{link.label}
 						</a>
@@ -158,9 +162,11 @@
 				<nav class="mobile-nav" aria-label="Mobile Navigation">
 					<div class="container mobile-nav-inner">
 						{#each navLinks as link (link.href)}
+							{@const active = isLinkActive(link.href, currentPath)}
 							<a
 								href={resolve(link.href)}
-								class="mobile-nav-link"
+								class={['mobile-nav-link', { active }]}
+								aria-current={active ? 'page' : undefined}
 								onclick={() => (mobileMenuOpen = false)}
 							>
 								{link.label}
@@ -520,6 +526,11 @@
 
 	.mobile-nav-link:hover {
 		background: var(--color-parchment);
+	}
+
+	.mobile-nav-link.active {
+		background: var(--color-gold-soft);
+		color: var(--color-navy);
 	}
 
 	.site-footer {

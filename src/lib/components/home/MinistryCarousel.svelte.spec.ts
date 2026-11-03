@@ -1,3 +1,6 @@
+import '../../../app.css';
+import '#lib/styles/inner-page.css';
+import '#lib/styles/prose.css';
 import { describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-svelte';
@@ -77,6 +80,42 @@ describe('MinistryCarousel - Responsive & Layout CLS Prevention', () => {
 			const rect = showcase!.getBoundingClientRect();
 			expect(rect.width).toBeLessThanOrEqual(vp.width);
 			expect(rect.width).toBeGreaterThan(0);
+		}
+	});
+
+	it('resolves SSOT design tokens (--nav-height, --status-amber-text), .inner-page .content-section layout container, and .alert-error feedback styles', async () => {
+		await page.viewport(1280, 800);
+		const rootStyles = getComputedStyle(document.documentElement);
+		expect(rootStyles.getPropertyValue('--nav-height').trim()).toBe('78px');
+		expect(rootStyles.getPropertyValue('--status-amber-text').trim()).toBe('#f59e0b');
+		expect(rootStyles.getPropertyValue('--tracking-h3').trim()).toBe('-0.01em');
+
+		const host = document.createElement('div');
+		host.className = 'inner-page';
+		host.innerHTML = `
+			<section class="content-section">
+				<div class="alert-error" role="alert">Validation error</div>
+				<div class="prose-base"><h2 id="sample-h2">Heading</h2></div>
+			</section>
+		`;
+		document.body.appendChild(host);
+
+		try {
+			const contentSection = host.querySelector<HTMLElement>('.content-section')!;
+			const sectionStyles = getComputedStyle(contentSection);
+			expect(sectionStyles.maxWidth).toBe('1240px');
+			expect(parseFloat(sectionStyles.paddingLeft)).toBeGreaterThanOrEqual(18);
+
+			const alertError = host.querySelector<HTMLElement>('.alert-error')!;
+			const alertStyles = getComputedStyle(alertError);
+			expect(alertStyles.borderTopStyle).toBe('solid');
+			expect(parseFloat(alertStyles.paddingTop)).toBeGreaterThan(0);
+
+			const proseH2 = host.querySelector<HTMLElement>('#sample-h2')!;
+			const h2Styles = getComputedStyle(proseH2);
+			expect(h2Styles.scrollMarginTop).toBe('102px');
+		} finally {
+			host.remove();
 		}
 	});
 });

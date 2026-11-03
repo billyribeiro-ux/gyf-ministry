@@ -16,6 +16,7 @@
 	} from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
+	let isSubmitting = $state(false);
 </script>
 
 <svelte:head>
@@ -228,9 +229,22 @@
 		<div class="card speaker-form-card">
 			<h3>Speaker &amp; Media Booking Inquiry</h3>
 			{#if form?.success}
-				<div class="alert-success">{form.message}</div>
+				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
-			<form method="POST" action="?/inviteSpeaker" use:enhance>
+			{#if form?.error}
+				<div class="alert-error" role="alert">{form.error}</div>
+			{/if}
+			<form
+				method="POST"
+				action="?/inviteSpeaker"
+				use:enhance={() => {
+					isSubmitting = true;
+					return async ({ update }) => {
+						await update();
+						isSubmitting = false;
+					};
+				}}
+			>
 				<div class="form-field">
 					<label for="speaker-name">Your Name *</label>
 					<input
@@ -281,9 +295,15 @@
 						placeholder="Share your proposed dates, location in CT or nationwide, and audience needs..."
 					></textarea>
 				</div>
-				<button type="submit" class="btn btn-gold" style="width: 100%">
+				<button
+					type="submit"
+					class="btn btn-gold"
+					style="width: 100%"
+					disabled={isSubmitting}
+					aria-busy={isSubmitting}
+				>
 					<IconMicrophone size={18} />
-					<span>Invite Courtney to Speak</span>
+					<span>{isSubmitting ? 'Sending Inquiry...' : 'Invite Courtney to Speak'}</span>
 				</button>
 			</form>
 		</div>

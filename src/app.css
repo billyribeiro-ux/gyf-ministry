@@ -47,6 +47,8 @@
 	--color-brand-gold: #d4a843;
 	--color-brand-gold-light: #e2c27d;
 	--color-brand-gold-dark: #a37e3b;
+	--status-amber-text: #f59e0b;
+	--status-amber-border: rgba(245, 158, 11, 0.42);
 
 	/* Typography */
 	--font-heading: 'Playfair Display', 'Fraunces', Georgia, serif;
@@ -55,8 +57,10 @@
 	--font-sans:
 		'Plus Jakarta Sans', 'Sofia Sans Variable', -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-mono: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+	--tracking-h3: -0.01em;
 
-	/* Layout */
+	/* Layout, Elevation & Motion */
+	--nav-height: 78px;
 	--container-max: 1240px;
 	--container-narrow: 860px;
 	--radius-sm: 10px;
@@ -64,6 +68,9 @@
 	--radius-lg: 20px;
 	--shadow-card: 0 2px 6px rgba(15, 32, 60, 0.03), 0 14px 34px -12px rgba(15, 32, 60, 0.08);
 	--shadow-elevated: 0 6px 16px rgba(15, 32, 60, 0.06), 0 24px 48px -14px rgba(15, 32, 60, 0.18);
+	--shadow-md: 0 8px 24px -6px rgba(0, 0, 0, 0.28);
+	--shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.45);
+	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *,
@@ -242,6 +249,13 @@ a:hover {
 	box-shadow: 0 10px 24px -6px rgba(15, 32, 60, 0.42);
 }
 
+.btn:disabled,
+.btn[aria-busy='true'] {
+	opacity: 0.72;
+	cursor: not-allowed;
+	transform: none;
+}
+
 /* Badges */
 .eyebrow-badge {
 	display: inline-flex;
@@ -363,7 +377,7 @@ a:hover {
 /* Forms */
 .form-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
 	gap: 1.15rem;
 }
 
@@ -403,6 +417,16 @@ a:hover {
 	background: var(--color-emerald-soft);
 	border: 1px solid var(--color-emerald);
 	color: #065f46;
+	padding: 1rem 1.25rem;
+	border-radius: var(--radius-sm);
+	font-weight: 600;
+	margin-bottom: 1.25rem;
+}
+
+.alert-error {
+	background: rgba(255, 121, 105, 0.14);
+	border: 1px solid #dc2626;
+	color: #991b1b;
 	padding: 1rem 1.25rem;
 	border-radius: var(--radius-sm);
 	font-weight: 600;
