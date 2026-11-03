@@ -25,6 +25,10 @@
 	}
 </script>
 
+<!-- Persistent live regions for screen reader announcements — must exist in DOM before announcements are made -->
+<div id="aria-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+<div id="aria-live-region-assertive" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
 {#if toasts.length > 0}
 	<div class="toast-container" role="region" aria-label="Notifications">
 		{#each toasts as item (item.id)}
@@ -63,3 +67,17 @@
 		{/each}
 	</div>
 {/if}
+
+<style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+</style>

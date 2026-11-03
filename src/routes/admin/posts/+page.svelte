@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import ConfirmDialog from '#lib/components/admin/ConfirmDialog.svelte';
-	import { attachBeforeUnloadGuard } from '#lib/components/admin/post-editor/form-actions';
 	import { rpcErrorMessage } from '#lib/components/admin/post-editor/rpc-error';
 	import { POST_STATUSES, type PostStatus } from '#lib/shared/schemas/posts';
 	import { META_DESCRIPTION_MAX, META_TITLE_MAX } from '#lib/shared/seo/meta-budget';
@@ -33,23 +32,11 @@
 	let activeView = $state<AdminView>('posts');
 	let pendingViewSwitch = $state<AdminView | null>(null);
 
-	let posts = $state<PageData['posts']>([]);
-	let trashedPosts = $state<PageData['trashedPosts']>([]);
-	let categories = $state<PageData['categories']>([]);
-	let tags = $state<PageData['tags']>([]);
-	let authors = $state<PageData['authors']>([]);
-
-	function hydrateData() {
-		posts = [...data.posts];
-		trashedPosts = [...data.trashedPosts];
-		categories = [...data.categories];
-		tags = [...data.tags];
-		authors = [...data.authors];
-		if (typeof window !== 'undefined') {
-			return attachBeforeUnloadGuard(window, () => anySubFormDirty);
-		}
-		return undefined;
-	}
+	let posts = $derived(data.posts);
+	let trashedPosts = $derived(data.trashedPosts);
+	let categories = $derived(data.categories);
+	let tags = $derived(data.tags);
+	let authors = $derived(data.authors);
 
 	// Filters for Posts view
 	let searchQuery = $state('');
@@ -500,7 +487,16 @@
 	}
 </script>
 
-<main {@attach hydrateData} class="admin-posts-page">
+<svelte:window
+	onbeforeunload={(e) => {
+		if (anySubFormDirty) {
+			e.preventDefault();
+			e.returnValue = '';
+		}
+	}}
+/>
+
+<main class="admin-posts-page">
 	<header class="admin-header">
 		<div class="admin-header-titles">
 			<span class="admin-kicker">Content Management</span>

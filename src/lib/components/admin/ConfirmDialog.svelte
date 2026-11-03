@@ -20,22 +20,26 @@
 		variant,
 		tone,
 		onConfirm,
-		onCancel = () => {
-			open = false;
-		}
+		onCancel
 	}: Props = $props();
 
+	let dialogEl = $state<HTMLElement | null>(null);
+
 	const resolvedVariant = $derived(variant ?? tone ?? 'default');
+
+	function handleCancel() {
+		onCancel?.();
+		open = false;
+	}
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (!open) return;
 		if (e.key === 'Escape') {
 			e.preventDefault();
-			onCancel();
+			handleCancel();
 			return;
 		}
 		if (e.key === 'Tab') {
-			const dialogEl = document.querySelector<HTMLElement>('.confirm-backdrop[role="dialog"]');
 			if (!dialogEl) return;
 			const focusable = Array.from(
 				dialogEl.querySelectorAll<HTMLElement>(
@@ -59,19 +63,24 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if open}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
+		bind:this={dialogEl}
 		class="confirm-backdrop"
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="confirm-dialog-title"
 		aria-describedby="confirm-dialog-desc"
 		tabindex="-1"
+		onclick={(e) => {
+			if (e.target === e.currentTarget) handleCancel();
+		}}
 	>
 		<div class="confirm-card">
 			<h2 id="confirm-dialog-title" class="confirm-title">{title}</h2>
 			<p id="confirm-dialog-desc" class="confirm-message">{message}</p>
 			<div class="confirm-actions">
-				<button type="button" class="btn-cancel" onclick={onCancel}>
+				<button type="button" class="btn-cancel" onclick={handleCancel}>
 					{cancelLabel}
 				</button>
 				<button

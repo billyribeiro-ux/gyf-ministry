@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import '#lib/styles/inner-page.css';
 	import '#lib/styles/prose.css';
 	import { resolve } from '$app/paths';
@@ -19,7 +20,9 @@
 	let activeHeadingId = $state('');
 	let tocDetailsOpen = $state(true);
 	let copyLinkStatus = $state('');
-	let canNativeShare = $state(false);
+	let canNativeShare = $derived(
+		typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+	);
 
 	// Server (getPublicPostViewBySlug) already runs normalizePostHeadings once (SSOT)
 	// and supplies 1:1 synchronized heading IDs and TOC items.
@@ -61,16 +64,16 @@
 		data.post?.title ?? data.payload?.title ?? 'Grow Your Faith Ministries'
 	);
 
-	function setupArticleInteractions() {
+	$effect(() => {
 		const activeSlug = data.post?.slug;
-		void activeSlug;
-		if (typeof window === 'undefined') return;
+		if (!activeSlug || typeof window === 'undefined') return;
 
-		activeHeadingId = toc[0]?.id ?? '';
-		if (window.innerWidth < 768) {
-			tocDetailsOpen = false;
-		}
-		canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+		untrack(() => {
+			activeHeadingId = toc[0]?.id ?? '';
+			if (window.innerWidth < 768) {
+				tocDetailsOpen = false;
+			}
+		});
 
 		// Pageview analytics tracking (Section 10.9)
 		if (data.post && !data.post.isPreview) {
@@ -87,19 +90,14 @@
 				console.debug('[pageview] Failed to record pageview:', err);
 			});
 		}
+	});
 
-		function onScroll() {
-			const doc = document.documentElement;
-			const scrollTop = window.scrollY || doc.scrollTop;
-			const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
-			readingProgress = Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100));
-		}
-
-		onScroll();
-		window.addEventListener('scroll', onScroll, { passive: true });
-		return () => {
-			window.removeEventListener('scroll', onScroll);
-		};
+	function onScroll() {
+		if (typeof window === 'undefined') return;
+		const doc = document.documentElement;
+		const scrollTop = window.scrollY || doc.scrollTop;
+		const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
+		readingProgress = Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100));
 	}
 
 	/**
@@ -179,6 +177,8 @@
 	}
 </script>
 
+<svelte:window onscroll={onScroll} />
+
 <SEO schema={data.jsonLdSchema} />
 
 <div
@@ -192,7 +192,7 @@
 	<div class="reading-progress-fill" style={`width: ${readingProgress}%`}></div>
 </div>
 
-<div {@attach setupArticleInteractions} id="blog-article-page" class="inner-page blog-article-page">
+<div id="blog-article-page" class="inner-page blog-article-page">
 	{#if data.locked && data.payload}
 		<section class="content-section locked-article-section" aria-labelledby="locked-h1">
 			<nav class="article-breadcrumbs" aria-label="Breadcrumb">

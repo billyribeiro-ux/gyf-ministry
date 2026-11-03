@@ -7,6 +7,9 @@ import PostCard from '../blog/PostCard.svelte';
 import RichTextEditor from './RichTextEditor.svelte';
 import PostEditor from './PostEditor.svelte';
 import MediaLibrary from './MediaLibrary.svelte';
+import Toast from '../Toast.svelte';
+import SEO from '../SEO.svelte';
+import { toast } from '#lib/stores/toast.svelte.js';
 import type { MediaItem } from '#lib/shared/media-upload';
 
 const rpcMocks = vi.hoisted(() => ({
@@ -114,6 +117,51 @@ describe('Admin & Blog Svelte 5 Components + Prose Parity', () => {
 		const confirmBtn = page.getByRole('button', { name: 'Unpublish' });
 		await confirmBtn.click();
 		expect(onConfirm).toHaveBeenCalledOnce();
+	});
+
+	it('dismisses ConfirmDialog on backdrop click as per the contract', async () => {
+		const onConfirm = vi.fn();
+		const onCancel = vi.fn();
+
+		await render(ConfirmDialog, {
+			open: true,
+			title: 'Confirm Action',
+			message: 'Are you sure?',
+			onConfirm,
+			onCancel
+		});
+
+		const backdrop = document.querySelector('.confirm-backdrop') as HTMLElement;
+		expect(backdrop).not.toBeNull();
+		backdrop.click();
+		expect(onCancel).toHaveBeenCalledOnce();
+	});
+
+	it('renders persistent aria-live regions for polite and assertive screen reader announcements', async () => {
+		await render(Toast);
+		const polite = document.getElementById('aria-live-region');
+		const assertive = document.getElementById('aria-live-region-assertive');
+		expect(polite).not.toBeNull();
+		expect(polite?.getAttribute('aria-live')).toBe('polite');
+		expect(assertive).not.toBeNull();
+		expect(assertive?.getAttribute('aria-live')).toBe('assertive');
+
+		toast.success('Saved successfully');
+		expect(polite?.textContent).toContain('Saved successfully');
+		toast.dismissAll();
+	});
+
+	it('renders document title and robots meta tags in SEO component', async () => {
+		await render(SEO, {
+			title: 'Admin Dashboard Test',
+			description: 'Test description',
+			noindex: true
+		});
+		expect(document.title).toBe('Admin Dashboard Test');
+		const metaDesc = document.querySelector('meta[name="description"]');
+		expect(metaDesc?.getAttribute('content')).toBe('Test description');
+		const metaRobots = document.querySelector('meta[name="robots"]');
+		expect(metaRobots?.getAttribute('content')).toContain('noindex');
 	});
 
 	it('renders RevisionDiffViewer with word-level additions/removals and restore confirmation', async () => {

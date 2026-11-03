@@ -117,7 +117,11 @@
 					</time>
 				{/if}
 			</div>
-			<a href={resolve('/blog/[slug]', { slug: post.slug })} class="card-read-link">
+			<a
+				href={resolve('/blog/[slug]', { slug: post.slug })}
+				class="card-read-link"
+				aria-label={`Read article: ${post.title}`}
+			>
 				Read Article
 			</a>
 		</div>

@@ -70,9 +70,12 @@
 	let viewMode = $state<'grid' | 'list'>('grid');
 	let showTrash = $state(false);
 
-	let items = $state.raw<MediaItem[]>([]);
-	let folders = $state.raw<string[]>([]);
-	let total = $state(0);
+	// svelte-ignore state_referenced_locally
+	let items = $state.raw<MediaItem[]>(initialItems);
+	// svelte-ignore state_referenced_locally
+	let folders = $state.raw<string[]>(initialFolders);
+	// svelte-ignore state_referenced_locally
+	let total = $state(initialTotal);
 	let page = $state(1);
 	let perPage = $state(24);
 	let loading = $state(false);
@@ -200,11 +203,7 @@
 	function ensureLoaded() {
 		if (initialized) return;
 		initialized = true;
-		if (initialItems.length > 0 || initialTotal > 0) {
-			items = initialItems;
-			folders = initialFolders;
-			total = initialTotal;
-		} else {
+		if (items.length === 0 && total === 0) {
 			void fetchLibrary(1);
 		}
 	}

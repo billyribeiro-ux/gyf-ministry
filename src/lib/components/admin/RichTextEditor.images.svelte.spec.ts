@@ -134,4 +134,18 @@ describe('RichTextEditor image handling', () => {
 		expect(ed.last()).toContain('title="SPX tooltip"');
 		expect(document.querySelectorAll('.ProseMirror button.image-alt-chip')).toHaveLength(0);
 	});
+
+	it('updates editor content when content prop changes externally', async () => {
+		const screen = await render(RichTextEditor, {
+			props: {
+				content: '<p>Initial text</p>',
+				onChange: () => {}
+			}
+		});
+		await screen.rerender({ content: '<p>Updated external text</p>' });
+		await vi.waitFor(() => {
+			const text = document.querySelector('.prose-base')?.textContent ?? '';
+			expect(text).toContain('Updated external text');
+		});
+	});
 });

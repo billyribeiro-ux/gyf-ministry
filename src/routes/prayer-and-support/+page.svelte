@@ -44,9 +44,11 @@
 		<!-- Dual-Tab Interactive Switcher -->
 		<div class="tabs-bar" role="tablist" aria-label="Prayer and Assistance Portal Tabs">
 			<button
+				id="tab-prayer"
 				type="button"
 				role="tab"
 				aria-selected={activeTab === 'prayer'}
+				aria-controls="panel-prayer"
 				class={['tab-btn', { active: activeTab === 'prayer' }]}
 				onclick={() => (activeTab = 'prayer')}
 			>
@@ -54,9 +56,11 @@
 				<span>Tab A: Submit a Prayer Request</span>
 			</button>
 			<button
+				id="tab-holiday"
 				type="button"
 				role="tab"
 				aria-selected={activeTab === 'holiday'}
+				aria-controls="panel-holiday"
 				class={['tab-btn', { active: activeTab === 'holiday' }]}
 				onclick={() => (activeTab = 'holiday')}
 			>
@@ -70,7 +74,7 @@
 		{/if}
 
 		{#if activeTab === 'prayer'}
-			<div class="card portal-card" role="tabpanel">
+			<div id="panel-prayer" class="card portal-card" role="tabpanel" aria-labelledby="tab-prayer">
 				<span class="badge-teal"
 					><IconPray size={14} /> Confidential Prayer &amp; Encouragement</span
 				>
@@ -127,7 +131,12 @@
 				</form>
 			</div>
 		{:else}
-			<div class="card portal-card" role="tabpanel">
+			<div
+				id="panel-holiday"
+				class="card portal-card"
+				role="tabpanel"
+				aria-labelledby="tab-holiday"
+			>
 				<span class="badge-emerald">
 					<IconSoup size={14} /> Thanksgiving – Jan 4 Connecticut Outreach
 				</span>

@@ -1,1 +1,2 @@
-// place files you want to import through the `#lib` alias in this folder.
+// Core barrel export for `#lib`
+export { siteConfig, getCanonicalUrl } from './config/site.js';

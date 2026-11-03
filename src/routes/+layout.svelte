@@ -5,6 +5,7 @@
 	import { page } from '$app/state';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import favicon from '#lib/assets/favicon.svg';
+	import Toast from '#lib/components/Toast.svelte';
 	import { MetaTags } from 'svelte-meta-tags';
 	import { siteConfig, getCanonicalUrl } from '#lib/config/site.js';
 	import { generateRootOrganizationSchema } from '#lib/seo/schema.js';
@@ -279,6 +280,8 @@
 				<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
 			{/each}
 		</div>
+
+		<Toast />
 	</div>
 {/if}
 

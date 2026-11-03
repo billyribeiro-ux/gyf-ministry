@@ -921,18 +921,21 @@
 			};
 		});
 	}
+
+	$effect(() => {
+		hydrateInitialState();
+	});
+
+	$effect(() => {
+		syncDirtyStateFromSnapshot(currentSnapshot);
+	});
+
+	$effect(() => {
+		return setupLifecycleHooks();
+	});
 </script>
 
-<div
-	{@attach () => {
-		hydrateInitialState();
-	}}
-	{@attach () => {
-		syncDirtyStateFromSnapshot(currentSnapshot);
-	}}
-	{@attach setupLifecycleHooks}
-	class="post-editor-shell"
->
+<div class="post-editor-shell">
 	<PostEditorTopBar
 		postId={form.id}
 		slug={form.slug}
@@ -1029,12 +1032,7 @@
 
 	{#if gateRefusal}
 		<div
-			{@attach (node) => {
-				gateAlertEl = node;
-				return () => {
-					gateAlertEl = null;
-				};
-			}}
+			bind:this={gateAlertEl}
 			class="editor-alert is-error is-gate"
 			role="alert"
 			tabindex="-1"
