@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { siteConfig } from '#lib/config/site.js';
+	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import {
 		IconHeartHandshake,
@@ -30,14 +31,14 @@
 	/>
 </svelte:head>
 
-<section class="page-hero">
+<section class="page-hero" {@attach gsapHeroEntrance}>
 	<div class="container">
-		<div class="eyebrow-badge">
+		<div class="eyebrow-badge" data-hero-item>
 			<IconHeartHandshake size={16} />
 			<span>CORPORATE &amp; INDIVIDUAL STEWARDSHIP PORTAL</span>
 		</div>
-		<h1>With the Help and Support of Clients &amp; Partners Like You</h1>
-		<p class="lead">
+		<h1 data-hero-item>With the Help and Support of Clients &amp; Partners Like You</h1>
+		<p class="lead" data-hero-item>
 			Because {siteConfig.founder.parentOrgName} underwrites our administrative operations, 100% of your
 			partnership directly funds hot Thanksgiving and Christmas meals and brand-new winter coats, hats,
 			mittens, and blankets for children in need.
@@ -48,12 +49,12 @@
 <!-- Three Ways to Partner -->
 <section class="section">
 	<div class="container">
-		<div class="section-intro">
+		<div class="section-intro" {@attach gsapReveal({ y: 20 })}>
 			<span class="badge-teal">Three Ways to Partner</span>
 			<h2>How Your Support Multiplies Impact Across Connecticut</h2>
 		</div>
 
-		<div class="ways-grid">
+		<div class="ways-grid" {@attach gsapReveal({ selector: '.way-card', stagger: 0.12 })}>
 			<article class="card way-card">
 				<div class="way-icon">
 					<IconHeartHandshake size={28} />

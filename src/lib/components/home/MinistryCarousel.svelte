@@ -6,7 +6,8 @@
 		IconChevronLeft,
 		IconChevronRight,
 		IconPlayerPause,
-		IconPlayerPlay
+		IconPlayerPlay,
+		type Icon
 	} from '@tabler/icons-svelte';
 
 	export interface CarouselSlide {
@@ -20,7 +21,7 @@
 	interface Props {
 		badgeText: string;
 		badgeVariant?: 'teal' | 'emerald';
-		BadgeIcon?: Component<{ size?: number; stroke?: number }>;
+		BadgeIcon?: Icon;
 		title: string;
 		subtitle?: string;
 		slides: readonly CarouselSlide[];
