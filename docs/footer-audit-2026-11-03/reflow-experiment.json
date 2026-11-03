@@ -1,0 +1,10 @@
+{
+	"viewport": 375,
+	"textEnlargement": "root font-size:200%",
+	"before": 431,
+	"after": 431,
+	"temporaryCss": ".footer-bottom,.footer-bottom-meta,.footer-bottom>*{min-width:0;max-width:100%}.footer-bottom p{overflow-wrap:anywhere}",
+	"afterFooterOverflowingElements": [],
+	"afterHidingHeaderAnnouncementAndMainDocumentWidth": 375,
+	"interpretation": "Temporary CSS removed measured footer overflow; full-page width remained 431 until other page regions were hidden. Separate non-footer overflow remains."
+}

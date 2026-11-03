@@ -1,0 +1,23 @@
+{
+	"resize": {
+		"width": 375,
+		"scrollWidth": 431,
+		"overflow": [
+			"footer-copyright svelte-12qhfyh",
+			"footer-bottom-meta svelte-12qhfyh",
+			"scripture-footnote svelte-12qhfyh"
+		]
+	},
+	"external": [
+		{
+			"url": "https://mwcdigitalagency.com",
+			"status": 200,
+			"final": "https://mwcdigitalagency.com/"
+		},
+		{
+			"url": "https://marketingwithcourtney.com",
+			"status": 200,
+			"final": "https://mwcdigitalagency.com/"
+		}
+	]
+}
