@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import { siteConfig } from '#lib/config/site.js';
+	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import {
 		IconCross,
@@ -33,14 +34,14 @@
 	/>
 </svelte:head>
 
-<section class="page-hero">
+<section class="page-hero" {@attach gsapHeroEntrance}>
 	<div class="container">
-		<div class="eyebrow-badge">
+		<div class="eyebrow-badge" data-hero-item>
 			<IconCross size={16} />
 			<span>FOUNDER AUTHORITY &amp; 2014 ORIGIN STORY</span>
 		</div>
-		<h1>A Calling to Serve: How a Mustard Seed of Faith Became a Movement</h1>
-		<p class="lead">
+		<h1 data-hero-item>A Calling to Serve: How a Mustard Seed of Faith Became a Movement</h1>
+		<p class="lead" data-hero-item>
 			Founded in 2014 by {siteConfig.founder.name}, Grow Your Faith Ministries bridges executive
 			stewardship with compassionate Christian outreach across Wolcott, Waterbury, New Haven, and
 			Hartford counties.
@@ -50,7 +51,10 @@
 
 <!-- 1. The Breaking Point That Sparked a Mission (2014) -->
 <section class="section">
-	<div class="container about-grid">
+	<div
+		class="container about-grid"
+		{@attach gsapReveal({ selector: '.about-copy, .authority-bio-card', stagger: 0.14 })}
+	>
 		<div class="about-copy">
 			<span class="badge-teal">The 2014 Origin</span>
 			<h2>The Breaking Point That Sparked a Mission</h2>
@@ -75,9 +79,9 @@
 
 		<div class="card authority-bio-card">
 			<img
-				src="/images/gyfm-holiday-outreach-hero.webp"
-				width="1200"
-				height="675"
+				src="/images/courtney-praying-clean.webp"
+				width="900"
+				height="900"
 				alt="Courtney Ribeiro, Founder of Grow Your Faith Ministries and MWC Digital Agency"
 				class="bio-img"
 			/>
@@ -100,7 +104,7 @@
 <!-- 2. The Stewardship Rhythm (The 4-Day Workweek & Holiday Sabbatical) -->
 <section class="section-alt">
 	<div class="container">
-		<div class="section-intro">
+		<div class="section-intro" {@attach gsapReveal({ y: 20 })}>
 			<span class="badge-teal"><IconCalendarHeart size={15} /> The Stewardship Rhythm</span>
 			<h2>Structuring Business Life to Honor God First</h2>
 			<p>
@@ -110,7 +114,7 @@
 			</p>
 		</div>
 
-		<div class="rhythm-grid">
+		<div class="rhythm-grid" {@attach gsapReveal({ selector: '.card', stagger: 0.14 })}>
 			<div class="card">
 				<div class="rhythm-badge">20% of Every Workweek</div>
 				<h3>Every Friday Year-Round (52 Fridays/Yr)</h3>
@@ -144,12 +148,12 @@
 <!-- 3. Statement of Faith & Core Values -->
 <section class="section">
 	<div class="container">
-		<div class="section-intro">
+		<div class="section-intro" {@attach gsapReveal({ y: 20 })}>
 			<span class="badge-teal">Statement of Faith &amp; Core Values</span>
 			<h2>Four Pillars of Restorative Christian Leadership</h2>
 		</div>
 
-		<div class="values-grid">
+		<div class="values-grid" {@attach gsapReveal({ selector: '.value-card', stagger: 0.1 })}>
 			<div class="card value-card">
 				<IconHeartHandshake size={28} />
 				<h3>Human Dignity</h3>
@@ -178,8 +182,8 @@
 				<IconMountain size={28} />
 				<h3>Mustard-Seed Boldness</h3>
 				<p>
-					Anchored in Matthew 17:20, we teach individuals that even the smallest spark of surrendered
-					faith can move mountains of doubt.
+					Anchored in Matthew 17:20, we teach individuals that even the smallest spark of
+					surrendered faith can move mountains of doubt.
 				</p>
 			</div>
 		</div>
@@ -188,7 +192,10 @@
 
 <!-- 4. Speaker & Media Kit Block -->
 <section class="section-navy" id="invite-courtney">
-	<div class="container speaker-grid">
+	<div
+		class="container speaker-grid"
+		{@attach gsapReveal({ selector: '.speaker-grid > *', stagger: 0.14 })}
+	>
 		<div>
 			<div class="eyebrow-badge">
 				<IconMicrophone size={16} />
@@ -226,16 +233,33 @@
 			<form method="POST" action="?/inviteSpeaker" use:enhance>
 				<div class="form-field">
 					<label for="speaker-name">Your Name *</label>
-					<input id="speaker-name" name="name" type="text" required placeholder="Pastor / Event Coordinator" />
+					<input
+						id="speaker-name"
+						name="name"
+						type="text"
+						required
+						placeholder="Pastor / Event Coordinator"
+					/>
 				</div>
 				<div class="form-field">
 					<label for="speaker-email">Email Address *</label>
-					<input id="speaker-email" name="email" type="email" required placeholder="you@church.org" />
+					<input
+						id="speaker-email"
+						name="email"
+						type="email"
+						required
+						placeholder="you@church.org"
+					/>
 				</div>
 				<div class="form-grid">
 					<div class="form-field">
 						<label for="speaker-org">Church / Organization</label>
-						<input id="speaker-org" name="organization" type="text" placeholder="Grace Fellowship CT" />
+						<input
+							id="speaker-org"
+							name="organization"
+							type="text"
+							placeholder="Grace Fellowship CT"
+						/>
 					</div>
 					<div class="form-field">
 						<label for="speaker-type">Event Format</label>
@@ -281,11 +305,16 @@
 	.authority-bio-card {
 		padding: 0;
 		overflow: hidden;
+		border: 2px solid rgba(212, 168, 67, 0.45);
+		box-shadow: var(--shadow-elevated);
 	}
 
 	.bio-img {
 		width: 100%;
 		height: auto;
+		aspect-ratio: 4 / 3.4;
+		object-fit: cover;
+		object-position: center 20%;
 		display: block;
 	}
 
@@ -400,4 +429,3 @@
 		}
 	}
 </style>
-

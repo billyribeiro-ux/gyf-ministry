@@ -74,212 +74,212 @@
 {#if isAdminArea}
 	{@render children()}
 {:else}
-<div class="site-shell">
-	<!-- 1. Top Announcement Bar (Seasonal Dynamic Banner) -->
-	<aside class="announcement-bar" aria-label="Seasonal Outreach Campaign Announcement">
-		<div class="container announcement-inner">
-			<span class="status-dot" aria-hidden="true"></span>
-			<p class="announcement-text">
-				<strong>2026 Holiday Outreach Active (Nov 26 – Jan 4):</strong> Help us provide hot holiday
-				meals and winter coats, hats, mittens, and blankets to children in our community.
-			</p>
-			<a href={resolve('/programs/holiday-outreach')} class="announcement-cta">
-				<span>Sponsor a Child Today</span>
-				<IconArrowRight size={16} stroke={2.2} />
-			</a>
-		</div>
-	</aside>
-
-	<!-- Site Header -->
-	<header class="site-header">
-		<div class="container header-inner">
-			<a href={resolve('/')} class="brand-logo" aria-label="{siteConfig.name} Home">
-				<span class="brand-icon" aria-hidden="true">
-					<IconCross size={24} stroke={2.2} />
-				</span>
-				<div class="brand-text">
-					<span class="brand-title">Grow Your Faith</span>
-					<span class="brand-subtitle">Ministries • Est. {siteConfig.foundingYear}</span>
-				</div>
-			</a>
-
-			<nav class="desktop-nav" aria-label="Primary Ministry Navigation">
-				{#each navLinks as link (link.href)}
-					<a
-						href={resolve(link.href)}
-						class={[
-							'nav-link',
-							{
-								active:
-									currentPath === link.href ||
-									(link.href !== '/' && currentPath.startsWith(link.href))
-							}
-						]}
-					>
-						{link.label}
-					</a>
-				{/each}
-			</nav>
-
-			<div class="header-actions">
-				<a href={resolve('/partner')} class="btn btn-gold header-cta">
-					<IconHeartHandshake size={18} />
-					<span>Partner &amp; Donate</span>
+	<div class="site-shell">
+		<!-- 1. Top Announcement Bar (Seasonal Dynamic Banner) -->
+		<aside class="announcement-bar" aria-label="Seasonal Outreach Campaign Announcement">
+			<div class="container announcement-inner">
+				<span class="status-dot" aria-hidden="true"></span>
+				<p class="announcement-text">
+					<strong>2026 Holiday Outreach Active (Nov 26 – Jan 4):</strong> Help us provide hot holiday
+					meals and winter coats, hats, mittens, and blankets to children in our community.
+				</p>
+				<a href={resolve('/programs/holiday-outreach')} class="announcement-cta">
+					<span>Sponsor a Child Today</span>
+					<IconArrowRight size={16} stroke={2.2} />
 				</a>
-				<button
-					type="button"
-					class="mobile-toggle"
-					aria-expanded={mobileMenuOpen}
-					aria-label="Toggle navigation menu"
-					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-				>
-					{#if mobileMenuOpen}
-						<IconX size={24} />
-					{:else}
-						<IconMenu2 size={24} />
-					{/if}
-				</button>
 			</div>
-		</div>
+		</aside>
 
-		{#if mobileMenuOpen}
-			<nav class="mobile-nav" aria-label="Mobile Navigation">
-				<div class="container mobile-nav-inner">
+		<!-- Site Header -->
+		<header class="site-header">
+			<div class="container header-inner">
+				<a href={resolve('/')} class="brand-logo" aria-label="{siteConfig.name} Home">
+					<span class="brand-icon" aria-hidden="true">
+						<IconCross size={24} stroke={2.2} />
+					</span>
+					<div class="brand-text">
+						<span class="brand-title">Grow Your Faith</span>
+						<span class="brand-subtitle">Ministries • Est. {siteConfig.foundingYear}</span>
+					</div>
+				</a>
+
+				<nav class="desktop-nav" aria-label="Primary Ministry Navigation">
 					{#each navLinks as link (link.href)}
 						<a
 							href={resolve(link.href)}
-							class="mobile-nav-link"
-							onclick={() => (mobileMenuOpen = false)}
+							class={[
+								'nav-link',
+								{
+									active:
+										currentPath === link.href ||
+										(link.href !== '/' && currentPath.startsWith(link.href))
+								}
+							]}
 						>
 							{link.label}
 						</a>
 					{/each}
-					<a
-						href={resolve('/partner')}
-						class="btn btn-gold"
-						onclick={() => (mobileMenuOpen = false)}
-					>
+				</nav>
+
+				<div class="header-actions">
+					<a href={resolve('/partner')} class="btn btn-gold header-cta">
 						<IconHeartHandshake size={18} />
-						<span>Partner With Our Mission</span>
+						<span>Partner &amp; Donate</span>
 					</a>
+					<button
+						type="button"
+						class="mobile-toggle"
+						aria-expanded={mobileMenuOpen}
+						aria-label="Toggle navigation menu"
+						onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
+					>
+						{#if mobileMenuOpen}
+							<IconX size={24} />
+						{:else}
+							<IconMenu2 size={24} />
+						{/if}
+					</button>
 				</div>
-			</nav>
-		{/if}
-	</header>
+			</div>
 
-	<main id="main-content">
-		{@render children()}
-	</main>
-
-	<!-- Site Footer -->
-	<footer class="site-footer">
-		<div class="container footer-grid">
-			<div class="footer-col brand-col">
-				<div class="footer-brand">
-					<span class="brand-icon" aria-hidden="true">
-						<IconCross size={24} stroke={2.2} />
-					</span>
-					<div>
-						<div class="footer-title">{siteConfig.name}</div>
-						<div class="footer-tagline">{siteConfig.slogan}</div>
+			{#if mobileMenuOpen}
+				<nav class="mobile-nav" aria-label="Mobile Navigation">
+					<div class="container mobile-nav-inner">
+						{#each navLinks as link (link.href)}
+							<a
+								href={resolve(link.href)}
+								class="mobile-nav-link"
+								onclick={() => (mobileMenuOpen = false)}
+							>
+								{link.label}
+							</a>
+						{/each}
+						<a
+							href={resolve('/partner')}
+							class="btn btn-gold"
+							onclick={() => (mobileMenuOpen = false)}
+						>
+							<IconHeartHandshake size={18} />
+							<span>Partner With Our Mission</span>
+						</a>
 					</div>
-				</div>
-				<p class="footer-desc">
-					Founded by {siteConfig.founder.name} in {siteConfig.foundingYear} to restore shattered dreams,
-					reawaken God-given purpose through weekly Friday ministry, and serve Connecticut families from
-					Thanksgiving through January 4.
-				</p>
-				<div class="footer-geo">
-					<IconMapPin size={18} />
-					<span>Serving Wolcott, Waterbury, New Haven &amp; Hartford Counties, Connecticut</span>
-				</div>
-			</div>
+				</nav>
+			{/if}
+		</header>
 
-			<div class="footer-col">
-				<h4>Core Pillars &amp; Programs</h4>
-				<ul class="footer-links">
-					<li>
-						<a href={resolve('/programs/friday-ministry')}>
-							<IconSeedling size={16} /> Weekly Friday Ministry
-						</a>
-					</li>
-					<li>
-						<a href={resolve('/programs/holiday-outreach')}>
-							<IconSoup size={16} /> Thanksgiving &amp; Christmas Meals
-						</a>
-					</li>
-					<li>
-						<a href={resolve('/programs/holiday-outreach')}>
-							<IconJacket size={16} /> Children’s Winter Coat Drive
-						</a>
-					</li>
-					<li>
-						<a href={resolve('/restore-your-purpose')}>
-							<IconSparkles size={16} /> Purpose &amp; Vision Restoration
-						</a>
-					</li>
-					<li>
-						<a href={resolve('/prayer-and-support')}>
-							<IconPray size={16} /> Submit a Prayer or Assistance Request
-						</a>
-					</li>
-				</ul>
-			</div>
+		<main id="main-content">
+			{@render children()}
+		</main>
 
-			<div class="footer-col">
-				<h4>Ministry Architecture</h4>
-				<ul class="footer-links">
-					<li><a href={resolve('/')}>Home Hub</a></li>
-					<li><a href={resolve('/about')}>About Courtney Ribeiro</a></li>
-					<li><a href={resolve('/partner')}>Partner &amp; Sponsor Outreach</a></li>
-					<li><a href={resolve('/resources')}>Mustard Seed Devotionals &amp; Blog</a></li>
-					<li><a href={resolve('/sitemap.xml')}>XML Sitemap</a></li>
-				</ul>
-			</div>
-
-			<div class="footer-col">
-				<h4>Philanthropy &amp; Authority Bridge</h4>
-				<div class="authority-card">
-					<div class="authority-header">
-						<IconBuildingChurch size={18} />
-						<span>Underwritten Stewardship</span>
+		<!-- Site Footer -->
+		<footer class="site-footer">
+			<div class="container footer-grid">
+				<div class="footer-col brand-col">
+					<div class="footer-brand">
+						<span class="brand-icon" aria-hidden="true">
+							<IconCross size={24} stroke={2.2} />
+						</span>
+						<div>
+							<div class="footer-title">{siteConfig.name}</div>
+							<div class="footer-tagline">{siteConfig.slogan}</div>
+						</div>
 					</div>
-					<p>
-						Proudly underwritten by <strong>{siteConfig.founder.parentOrgName}</strong> and executive
-						coaching partners since 2014. 100% of public outreach gifts go directly to hot holiday meals
-						and children’s winter warmth kits.
+					<p class="footer-desc">
+						Founded by {siteConfig.founder.name} in {siteConfig.foundingYear} to restore shattered dreams,
+						reawaken God-given purpose through weekly Friday ministry, and serve Connecticut families
+						from Thanksgiving through January 4.
 					</p>
-					<div class="authority-links">
-						<a href={siteConfig.founder.parentOrgUrl} rel="noopener noreferrer" target="_blank">
-							MWC Digital Agency ↗
-						</a>
-						<a href={siteConfig.founder.coachingUrl} rel="noopener noreferrer" target="_blank">
-							Marketing With Courtney ↗
-						</a>
+					<div class="footer-geo">
+						<IconMapPin size={18} />
+						<span>Serving Wolcott, Waterbury, New Haven &amp; Hartford Counties, Connecticut</span>
+					</div>
+				</div>
+
+				<div class="footer-col">
+					<h4>Core Pillars &amp; Programs</h4>
+					<ul class="footer-links">
+						<li>
+							<a href={resolve('/programs/friday-ministry')}>
+								<IconSeedling size={16} /> Weekly Friday Ministry
+							</a>
+						</li>
+						<li>
+							<a href={resolve('/programs/holiday-outreach')}>
+								<IconSoup size={16} /> Thanksgiving &amp; Christmas Meals
+							</a>
+						</li>
+						<li>
+							<a href={resolve('/programs/holiday-outreach')}>
+								<IconJacket size={16} /> Children’s Winter Coat Drive
+							</a>
+						</li>
+						<li>
+							<a href={resolve('/restore-your-purpose')}>
+								<IconSparkles size={16} /> Purpose &amp; Vision Restoration
+							</a>
+						</li>
+						<li>
+							<a href={resolve('/prayer-and-support')}>
+								<IconPray size={16} /> Submit a Prayer or Assistance Request
+							</a>
+						</li>
+					</ul>
+				</div>
+
+				<div class="footer-col">
+					<h4>Ministry Architecture</h4>
+					<ul class="footer-links">
+						<li><a href={resolve('/')}>Home Hub</a></li>
+						<li><a href={resolve('/about')}>About Courtney Ribeiro</a></li>
+						<li><a href={resolve('/partner')}>Partner &amp; Sponsor Outreach</a></li>
+						<li><a href={resolve('/resources')}>Mustard Seed Devotionals &amp; Blog</a></li>
+						<li><a href={resolve('/sitemap.xml')}>XML Sitemap</a></li>
+					</ul>
+				</div>
+
+				<div class="footer-col">
+					<h4>Philanthropy &amp; Authority Bridge</h4>
+					<div class="authority-card">
+						<div class="authority-header">
+							<IconBuildingChurch size={18} />
+							<span>Underwritten Stewardship</span>
+						</div>
+						<p>
+							Proudly underwritten by <strong>{siteConfig.founder.parentOrgName}</strong> and executive
+							coaching partners since 2014. 100% of public outreach gifts go directly to hot holiday meals
+							and children’s winter warmth kits.
+						</p>
+						<div class="authority-links">
+							<a href={siteConfig.founder.parentOrgUrl} rel="noopener noreferrer" target="_blank">
+								MWC Digital Agency ↗
+							</a>
+							<a href={siteConfig.founder.coachingUrl} rel="noopener noreferrer" target="_blank">
+								Marketing With Courtney ↗
+							</a>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="container footer-bottom">
-			<p>
-				© {new Date().getFullYear()}
-				{siteConfig.name} ({siteConfig.domain}). All rights reserved. Founded by {siteConfig.founder
-					.name}.
-			</p>
-			<p class="scripture-footnote">
-				“Faith the size of a mustard seed moves mountains.” — Matthew 17:20
-			</p>
-		</div>
-	</footer>
+			<div class="container footer-bottom">
+				<p>
+					© {new Date().getFullYear()}
+					{siteConfig.name} ({siteConfig.domain}). All rights reserved. Founded by {siteConfig
+						.founder.name}.
+				</p>
+				<p class="scripture-footnote">
+					“Faith the size of a mustard seed moves mountains.” — Matthew 17:20
+				</p>
+			</div>
+		</footer>
 
-	<div style="display:none">
-		{#each locales as locale (locale)}
-			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
-		{/each}
+		<div style="display:none">
+			{#each locales as locale (locale)}
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
+			{/each}
+		</div>
 	</div>
-</div>
 {/if}
 
 <style>
@@ -317,6 +317,17 @@
 		background-color: var(--color-emerald);
 		box-shadow: 0 0 0 4px rgba(34, 181, 115, 0.25);
 		flex-shrink: 0;
+		animation: pulseDot 2.4s infinite ease-in-out;
+	}
+
+	@keyframes pulseDot {
+		0%,
+		100% {
+			box-shadow: 0 0 0 3px rgba(34, 181, 115, 0.24);
+		}
+		50% {
+			box-shadow: 0 0 0 6px rgba(34, 181, 115, 0.42);
+		}
 	}
 
 	.announcement-text {
@@ -344,12 +355,14 @@
 	}
 
 	.site-header {
-		background-color: var(--color-surface);
-		border-bottom: 1px solid var(--color-border);
+		background-color: rgba(255, 255, 255, 0.92);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-bottom: 1px solid rgba(230, 224, 214, 0.85);
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		box-shadow: 0 4px 20px -10px rgba(15, 32, 60, 0.06);
+		box-shadow: 0 8px 28px -12px rgba(15, 32, 60, 0.08);
 	}
 
 	.header-inner {

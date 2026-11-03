@@ -1,12 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PageProps } from './$types';
-	import {
-		IconPray,
-		IconJacket,
-		IconSoup,
-		IconHeartHandshake
-	} from '@tabler/icons-svelte';
+	import { IconPray, IconJacket, IconSoup, IconHeartHandshake } from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
 	let activeTab = $state<'prayer' | 'holiday'>('prayer');
@@ -75,7 +70,9 @@
 
 		{#if activeTab === 'prayer'}
 			<div class="card portal-card" role="tabpanel">
-				<span class="badge-teal"><IconPray size={14} /> Confidential Prayer &amp; Encouragement</span>
+				<span class="badge-teal"
+					><IconPray size={14} /> Confidential Prayer &amp; Encouragement</span
+				>
 				<h2>Submit a Prayer Request</h2>
 				<p>
 					Every prayer request is personally lifted up during our weekly Friday Ministry. You may
@@ -85,7 +82,13 @@
 				<form method="POST" action="?/submitPrayer" use:enhance>
 					<div class="form-field">
 						<label for="prayer-name">Your Name *</label>
-						<input id="prayer-name" name="name" type="text" required placeholder="First & Last Name" />
+						<input
+							id="prayer-name"
+							name="name"
+							type="text"
+							required
+							placeholder="First & Last Name"
+						/>
 					</div>
 					<div class="form-grid">
 						<div class="form-field">
@@ -100,7 +103,9 @@
 					<div class="form-field">
 						<label for="prayer-friday">Would you like a Friday follow-up encouragement call?</label>
 						<select id="prayer-friday" name="fridayCall">
-							<option value="yes">Yes — Please schedule a Friday encouragement follow-up call</option>
+							<option value="yes"
+								>Yes — Please schedule a Friday encouragement follow-up call</option
+							>
 							<option value="no">No — Please pray over my request privately</option>
 						</select>
 					</div>
@@ -127,9 +132,9 @@
 				</span>
 				<h2>Nominate a Family for Holiday Meals &amp; Children’s Coats</h2>
 				<p>
-					Register your household or nominate a local Connecticut family in need (Wolcott, Waterbury,
-					New Haven, or Hartford counties) for hot Thanksgiving &amp; Christmas meals and brand-new
-					children’s coats, hats, mittens, and blankets.
+					Register your household or nominate a local Connecticut family in need (Wolcott,
+					Waterbury, New Haven, or Hartford counties) for hot Thanksgiving &amp; Christmas meals and
+					brand-new children’s coats, hats, mittens, and blankets.
 				</p>
 
 				<form method="POST" action="?/nominateFamily" use:enhance>
@@ -162,7 +167,15 @@
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="nom-size">Total Household / Family Size *</label>
-							<input id="nom-size" name="familySize" type="number" min="1" max="15" value="4" required />
+							<input
+								id="nom-size"
+								name="familySize"
+								type="number"
+								min="1"
+								max="15"
+								value="4"
+								required
+							/>
 						</div>
 						<div class="form-field">
 							<label for="nom-coats">Children’s Ages &amp; Winter Coat Sizes *</label>

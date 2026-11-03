@@ -19,7 +19,8 @@ export const actions: Actions = {
 			type: 'devotional_guide',
 			name,
 			email,
-			details: visionGoal || 'Requested The 7-Day Mustard Seed Restoration Devotional & Vision Workbook'
+			details:
+				visionGoal || 'Requested The 7-Day Mustard Seed Restoration Devotional & Vision Workbook'
 		});
 
 		return {
@@ -28,4 +29,3 @@ export const actions: Actions = {
 		};
 	}
 };
-

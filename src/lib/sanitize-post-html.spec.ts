@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { isGoogleDocsHtml, isWordHtml, sanitizePostHtml } from './sanitize-post-html';
 
 describe('sanitizePostHtml (Section 7.1)', () => {
@@ -52,7 +52,9 @@ describe('sanitizePostHtml (Section 7.1)', () => {
 		const internal = sanitizePostHtml('<a href="/blog/options-greeks" target="_self">Internal</a>');
 		expect(internal).toBe('<a href="/blog/options-greeks" target="_self">Internal</a>');
 
-		const mailto = sanitizePostHtml('<a href="mailto:support@growyourfaithministries.org">Email</a>');
+		const mailto = sanitizePostHtml(
+			'<a href="mailto:support@growyourfaithministries.org">Email</a>'
+		);
 		expect(mailto).toBe('<a href="mailto:support@growyourfaithministries.org">Email</a>');
 	});
 

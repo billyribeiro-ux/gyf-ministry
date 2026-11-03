@@ -118,65 +118,121 @@ export const siteConfig = {
 		}
 	],
 	legacyPhotos: {
-		logo: 'https://mwcdigitalagency.com/wp-content/uploads/2019/10/GYF-Ministries-Logo.png',
-		businessMinistry:
-			'https://mwcdigitalagency.com/wp-content/uploads/2021/06/business-ministry.png',
-		mwcMinistry2: 'https://mwcdigitalagency.com/wp-content/uploads/2021/06/MWC-Ministry-2.png',
-		picForMinistryPage:
-			'https://mwcdigitalagency.com/wp-content/uploads/2021/06/Pic-for-ministry-page.png',
+		logo: '/images/gyfm-logo.webp',
+		businessMinistry: '/images/courtney-praying-clean.webp',
+		mwcMinistry2: '/images/courtney-outreach-car-clean.webp',
+		picForMinistryPage: '/images/gallery/carousel2-5.webp',
 		carousel1: [
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2021/06/Image-from-iOS-1.jpg',
+				url: '/images/gallery/carousel1-1.webp',
+				legacyUrl: 'https://mwcdigitalagency.com/wp-content/uploads/2021/06/Image-from-iOS-1.jpg',
+				tag: 'Community Outreach • Connecticut',
+				aspect: 'landscape',
+				focus: 'center 22%',
 				alt: 'Courtney Ribeiro serving families during Grow Your Faith Ministries outreach in Connecticut'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2019/10/Thanksgiving-2018-3.jpg',
+				url: '/images/gallery/carousel1-2.webp',
+				legacyUrl:
+					'https://mwcdigitalagency.com/wp-content/uploads/2019/10/Thanksgiving-2018-3.jpg',
+				tag: 'Thanksgiving Meal Preparation',
+				aspect: 'landscape',
+				focus: 'center 28%',
 				alt: 'Thanksgiving community meal preparation and volunteer service in Greater Waterbury CT'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2019/10/Thanksgiving-2018-2.jpg',
+				url: '/images/gallery/carousel1-3.webp',
+				legacyUrl:
+					'https://mwcdigitalagency.com/wp-content/uploads/2019/10/Thanksgiving-2018-2.jpg',
+				tag: 'Holiday Meal Delivery',
+				aspect: 'landscape',
+				focus: 'center 25%',
 				alt: 'Delivering hot Thanksgiving meals to neighbors in need across Connecticut'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2019/10/Thanksgiving-2018-1.jpg',
+				url: '/images/gallery/carousel1-4.webp',
+				legacyUrl:
+					'https://mwcdigitalagency.com/wp-content/uploads/2019/10/Thanksgiving-2018-1.jpg',
+				tag: 'Holiday Outreach Tables',
+				aspect: 'landscape',
+				focus: 'center 30%',
 				alt: 'Holiday outreach tables stocked with warm meals and winter supplies'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__4.png',
+				url: '/images/gallery/carousel1-5.webp',
+				legacyUrl: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__4.png',
+				tag: 'Friday Ministry & Mentorship',
+				aspect: 'landscape',
+				focus: 'center 20%',
 				alt: 'Friday community ministry and faith encouragement outreach session'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work_2.png',
+				url: '/images/gallery/carousel1-6.webp',
+				legacyUrl: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work_2.png',
+				tag: 'Hands-On Community Care',
+				aspect: 'landscape',
+				focus: 'center 22%',
 				alt: 'Sharing the love of Christ through hands-on community service'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__3.png',
+				url: '/images/gallery/carousel1-7.webp',
+				legacyUrl: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__3.png',
+				tag: 'Partner-Funded Outreach',
+				aspect: 'landscape',
+				focus: 'center 25%',
 				alt: 'Partner-funded outreach supplies ready for local families'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2021/06/Food-for-those-in-need.jpg',
+				url: '/images/gallery/carousel1-8.webp',
+				legacyUrl:
+					'https://mwcdigitalagency.com/wp-content/uploads/2021/06/Food-for-those-in-need.jpg',
+				tag: 'Hot Holiday Food Packages',
+				aspect: 'landscape',
+				focus: 'center 30%',
 				alt: 'Hot holiday food packages prepared for families in need'
 			}
 		],
 		carousel2: [
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__6.png',
+				url: '/images/gallery/carousel2-1.webp',
+				legacyUrl: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__6.png',
+				tag: 'Street Ministry • “Honk If You Love Jesus”',
+				aspect: 'portrait',
+				focus: 'center 15%',
 				alt: 'Children winter coats, hats, mittens, and blankets drive in Connecticut'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/collecting_money_for_the_homeless_.png',
+				url: '/images/gallery/carousel2-2.webp',
+				legacyUrl:
+					'https://mwcdigitalagency.com/wp-content/uploads/2017/08/collecting_money_for_the_homeless_.png',
+				tag: 'Friday Outreach • Supporting Unhoused Neighbors',
+				aspect: 'portrait',
+				focus: 'center 15%',
 				alt: 'Collecting funds and supplies for unhoused neighbors during Friday outreach'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__5.png',
+				url: '/images/gallery/carousel2-3.webp',
+				legacyUrl: 'https://mwcdigitalagency.com/wp-content/uploads/2017/08/ministry_work__5.png',
+				tag: 'Prayer & Scripture Encouragement',
+				aspect: 'portrait',
+				focus: 'center 15%',
 				alt: 'Community members gathering for prayer and encouragement'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2019/10/IMG_0615.jpg',
+				url: '/images/gallery/carousel2-4.webp',
+				legacyUrl: 'https://mwcdigitalagency.com/wp-content/uploads/2019/10/IMG_0615.jpg',
+				tag: 'Children’s Winter Warmth & Gifts',
+				aspect: 'portrait',
+				focus: 'center 18%',
 				alt: 'Holiday gift and winter warmth distribution for local children'
 			},
 			{
-				url: 'https://mwcdigitalagency.com/wp-content/uploads/2021/06/Pic-for-ministry-page.png',
+				url: '/images/gallery/carousel2-5.webp',
+				legacyUrl:
+					'https://mwcdigitalagency.com/wp-content/uploads/2021/06/Pic-for-ministry-page.png',
+				tag: 'Courtney Ribeiro • Founder Outreach',
+				aspect: 'portrait',
+				focus: 'center 15%',
 				alt: 'Courtney Ribeiro and Grow Your Faith Ministries outreach team in action'
 			}
 		]

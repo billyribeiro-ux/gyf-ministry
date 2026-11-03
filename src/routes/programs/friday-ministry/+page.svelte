@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import {
 		IconCalendarHeart,
@@ -29,14 +30,14 @@
 	/>
 </svelte:head>
 
-<section class="page-hero">
+<section class="page-hero" {@attach gsapHeroEntrance}>
 	<div class="container">
-		<div class="eyebrow-badge">
+		<div class="eyebrow-badge" data-hero-item>
 			<IconCalendarHeart size={16} />
 			<span>EVERY FRIDAY YEAR-ROUND • 52 FRIDAYS/YR</span>
 		</div>
-		<h1>Fridays Are For Restoration: Dedicated Weekly Ministry for Those in Need</h1>
-		<p class="lead">
+		<h1 data-hero-item>Fridays Are For Restoration: Dedicated Weekly Ministry for Those in Need</h1>
+		<p class="lead" data-hero-item>
 			“God has so abundantly blessed me that I am now able to take Friday off every week to minister
 			to those in need.” — Courtney Ribeiro
 		</p>
@@ -45,7 +46,10 @@
 
 <!-- Why Every Friday & Who We Serve -->
 <section class="section">
-	<div class="container friday-grid">
+	<div
+		class="container friday-grid"
+		{@attach gsapReveal({ selector: '.friday-grid > *', stagger: 0.14 })}
+	>
 		<div>
 			<span class="badge-teal">Why Every Friday?</span>
 			<h2>A Covenant Commitment to Step Away From Commercial Work</h2>
@@ -136,7 +140,9 @@
 					<div class="form-field">
 						<label for="friday-type">How Can We Minister to You?</label>
 						<select id="friday-type" name="sessionType">
-							<option value="1-on-1 Encouragement Call">1-on-1 Encouragement &amp; Vision Call</option>
+							<option value="1-on-1 Encouragement Call"
+								>1-on-1 Encouragement &amp; Vision Call</option
+							>
 							<option value="Friday Prayer Session">Dedicated Friday Prayer Session</option>
 							<option value="Local CT Community Visit">Local CT Outreach / Shelter Visit</option>
 							<option value="Refer Someone in Need">Refer a Friend or Family in Need</option>

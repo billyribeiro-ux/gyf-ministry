@@ -364,8 +364,8 @@
 				/>
 				{#if brandSuffixDropped}
 					<span class="meta-info-note">
-						Brand suffix " | Grow Your Faith Ministries" is omitted because the rendered title exceeds
-						33 characters before the suffix.
+						Brand suffix " | Grow Your Faith Ministries" is omitted because the rendered title
+						exceeds 33 characters before the suffix.
 					</span>
 				{/if}
 			</label>

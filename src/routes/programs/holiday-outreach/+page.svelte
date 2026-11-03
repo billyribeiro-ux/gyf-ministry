@@ -76,18 +76,26 @@
 		<div class="tracker-header">
 			<div>
 				<span class="badge-emerald">Active 2026 Campaign • Starts Thanksgiving (Nov 26, 2026)</span>
-				<h2> Connecticut Children’s Winter Warmth &amp; Holiday Meal Goal</h2>
+				<h2>Connecticut Children’s Winter Warmth &amp; Holiday Meal Goal</h2>
 			</div>
 			<div class="tracker-stats">
 				<strong>100% Direct Allocation</strong>
 				<span>Wolcott • Waterbury • New Haven • Hartford Counties</span>
 			</div>
 		</div>
-		<div class="progress-track" role="progressbar" aria-valuenow={74} aria-valuemin={0} aria-valuemax={100}>
+		<div
+			class="progress-track"
+			role="progressbar"
+			aria-valuenow={74}
+			aria-valuemin={0}
+			aria-valuemax={100}
+		>
 			<div class="progress-fill" style="width: 74%"></div>
 		</div>
 		<div class="tracker-meta">
-			<span><strong>185 of 250</strong> Children’s Winter Warmth Kits &amp; Family Meals Sponsored</span>
+			<span
+				><strong>185 of 250</strong> Children’s Winter Warmth Kits &amp; Family Meals Sponsored</span
+			>
 			<span><strong>65 Kits Needed</strong> Before Christmas Outreach</span>
 		</div>
 	</div>
@@ -109,7 +117,9 @@
 			</p>
 			<ul class="init-list">
 				<li><IconCheck size={17} /> Traditional hot Thanksgiving &amp; Christmas dinners</li>
-				<li><IconCheck size={17} /> Direct delivery to families in transition &amp; local shelters</li>
+				<li>
+					<IconCheck size={17} /> Direct delivery to families in transition &amp; local shelters
+				</li>
 				<li><IconCheck size={17} /> Zero cost or barriers for families in need</li>
 			</ul>
 		</article>
@@ -127,7 +137,9 @@
 			<ul class="init-list">
 				<li><IconCheck size={17} /> Brand-new heavy winter coats sized per child</li>
 				<li><IconCheck size={17} /> Matching warm hats, insulated mittens &amp; cozy blankets</li>
-				<li><IconCheck size={17} /> Partnered with local schools, churches &amp; family referrals</li>
+				<li>
+					<IconCheck size={17} /> Partnered with local schools, churches &amp; family referrals
+				</li>
 			</ul>
 		</article>
 	</div>
@@ -147,13 +159,7 @@
 
 		<div class="tiers-grid">
 			{#each tiers as t (t.amount)}
-				<div
-					class={[
-						'card',
-						'tier-card',
-						{ selected: selectedTier === t.amount }
-					]}
-				>
+				<div class={['card', 'tier-card', { selected: selectedTier === t.amount }]}>
 					<span class="badge-teal">{t.badge}</span>
 					<div class="tier-price">{t.amount}</div>
 					<h3>{t.title}</h3>
@@ -185,7 +191,13 @@
 						</div>
 						<div class="form-field">
 							<label for="sponsor-email">Email Address (for Receipt &amp; Impact Update) *</label>
-							<input id="sponsor-email" name="email" type="email" required placeholder="you@example.com" />
+							<input
+								id="sponsor-email"
+								name="email"
+								type="email"
+								required
+								placeholder="you@example.com"
+							/>
 						</div>
 					</div>
 					<div class="form-grid">
@@ -200,7 +212,12 @@
 						</div>
 						<div class="form-field">
 							<label for="sponsor-city">Your City / State</label>
-							<input id="sponsor-city" name="city" type="text" placeholder="Wolcott / Waterbury, CT" />
+							<input
+								id="sponsor-city"
+								name="city"
+								type="text"
+								placeholder="Wolcott / Waterbury, CT"
+							/>
 						</div>
 					</div>
 					<div class="form-field">
@@ -425,4 +442,3 @@
 		}
 	}
 </style>
-

@@ -11,4 +11,3 @@ export interface HomeBlogPostItem {
 	categorySlug: string | null;
 	authorName: string;
 }
-

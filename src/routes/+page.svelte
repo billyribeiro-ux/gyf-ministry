@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { siteConfig } from '#lib/config/site.js';
+	import { gsapHeroEntrance, gsapReveal, gsapCounter } from '#lib/attachments/gsap.js';
 	import BlogSection from '#lib/components/home/BlogSection.svelte';
+	import MinistryCarousel from '#lib/components/home/MinistryCarousel.svelte';
 	import type { PageProps } from './$types';
 	import {
 		IconSeedling,
@@ -11,8 +13,6 @@
 		IconPray,
 		IconMountain,
 		IconArrowRight,
-		IconChevronLeft,
-		IconChevronRight,
 		IconSparkles,
 		IconMapPin,
 		IconCheck,
@@ -22,27 +22,8 @@
 
 	let { data }: PageProps = $props();
 
-	let carousel1Index = $state(0);
-	let carousel2Index = $state(0);
-
 	const slides1 = siteConfig.legacyPhotos.carousel1;
 	const slides2 = siteConfig.legacyPhotos.carousel2;
-
-	function prevSlide1() {
-		carousel1Index = (carousel1Index - 1 + slides1.length) % slides1.length;
-	}
-
-	function nextSlide1() {
-		carousel1Index = (carousel1Index + 1) % slides1.length;
-	}
-
-	function prevSlide2() {
-		carousel2Index = (carousel2Index - 1 + slides2.length) % slides2.length;
-	}
-
-	function nextSlide2() {
-		carousel2Index = (carousel2Index + 1) % slides2.length;
-	}
 </script>
 
 <svelte:head>
@@ -60,24 +41,24 @@
 </svelte:head>
 
 <!-- 2. Hero Section (Split 60/40 Layout on Deep Navy #0F203C) -->
-<section class="hero-section">
+<section class="hero-section" {@attach gsapHeroEntrance}>
 	<div class="container hero-grid">
 		<div class="hero-copy">
-			<div class="eyebrow-badge">
+			<div class="eyebrow-badge" data-hero-item>
 				<IconSeedling size={16} />
 				<span>HELPING INDIVIDUALS FIND HOPE SINCE 2014</span>
 			</div>
 
-			<h1>Restoring Shattered Dreams. Reawakening God-Given Purpose.</h1>
+			<h1 data-hero-item>Restoring Shattered Dreams. Reawakening God-Given Purpose.</h1>
 
-			<p class="hero-subheadline">
+			<p class="hero-subheadline" data-hero-item>
 				Too many people walk through life believing their best days are behind them. At Grow Your
 				Faith Ministries, we step into the gap—combining weekly one-on-one faith restoration with
 				tangible community outreach to prove that your life has meaning far beyond your current
 				circumstances.
 			</p>
 
-			<div class="hero-ctas">
+			<div class="hero-ctas" data-hero-item>
 				<a href={resolve('/partner')} class="btn btn-gold">
 					<IconHeartHandshake size={20} />
 					<span>Partner With Our Mission</span>
@@ -88,7 +69,7 @@
 				</a>
 			</div>
 
-			<div class="hero-local-anchor">
+			<div class="hero-local-anchor" data-hero-item>
 				<IconMapPin size={17} />
 				<span>
 					Serving Wolcott, Waterbury, New Haven &amp; Hartford Counties in Connecticut + National
@@ -97,8 +78,12 @@
 			</div>
 		</div>
 
-		<div class="hero-visual">
+		<div class="hero-visual" data-hero-visual>
 			<div class="hero-image-frame">
+				<div class="hero-floating-pill" data-hero-float>
+					<span class="pill-dot" aria-hidden="true"></span>
+					<span>Founded by Courtney Ribeiro • Est. 2014</span>
+				</div>
 				<img
 					src="/images/gyfm-holiday-outreach-hero.webp"
 					width="1200"
@@ -122,25 +107,36 @@
 </section>
 
 <!-- 3. Quantified Impact Bar (4-Column Metric Strip) -->
-<section class="impact-strip" aria-label="Quantified Ministry Impact Ledger">
+<section
+	class="impact-strip"
+	aria-label="Quantified Ministry Impact Ledger"
+	{@attach gsapReveal({ selector: '.impact-item', stagger: 0.1, y: 18 })}
+>
 	<div class="container impact-grid">
 		<div class="impact-item">
-			<span class="impact-number">2014</span>
+			<span class="impact-number" {@attach gsapCounter({ start: 2002, end: 2014 })}>2014</span>
 			<span class="impact-label">Year Founded &amp; Serving Continuously (12+ Years Active)</span>
 		</div>
 		<div class="impact-item">
-			<span class="impact-number">52 Fridays/Yr</span>
+			<span
+				class="impact-number"
+				{@attach gsapCounter({ start: 0, end: 52, suffix: ' Fridays/Yr' })}>52 Fridays/Yr</span
+			>
 			<span class="impact-label">Dedicated Strictly to Ministry &amp; Mentorship (500+ Served)</span
 			>
 		</div>
 		<div class="impact-item">
-			<span class="impact-number">40 Days</span>
+			<span class="impact-number" {@attach gsapCounter({ start: 0, end: 40, suffix: ' Days' })}
+				>40 Days</span
+			>
 			<span class="impact-label"
 				>Annual Holiday Sabbatical (Thanksgiving – Jan 4) for Full-Time Outreach</span
 			>
 		</div>
 		<div class="impact-item">
-			<span class="impact-number">100%</span>
+			<span class="impact-number" {@attach gsapCounter({ start: 0, end: 100, suffix: '%' })}
+				>100%</span
+			>
 			<span class="impact-label"
 				>Of Outreach Contributions Go Directly to Meals &amp; Children’s Winter Gear</span
 			>
@@ -149,24 +145,34 @@
 </section>
 
 <!-- 4. The Heart of the Mission (Editorial Story Block) -->
-<section class="section">
+<section
+	class="section"
+	{@attach gsapReveal({ selector: '[data-story-reveal]', stagger: 0.14, y: 24 })}
+>
 	<div class="container story-grid">
-		<div class="story-media">
-			<img
-				src="/images/gyfm-mustard-seed-ministry.webp"
-				width="1200"
-				height="675"
-				loading="lazy"
-				alt="Grow Your Faith Ministries founder Courtney Ribeiro sharing faith and mentorship"
-				class="story-img"
-			/>
+		<div class="story-media" data-story-reveal>
+			<div class="story-portrait-frame">
+				<img
+					src="/images/courtney-outreach-car-clean.webp"
+					width="900"
+					height="900"
+					loading="lazy"
+					decoding="async"
+					alt="Grow Your Faith Ministries founder Courtney Ribeiro preparing community outreach supplies"
+					class="story-img"
+				/>
+				<div class="story-badge-overlay">
+					<IconSeedling size={16} />
+					<span>Faith in Word &amp; Action • Since 2014</span>
+				</div>
+			</div>
 			<div class="story-caption">
 				<i>With the help and support of clients like you</i> — restoring hope across Connecticut since
 				2014.
 			</div>
 		</div>
 
-		<div class="story-content">
+		<div class="story-content" data-story-reveal>
 			<span class="badge-teal">
 				<IconSparkles size={15} />
 				<span>The Heart of the Mission</span>
@@ -207,7 +213,7 @@
 <!-- 5. Three Core Ministry Pillars (3-Card Grid) -->
 <section class="section-alt">
 	<div class="container">
-		<div class="section-header">
+		<div class="section-header" {@attach gsapReveal({ y: 20 })}>
 			<span class="badge-teal">Three Core Ministry Pillars</span>
 			<h2>Faith in Word and Action Across Every Season</h2>
 			<p>
@@ -216,21 +222,26 @@
 			</p>
 		</div>
 
-		<div class="pillars-grid">
+		<div
+			class="pillars-grid"
+			{@attach gsapReveal({ selector: '.pillar-card', stagger: 0.12, y: 26 })}
+		>
 			<!-- Card 1 -->
 			<article class="card pillar-card">
-				<div class="pillar-top">
-					<span class="pillar-icon">
-						<IconCalendarHeart size={26} />
-					</span>
-					<span class="badge-teal">Every Friday Year-Round</span>
+				<div>
+					<div class="pillar-top">
+						<span class="pillar-icon">
+							<IconCalendarHeart size={26} />
+						</span>
+						<span class="badge-teal">Every Friday Year-Round</span>
+					</div>
+					<h3>Weekly Friday Ministry</h3>
+					<p>
+						God has abundantly blessed our work so that every Friday is set aside exclusively to
+						minister to those in need—offering spiritual encouragement, life-purpose coaching, and
+						direct community care.
+					</p>
 				</div>
-				<h3>Weekly Friday Ministry</h3>
-				<p>
-					God has abundantly blessed our work so that every Friday is set aside exclusively to
-					minister to those in need—offering spiritual encouragement, life-purpose coaching, and
-					direct community care.
-				</p>
 				<a href={resolve('/programs/friday-ministry')} class="pillar-link">
 					<span>Explore Friday Ministry</span>
 					<IconArrowRight size={18} />
@@ -239,17 +250,19 @@
 
 			<!-- Card 2 -->
 			<article class="card pillar-card featured-pillar">
-				<div class="pillar-top">
-					<span class="pillar-icon gold">
-						<IconJacket size={26} />
-					</span>
-					<span class="badge-emerald">Thanksgiving through January 4</span>
+				<div>
+					<div class="pillar-top">
+						<span class="pillar-icon gold">
+							<IconJacket size={26} />
+						</span>
+						<span class="badge-emerald">Thanksgiving through January 4</span>
+					</div>
+					<h3>Thanksgiving &amp; Christmas Outreach</h3>
+					<p>
+						Every holiday season, we pause business operations for six weeks to serve hot holiday
+						meals and purchase brand-new coats, hats, mittens, and blankets for children in need.
+					</p>
 				</div>
-				<h3>Thanksgiving &amp; Christmas Outreach</h3>
-				<p>
-					Every holiday season, we pause business operations for six weeks to serve hot holiday
-					meals and purchase brand-new coats, hats, mittens, and blankets for children in need.
-				</p>
 				<a href={resolve('/programs/holiday-outreach')} class="pillar-link">
 					<span>Support the Holiday Drive</span>
 					<IconArrowRight size={18} />
@@ -258,17 +271,19 @@
 
 			<!-- Card 3 -->
 			<article class="card pillar-card">
-				<div class="pillar-top">
-					<span class="pillar-icon">
-						<IconSeedling size={26} />
-					</span>
-					<span class="badge-teal">Mustard Seed Mentorship</span>
+				<div>
+					<div class="pillar-top">
+						<span class="pillar-icon">
+							<IconSeedling size={26} />
+						</span>
+						<span class="badge-teal">Mustard Seed Mentorship</span>
+					</div>
+					<h3>Purpose &amp; Vision Restoration</h3>
+					<p>
+						Practical, faith-rooted guidance designed to help individuals overcome adversity,
+						rediscover their self-worth in Christ, and steward their God-given talents.
+					</p>
 				</div>
-				<h3>Purpose &amp; Vision Restoration</h3>
-				<p>
-					Practical, faith-rooted guidance designed to help individuals overcome adversity,
-					rediscover their self-worth in Christ, and steward their God-given talents.
-				</p>
 				<a href={resolve('/restore-your-purpose')} class="pillar-link">
 					<span>Start Your Restoration Journey</span>
 					<IconArrowRight size={18} />
@@ -281,7 +296,7 @@
 <!-- Community Impact Galleries (Preserving all 13 original ministry photos with descriptive local alt attributes) -->
 <section class="section">
 	<div class="container">
-		<div class="section-header">
+		<div class="section-header" {@attach gsapReveal({ y: 20 })}>
 			<span class="badge-teal">Authentic Ministry Proof</span>
 			<h2>Serving Hot Holiday Meals &amp; Children’s Winter Warmth Since 2014</h2>
 			<p>
@@ -290,82 +305,29 @@
 			</p>
 		</div>
 
-		<div class="carousels-grid">
-			<!-- Carousel 1: Thanksgiving & Meals Outreach -->
-			<div class="card carousel-card">
-				<div class="carousel-header">
-					<div>
-						<span class="badge-teal"><IconSoup size={14} /> Holiday Meals &amp; Service</span>
-						<h3>Thanksgiving &amp; Community Meal Outreach</h3>
-					</div>
-					<div class="carousel-controls">
-						<button
-							type="button"
-							class="carousel-btn"
-							aria-label="Previous Thanksgiving outreach photo"
-							onclick={prevSlide1}
-						>
-							<IconChevronLeft size={20} />
-						</button>
-						<span class="carousel-counter">{carousel1Index + 1} / {slides1.length}</span>
-						<button
-							type="button"
-							class="carousel-btn"
-							aria-label="Next Thanksgiving outreach photo"
-							onclick={nextSlide1}
-						>
-							<IconChevronRight size={20} />
-						</button>
-					</div>
-				</div>
-				<div class="carousel-viewport">
-					<img
-						src={slides1[carousel1Index].url}
-						alt={slides1[carousel1Index].alt}
-						loading="lazy"
-						class="carousel-image"
-					/>
-				</div>
-				<p class="carousel-caption">{slides1[carousel1Index].alt}</p>
-			</div>
+		<div
+			class="carousels-grid"
+			{@attach gsapReveal({ selector: '.carousel-showcase', stagger: 0.15, y: 28 })}
+		>
+			<MinistryCarousel
+				badgeText="Holiday Meals & Service"
+				badgeVariant="teal"
+				BadgeIcon={IconSoup}
+				title="Thanksgiving & Community Meal Outreach"
+				subtitle="Hot holiday meals & hands-on service across Greater Waterbury & Central CT"
+				slides={slides1}
+				autoPlayMs={6000}
+			/>
 
-			<!-- Carousel 2: Coats, Hats, Mittens, Blankets & Homeless Outreach -->
-			<div class="card carousel-card">
-				<div class="carousel-header">
-					<div>
-						<span class="badge-emerald"><IconJacket size={14} /> Winter Warmth &amp; Care</span>
-						<h3>Children’s Coats, Blankets &amp; Street Ministry</h3>
-					</div>
-					<div class="carousel-controls">
-						<button
-							type="button"
-							class="carousel-btn"
-							aria-label="Previous winter outreach photo"
-							onclick={prevSlide2}
-						>
-							<IconChevronLeft size={20} />
-						</button>
-						<span class="carousel-counter">{carousel2Index + 1} / {slides2.length}</span>
-						<button
-							type="button"
-							class="carousel-btn"
-							aria-label="Next winter outreach photo"
-							onclick={nextSlide2}
-						>
-							<IconChevronRight size={20} />
-						</button>
-					</div>
-				</div>
-				<div class="carousel-viewport">
-					<img
-						src={slides2[carousel2Index].url}
-						alt={slides2[carousel2Index].alt}
-						loading="lazy"
-						class="carousel-image"
-					/>
-				</div>
-				<p class="carousel-caption">{slides2[carousel2Index].alt}</p>
-			</div>
+			<MinistryCarousel
+				badgeText="Winter Warmth & Care"
+				badgeVariant="emerald"
+				BadgeIcon={IconJacket}
+				title="Children’s Coats, Blankets & Street Ministry"
+				subtitle="Winter coats, hats, mittens & Friday street encouragement in action"
+				slides={slides2}
+				autoPlayMs={6800}
+			/>
 		</div>
 	</div>
 </section>
@@ -374,9 +336,12 @@
 <BlogSection posts={data.latestPosts} />
 
 <!-- 7. The "Client & Partner Fuel" Section (Bridging MWC Digital Agency & Donors) -->
-<section class="section-navy">
+<section
+	class="section-navy"
+	{@attach gsapReveal({ selector: '[data-partner-reveal]', stagger: 0.14, y: 24 })}
+>
 	<div class="container partner-fuel-grid">
-		<div class="partner-fuel-copy">
+		<div class="partner-fuel-copy" data-partner-reveal>
 			<div class="eyebrow-badge">
 				<IconShieldCheck size={16} />
 				<span>WITH THE HELP AND SUPPORT OF CLIENTS LIKE YOU</span>
@@ -420,7 +385,7 @@
 			</div>
 		</div>
 
-		<div class="partner-fuel-card">
+		<div class="partner-fuel-card" data-partner-reveal>
 			<div class="prayer-blessing-box">
 				<IconPray size={32} />
 				<h3>A Prayer Over Your Calling</h3>
@@ -441,27 +406,32 @@
 
 <style>
 	.hero-section {
-		background: linear-gradient(135deg, var(--color-navy) 0%, #142b52 100%);
+		position: relative;
+		overflow: hidden;
+		background:
+			radial-gradient(circle at 82% 22%, rgba(212, 168, 67, 0.16) 0%, transparent 46%),
+			radial-gradient(circle at 14% 88%, rgba(15, 164, 175, 0.14) 0%, transparent 42%),
+			linear-gradient(135deg, #091529 0%, var(--color-navy) 52%, #16305c 100%);
 		color: #ffffff;
-		padding: 4.5rem 0 5rem;
+		padding: 4.75rem 0 5.25rem;
 	}
 
 	.hero-grid {
 		display: grid;
-		grid-template-columns: 1.35fr 1fr;
-		gap: 3rem;
+		grid-template-columns: 1.28fr 1fr;
+		gap: 3.25rem;
 		align-items: center;
 	}
 
 	.hero-copy h1 {
 		color: #ffffff;
-		margin-top: 1rem;
+		margin-top: 1.05rem;
 		margin-bottom: 1.25rem;
 	}
 
 	.hero-subheadline {
 		font-size: 1.12rem;
-		color: rgba(255, 255, 255, 0.88);
+		color: rgba(255, 255, 255, 0.9);
 		margin-bottom: 2rem;
 		max-width: 640px;
 	}
@@ -486,9 +456,39 @@
 		position: relative;
 		border-radius: var(--radius-lg);
 		overflow: hidden;
-		border: 2px solid rgba(212, 168, 67, 0.45);
-		box-shadow: var(--shadow-elevated);
+		border: 2px solid rgba(212, 168, 67, 0.5);
+		box-shadow:
+			0 24px 60px -15px rgba(0, 0, 0, 0.5),
+			0 0 0 1px rgba(255, 255, 255, 0.08);
 		background: #091529;
+	}
+
+	.hero-floating-pill {
+		position: absolute;
+		top: 0.95rem;
+		left: 0.95rem;
+		z-index: 3;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.36rem 0.85rem;
+		border-radius: 999px;
+		background: rgba(9, 21, 41, 0.84);
+		border: 1px solid rgba(212, 168, 67, 0.45);
+		color: #ffffff;
+		font-size: 0.76rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		backdrop-filter: blur(8px);
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+	}
+
+	.pill-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--color-emerald);
+		box-shadow: 0 0 0 3px rgba(34, 181, 115, 0.28);
 	}
 
 	.hero-img {
@@ -497,12 +497,13 @@
 		display: block;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
+		object-position: center 22%;
 	}
 
 	.scripture-overlay {
-		background: rgba(15, 32, 60, 0.94);
-		border-top: 1px solid rgba(212, 168, 67, 0.4);
-		padding: 1.15rem 1.35rem;
+		background: linear-gradient(90deg, rgba(9, 21, 41, 0.96) 0%, rgba(15, 32, 60, 0.94) 100%);
+		border-top: 1px solid rgba(212, 168, 67, 0.42);
+		padding: 1.2rem 1.4rem;
 		display: flex;
 		align-items: flex-start;
 		gap: 0.85rem;
@@ -518,7 +519,7 @@
 		margin: 0;
 		font-family: var(--font-heading);
 		font-style: italic;
-		font-size: 1rem;
+		font-size: 1.02rem;
 		color: #ffffff;
 	}
 
@@ -536,8 +537,8 @@
 	.impact-strip {
 		background: var(--color-surface);
 		border-bottom: 1px solid var(--color-border);
-		padding: 2.25rem 0;
-		box-shadow: 0 8px 24px -12px rgba(15, 32, 60, 0.06);
+		padding: 2.4rem 0;
+		box-shadow: 0 10px 28px -14px rgba(15, 32, 60, 0.07);
 	}
 
 	.impact-grid {
@@ -550,42 +551,75 @@
 		display: flex;
 		flex-direction: column;
 		border-left: 3px solid var(--color-gold);
-		padding-left: 1.1rem;
+		padding-left: 1.15rem;
 	}
 
 	.impact-number {
 		font-family: var(--font-heading);
-		font-size: 1.9rem;
+		font-size: 2rem;
 		font-weight: 700;
 		color: var(--color-navy);
 		line-height: 1.15;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.impact-label {
 		font-size: 0.88rem;
 		color: var(--color-text-muted);
 		font-weight: 500;
-		margin-top: 0.25rem;
+		margin-top: 0.28rem;
 	}
 
 	/* Editorial Story */
 	.story-grid {
 		display: grid;
-		grid-template-columns: 1fr 1.25fr;
-		gap: 3.5rem;
+		grid-template-columns: 0.95fr 1.3fr;
+		gap: 3.75rem;
 		align-items: center;
+	}
+
+	.story-portrait-frame {
+		position: relative;
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+		border: 2px solid rgba(212, 168, 67, 0.45);
+		box-shadow: var(--shadow-elevated);
+		background: var(--color-navy);
+		aspect-ratio: 4 / 3.8;
 	}
 
 	.story-img {
 		width: 100%;
-		height: auto;
-		border-radius: var(--radius-md);
-		border: 1px solid var(--color-border);
-		box-shadow: var(--shadow-card);
+		height: 100%;
+		display: block;
+		object-fit: cover;
+		object-position: center 18%;
+		transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.story-portrait-frame:hover .story-img {
+		transform: scale(1.03);
+	}
+
+	.story-badge-overlay {
+		position: absolute;
+		bottom: 0.95rem;
+		left: 0.95rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.4rem 0.88rem;
+		border-radius: 999px;
+		background: rgba(9, 21, 41, 0.86);
+		color: var(--color-gold);
+		border: 1px solid rgba(212, 168, 67, 0.45);
+		font-size: 0.78rem;
+		font-weight: 700;
+		backdrop-filter: blur(8px);
 	}
 
 	.story-caption {
-		margin-top: 0.75rem;
+		margin-top: 0.85rem;
 		font-size: 0.88rem;
 		color: var(--color-text-muted);
 		text-align: center;
@@ -598,7 +632,7 @@
 
 	.founder-quote {
 		margin: 0 0 1.5rem;
-		padding: 1.5rem 1.75rem;
+		padding: 1.6rem 1.85rem;
 		background: var(--color-surface);
 		border-left: 4px solid var(--color-gold);
 		border-radius: 0 var(--radius-md) var(--radius-md) 0;
@@ -655,15 +689,17 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		transition: transform 0.2s ease;
 	}
 
 	.pillar-card:hover {
-		transform: translateY(-4px);
+		transform: translateY(-5px);
+		box-shadow: var(--shadow-elevated);
+		border-color: rgba(212, 168, 67, 0.5);
 	}
 
 	.featured-pillar {
 		border: 2px solid var(--color-gold);
+		box-shadow: var(--shadow-elevated);
 	}
 
 	.pillar-top {
@@ -675,14 +711,15 @@
 	}
 
 	.pillar-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
+		width: 50px;
+		height: 50px;
+		border-radius: 13px;
 		background: var(--color-navy);
 		color: var(--color-gold);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		box-shadow: 0 8px 18px -6px rgba(15, 32, 60, 0.35);
 	}
 
 	.pillar-icon.gold {
@@ -696,11 +733,15 @@
 		gap: 0.45rem;
 		font-weight: 700;
 		color: var(--color-teal);
-		margin-top: 0.75rem;
+		margin-top: 0.85rem;
+		transition:
+			color 0.2s ease,
+			gap 0.2s ease;
 	}
 
 	.pillar-link:hover {
 		color: var(--color-navy);
+		gap: 0.65rem;
 	}
 
 	/* Carousels */
@@ -708,75 +749,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 2rem;
-	}
-
-	.carousel-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		margin-bottom: 1rem;
-	}
-
-	.carousel-header h3 {
-		font-size: 1.2rem;
-		margin: 0.4rem 0 0;
-	}
-
-	.carousel-controls {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.carousel-btn {
-		width: 36px;
-		height: 36px;
-		border-radius: 50%;
-		border: 1px solid var(--color-border);
-		background: var(--color-parchment);
-		color: var(--color-navy);
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-	}
-
-	.carousel-btn:hover {
-		background: var(--color-gold);
-		border-color: var(--color-gold);
-	}
-
-	.carousel-counter {
-		font-size: 0.82rem;
-		font-weight: 700;
-		color: var(--color-text-muted);
-		min-width: 44px;
-		text-align: center;
-	}
-
-	.carousel-viewport {
-		width: 100%;
-		aspect-ratio: 16 / 10;
-		background: #0f203c;
-		border-radius: var(--radius-sm);
-		overflow: hidden;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.carousel-image {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.carousel-caption {
-		margin: 0.75rem 0 0;
-		font-size: 0.86rem;
-		color: var(--color-text-muted);
-		font-style: italic;
+		align-items: stretch;
 	}
 
 	/* Partner Fuel */
@@ -821,10 +794,12 @@
 
 	.prayer-blessing-box {
 		background: rgba(255, 255, 255, 0.06);
-		border: 1px solid rgba(212, 168, 67, 0.4);
-		border-radius: var(--radius-md);
-		padding: 2.25rem;
+		border: 1px solid rgba(212, 168, 67, 0.42);
+		border-radius: var(--radius-lg);
+		padding: 2.35rem;
 		color: #ffffff;
+		backdrop-filter: blur(10px);
+		box-shadow: 0 20px 44px -16px rgba(0, 0, 0, 0.38);
 	}
 
 	.prayer-blessing-box :global(svg) {
@@ -861,6 +836,10 @@
 		color: var(--color-gold);
 		font-weight: 600;
 		font-size: 0.92rem;
+	}
+
+	.quick-links a:hover {
+		color: #ffffff;
 	}
 
 	@media (max-width: 960px) {

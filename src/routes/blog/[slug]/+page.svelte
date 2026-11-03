@@ -57,7 +57,9 @@
 				: `${SITE_ORIGIN}/blog`
 	);
 
-	let shareTitle = $derived(data.post?.title ?? data.payload?.title ?? 'Grow Your Faith Ministries');
+	let shareTitle = $derived(
+		data.post?.title ?? data.payload?.title ?? 'Grow Your Faith Ministries'
+	);
 
 	function setupArticleInteractions() {
 		const activeSlug = data.post?.slug;
@@ -190,11 +192,7 @@
 	<div class="reading-progress-fill" style={`width: ${readingProgress}%`}></div>
 </div>
 
-<div
-	{@attach setupArticleInteractions}
-	id="blog-article-page"
-	class="inner-page blog-article-page"
->
+<div {@attach setupArticleInteractions} id="blog-article-page" class="inner-page blog-article-page">
 	{#if data.locked && data.payload}
 		<section class="content-section locked-article-section" aria-labelledby="locked-h1">
 			<nav class="article-breadcrumbs" aria-label="Breadcrumb">
@@ -411,9 +409,7 @@
 							<a href={resolve('/programs/friday-ministry')} class="btn-cta-primary">
 								Request a Friday Session
 							</a>
-							<a href={resolve('/partner')} class="btn-cta-secondary">
-								Partner With Our Mission
-							</a>
+							<a href={resolve('/partner')} class="btn-cta-secondary"> Partner With Our Mission </a>
 						</div>
 					</section>
 

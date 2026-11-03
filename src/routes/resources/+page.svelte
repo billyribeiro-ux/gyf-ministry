@@ -33,7 +33,8 @@
 		},
 		{
 			category: 'Christian Stewardship & Community Impact',
-			title: 'Stewarding Your God-Given Talents in Business and Life (Why We Pause From Thanksgiving to Jan 4)',
+			title:
+				'Stewarding Your God-Given Talents in Business and Life (Why We Pause From Thanksgiving to Jan 4)',
 			excerpt:
 				'Inside our unique stewardship model funding weekly Friday ministry and our 40-day holiday sabbatical serving hot meals and equipping children across Wolcott and Waterbury with winter gear.',
 			readTime: '6 min read',
@@ -66,8 +67,8 @@
 		</div>
 		<h1>Mustard Seed Faith Devotionals &amp; Community Impact Hub</h1>
 		<p class="lead">
-			Practical Christian encouragement for hard times, biblical wisdom on stewarding your
-			God-given talents, and real-time updates from our Friday and holiday outreach in Connecticut.
+			Practical Christian encouragement for hard times, biblical wisdom on stewarding your God-given
+			talents, and real-time updates from our Friday and holiday outreach in Connecticut.
 		</p>
 	</div>
 </section>
@@ -234,4 +235,3 @@
 		}
 	}
 </style>
-

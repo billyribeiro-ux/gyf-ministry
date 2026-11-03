@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
+	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import {
 		IconSeedling,
@@ -31,14 +32,14 @@
 	/>
 </svelte:head>
 
-<section class="page-hero">
+<section class="page-hero" {@attach gsapHeroEntrance}>
 	<div class="container">
-		<div class="eyebrow-badge">
+		<div class="eyebrow-badge" data-hero-item>
 			<IconSeedling size={16} />
 			<span>FAITH &amp; VISION RESTORATION HUB</span>
 		</div>
-		<h1>Your Circumstances Do Not Define Your Calling</h1>
-		<p class="lead">
+		<h1 data-hero-item>Your Circumstances Do Not Define Your Calling</h1>
+		<p class="lead" data-hero-item>
 			Grow Your Faith Ministries’ main goal is to help people restore their dreams, goals, and
 			visions that are buried deep inside of them; to bring them back to life and to teach them that
 			their lives have meaning and purpose far beyond their current circumstances.
@@ -49,7 +50,7 @@
 <!-- The Mustard Seed Framework (3 Steps to Restoration) -->
 <section class="section">
 	<div class="container">
-		<div class="section-intro">
+		<div class="section-intro" {@attach gsapReveal({ y: 20 })}>
 			<span class="badge-teal"><IconMountain size={15} /> Matthew 17:20 Blueprint</span>
 			<h2>The Mustard Seed Framework (3 Steps to Restoration)</h2>
 			<p>
@@ -58,7 +59,7 @@
 			</p>
 		</div>
 
-		<div class="steps-grid">
+		<div class="steps-grid" {@attach gsapReveal({ selector: '.step-card', stagger: 0.12 })}>
 			<article class="card step-card">
 				<div class="step-num">Step 01</div>
 				<div class="step-icon">
@@ -66,9 +67,9 @@
 				</div>
 				<h3>Unbury the Vision</h3>
 				<p>
-					Identifying the dreams, goals, and God-given visions that life’s setbacks, disappointments,
-					or heartbreak convinced you to abandon. What God planted in your spirit was not meant to
-					stay buried.
+					Identifying the dreams, goals, and God-given visions that life’s setbacks,
+					disappointments, or heartbreak convinced you to abandon. What God planted in your spirit
+					was not meant to stay buried.
 				</p>
 			</article>
 
@@ -136,16 +137,23 @@
 				</div>
 				<div class="form-field">
 					<label for="guide-email">Email Address *</label>
-					<input id="guide-email" name="email" type="email" required placeholder="you@example.com" />
+					<input
+						id="guide-email"
+						name="email"
+						type="email"
+						required
+						placeholder="you@example.com"
+					/>
 				</div>
 				<div class="form-field">
-					<label for="guide-goal">What dream or goal are you asking God to restore? (Optional)</label>
+					<label for="guide-goal"
+						>What dream or goal are you asking God to restore? (Optional)</label
+					>
 					<textarea
 						id="guide-goal"
 						name="visionGoal"
 						rows="3"
-						placeholder="Share a dream or calling you want to bring back to life..."
-					></textarea>
+						placeholder="Share a dream or calling you want to bring back to life..."></textarea>
 				</div>
 				<button type="submit" class="btn btn-gold" style="width: 100%">
 					<IconDownload size={19} />
@@ -245,4 +253,3 @@
 		}
 	}
 </style>
-

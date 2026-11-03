@@ -143,7 +143,13 @@
 			<form method="POST" action="?/submitPartner" use:enhance>
 				<div class="form-field">
 					<label for="part-name">Your Name or Company Name *</label>
-					<input id="part-name" name="name" type="text" required placeholder="Full Name / Company" />
+					<input
+						id="part-name"
+						name="name"
+						type="text"
+						required
+						placeholder="Full Name / Company"
+					/>
 				</div>
 				<div class="form-field">
 					<label for="part-email">Email Address *</label>
@@ -155,19 +161,33 @@
 						<select id="part-way" name="partnerWay">
 							<option value="Monthly Mustard Seed Partner">Monthly Mustard Seed Partner</option>
 							<option value="One-Time Holiday Outreach Gift">One-Time Holiday Outreach Gift</option>
-							<option value="Corporate Winter Kit Sponsorship">Corporate Winter Kit Sponsorship (10/25/50 Kits)</option>
-							<option value="Host an In-Kind Coat Drive Box">Host an In-Kind Coat Drive Box in CT</option>
+							<option value="Corporate Winter Kit Sponsorship"
+								>Corporate Winter Kit Sponsorship (10/25/50 Kits)</option
+							>
+							<option value="Host an In-Kind Coat Drive Box"
+								>Host an In-Kind Coat Drive Box in CT</option
+							>
 						</select>
 					</div>
 					<div class="form-field">
 						<label for="part-amount">Commitment Tier</label>
 						<select id="part-amount" name="amount">
 							<option value="$25 / Warmth Bundle">$25 — Warmth &amp; Holiday Meal Bundle</option>
-							<option value="$65 / Child Winter Coat Kit">$65 — 1 Complete Child’s Winter Package</option>
-							<option value="$250 / Full Family of 4">$250 — Full Family of 4 Holiday Outreach</option>
-							<option value="$650 / 10 Children Kits">$650 — Corporate: 10 Children’s Winter Kits</option>
-							<option value="$1,625 / 25 Children Kits">$1,625 — Corporate: 25 Children’s Winter Kits</option>
-							<option value="In-Kind Coat Collection Box">In-Kind Coat &amp; Blanket Collection Box</option>
+							<option value="$65 / Child Winter Coat Kit"
+								>$65 — 1 Complete Child’s Winter Package</option
+							>
+							<option value="$250 / Full Family of 4"
+								>$250 — Full Family of 4 Holiday Outreach</option
+							>
+							<option value="$650 / 10 Children Kits"
+								>$650 — Corporate: 10 Children’s Winter Kits</option
+							>
+							<option value="$1,625 / 25 Children Kits"
+								>$1,625 — Corporate: 25 Children’s Winter Kits</option
+							>
+							<option value="In-Kind Coat Collection Box"
+								>In-Kind Coat &amp; Blanket Collection Box</option
+							>
 						</select>
 					</div>
 				</div>
@@ -285,4 +305,3 @@
 		}
 	}
 </style>
-

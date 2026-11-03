@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { gsapReveal } from '#lib/attachments/gsap.js';
 	import {
 		IconBible,
 		IconArrowUpRight,
@@ -30,7 +31,7 @@
 <!-- BLOG SECTION (Modeled after new-revolution-web BlogSection with Grow Your Faith Ministries palette & design) -->
 <section class="section-alt blog-section" id="blog" aria-labelledby="blog-title">
 	<div class="container">
-		<div class="blog-header">
+		<div class="blog-header" {@attach gsapReveal({ y: 20 })}>
 			<div class="blog-heading-group">
 				<span class="badge-teal">
 					<IconBible size={15} />
@@ -53,7 +54,7 @@
 			</a>
 		</div>
 
-		<div class="blog-grid">
+		<div class="blog-grid" {@attach gsapReveal({ selector: '.blog-card', stagger: 0.12, y: 26 })}>
 			{#each posts as post, idx (post.id)}
 				<article
 					class={['card', 'blog-card', { 'blog-card-featured': idx === 0 }]}
@@ -222,8 +223,9 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		object-position: center 22%;
 		display: block;
-		transition: transform 0.35s ease;
+		transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.blog-card:hover .blog-cover-img {
