@@ -121,7 +121,7 @@
 				children’s winter coat packages, or request an In-Kind Coat Drive box for your business.
 			</p>
 			<div class="card bridge-note">
-				<h4>MWC Digital Agency Philanthropy Bridge</h4>
+				<h3>MWC Digital Agency Philanthropy Bridge</h3>
 				<p>
 					Are you a client of <a
 						href={siteConfig.founder.parentOrgUrl}
@@ -143,7 +143,7 @@
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
 			{#if form?.error}
-				<div class="alert-error" role="alert">{form.error}</div>
+				<div id="partner-form-error" class="alert-error" role="alert">{form.error}</div>
 			{/if}
 			<form
 				method="POST"
@@ -162,18 +162,36 @@
 						id="part-name"
 						name="name"
 						type="text"
+						autocomplete="name"
 						required
+						value={form?.values?.name ?? ''}
+						aria-invalid={form?.error && !form?.values?.name ? 'true' : undefined}
+						aria-describedby={form?.error ? 'partner-form-error' : undefined}
 						placeholder="Full Name / Company"
 					/>
 				</div>
 				<div class="form-field">
 					<label for="part-email">Email Address *</label>
-					<input id="part-email" name="email" type="email" required placeholder="you@company.com" />
+					<input
+						id="part-email"
+						name="email"
+						type="email"
+						autocomplete="email"
+						required
+						value={form?.values?.email ?? ''}
+						aria-invalid={form?.error && !form?.values?.email ? 'true' : undefined}
+						aria-describedby={form?.error ? 'partner-form-error' : undefined}
+						placeholder="you@company.com"
+					/>
 				</div>
 				<div class="form-grid">
 					<div class="form-field">
 						<label for="part-way">Partnership Pathway</label>
-						<select id="part-way" name="partnerWay">
+						<select
+							id="part-way"
+							name="partnerWay"
+							value={form?.values?.partnerWay ?? 'Monthly Mustard Seed Partner'}
+						>
 							<option value="Monthly Mustard Seed Partner">Monthly Mustard Seed Partner</option>
 							<option value="One-Time Holiday Outreach Gift">One-Time Holiday Outreach Gift</option>
 							<option value="Corporate Winter Kit Sponsorship"
@@ -186,7 +204,11 @@
 					</div>
 					<div class="form-field">
 						<label for="part-amount">Commitment Tier</label>
-						<select id="part-amount" name="amount">
+						<select
+							id="part-amount"
+							name="amount"
+							value={form?.values?.amount ?? '$25 / Warmth Bundle'}
+						>
 							<option value="$25 / Warmth Bundle">$25 — Warmth &amp; Holiday Meal Bundle</option>
 							<option value="$65 / Child Winter Coat Kit"
 								>$65 — 1 Complete Child’s Winter Package</option
@@ -212,6 +234,7 @@
 						id="part-details"
 						name="details"
 						rows="3"
+						value={form?.values?.details ?? ''}
 						placeholder="Let us know how we can coordinate your sponsorship or coat drive box..."
 					></textarea>
 				</div>
@@ -247,7 +270,7 @@
 
 	.ways-grid {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1.75rem;
 	}
 
@@ -300,9 +323,13 @@
 
 	.partner-form-grid {
 		display: grid;
-		grid-template-columns: 1.1fr 1fr;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
 		gap: 3rem;
 		align-items: start;
+	}
+
+	.partner-form-grid > * {
+		min-width: 0;
 	}
 
 	.partner-form-grid h2 {
@@ -314,7 +341,8 @@
 		border-left: 4px solid var(--color-gold);
 	}
 
-	.bridge-note h4 {
+	.bridge-note h3 {
+		font-size: 1.15rem;
 		margin-bottom: 0.5rem;
 	}
 
@@ -326,7 +354,7 @@
 	@media (max-width: 960px) {
 		.ways-grid,
 		.partner-form-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

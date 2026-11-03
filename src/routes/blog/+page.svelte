@@ -152,6 +152,7 @@
 
 	.blog-search-input {
 		flex: 1;
+		min-height: 44px;
 		padding: 0.65rem 0.9rem;
 		border-radius: 8px;
 		background: var(--panel);
@@ -162,6 +163,7 @@
 	}
 
 	.blog-search-btn {
+		min-height: 44px;
 		padding: 0.65rem 1.2rem;
 		border-radius: 8px;
 		background: var(--acid);
@@ -180,6 +182,9 @@
 	}
 
 	.category-pill {
+		display: inline-flex;
+		align-items: center;
+		min-height: 38px;
 		padding: 0.45rem 0.9rem;
 		border-radius: 999px;
 		background: var(--panel);

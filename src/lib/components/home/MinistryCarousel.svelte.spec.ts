@@ -20,10 +20,17 @@ const SAMPLE_SLIDES = [
 		aspect: 'portrait' as const,
 		focus: 'center 28%',
 		alt: 'Preparing hot holiday meals for local families'
+	},
+	{
+		url: '/images/gallery/carousel1-3.webp',
+		tag: 'Holiday Meal Delivery',
+		aspect: 'landscape' as const,
+		focus: 'center 25%',
+		alt: 'Delivering hot Thanksgiving meals to neighbors in need'
 	}
 ];
 
-describe('MinistryCarousel - Responsive & Layout CLS Prevention', () => {
+describe('MinistryCarousel - Enterprise Grade Functionality, A11y & CLS Prevention', () => {
 	it('ensures all lazy-loaded images (ambient backdrop, foreground, thumbnails) have explicit width and height attributes', async () => {
 		await render(MinistryCarousel, {
 			badgeText: 'OUTREACH ARCHIVE',
@@ -81,6 +88,114 @@ describe('MinistryCarousel - Responsive & Layout CLS Prevention', () => {
 			expect(rect.width).toBeLessThanOrEqual(vp.width);
 			expect(rect.width).toBeGreaterThan(0);
 		}
+	});
+
+	it('implements W3C WAI-ARIA roving tabindex on filmstrip tabs, keyboard navigation, and wrap-around slide controls', async () => {
+		await render(MinistryCarousel, {
+			badgeText: 'OUTREACH ARCHIVE',
+			title: 'Faith in Action Gallery',
+			subtitle: 'Documented Outreach Archive',
+			slides: SAMPLE_SLIDES
+		});
+
+		const showcase = document.querySelector<HTMLElement>('.carousel-showcase')!;
+		const tabs = document.querySelectorAll<HTMLButtonElement>('.filmstrip-thumb[role="tab"]');
+		const stage = document.querySelector<HTMLElement>('.carousel-stage')!;
+
+		expect(tabs.length).toBe(3);
+		expect(tabs[0]?.getAttribute('aria-selected')).toBe('true');
+		expect(tabs[0]?.getAttribute('tabindex')).toBe('0');
+		expect(tabs[0]?.getAttribute('aria-controls')).toBe(stage.id);
+		expect(tabs[1]?.getAttribute('aria-selected')).toBe('false');
+		expect(tabs[1]?.getAttribute('tabindex')).toBe('-1');
+
+		// Navigate via filmstrip keyboard ArrowRight / End / Home
+		const filmstrip = document.querySelector<HTMLElement>('.carousel-filmstrip')!;
+		filmstrip.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+		await new Promise((r) => setTimeout(r, 20));
+		expect(showcase.getAttribute('data-active-index')).toBe('1');
+		expect(tabs[1]?.getAttribute('aria-selected')).toBe('true');
+		expect(tabs[1]?.getAttribute('tabindex')).toBe('0');
+		expect(tabs[0]?.getAttribute('tabindex')).toBe('-1');
+
+		filmstrip.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+		await new Promise((r) => setTimeout(r, 20));
+		expect(showcase.getAttribute('data-active-index')).toBe('2');
+
+		filmstrip.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+		await new Promise((r) => setTimeout(r, 20));
+		expect(showcase.getAttribute('data-active-index')).toBe('0');
+
+		// Wrap-around backwards from slide 0 -> slide 2
+		const prevBtn = document.querySelector<HTMLButtonElement>(
+			'button[aria-label="Previous outreach photo"]'
+		)!;
+		prevBtn.click();
+		await new Promise((r) => setTimeout(r, 20));
+		expect(showcase.getAttribute('data-active-index')).toBe('2');
+	});
+
+	it('supports pause/resume toggle, horizontal pointer swipe gestures, and fullscreen cinema lightbox', async () => {
+		await render(MinistryCarousel, {
+			badgeText: 'OUTREACH ARCHIVE',
+			title: 'Faith in Action Gallery',
+			subtitle: 'Documented Outreach Archive',
+			slides: SAMPLE_SLIDES
+		});
+
+		const showcase = document.querySelector<HTMLElement>('.carousel-showcase')!;
+		const pauseBtn = document.querySelector<HTMLButtonElement>('.pause-btn')!;
+		expect(pauseBtn.getAttribute('aria-pressed')).toBe('false');
+
+		pauseBtn.click();
+		await new Promise((r) => setTimeout(r, 20));
+		expect(pauseBtn.getAttribute('aria-pressed')).toBe('true');
+		expect(showcase.getAttribute('data-autoplay-paused')).toBe('true');
+
+		// Horizontal swipe left on stage -> advances from slide 0 to slide 1
+		const stage = document.querySelector<HTMLElement>('.carousel-stage')!;
+		stage.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				pointerId: 1,
+				pointerType: 'touch',
+				clientX: 260,
+				clientY: 150,
+				bubbles: true
+			})
+		);
+		stage.dispatchEvent(
+			new PointerEvent('pointermove', {
+				pointerId: 1,
+				pointerType: 'touch',
+				clientX: 160,
+				clientY: 152,
+				bubbles: true
+			})
+		);
+		stage.dispatchEvent(
+			new PointerEvent('pointerup', {
+				pointerId: 1,
+				pointerType: 'touch',
+				clientX: 160,
+				clientY: 152,
+				bubbles: true
+			})
+		);
+		await new Promise((r) => setTimeout(r, 20));
+		expect(showcase.getAttribute('data-active-index')).toBe('1');
+
+		// Open fullscreen cinema lightbox
+		const expandBtn = document.querySelector<HTMLButtonElement>('.stage-expand-btn')!;
+		expandBtn.click();
+		await new Promise((r) => setTimeout(r, 30));
+
+		const dialog = document.querySelector<HTMLDialogElement>('.carousel-lightbox')!;
+		expect(dialog.open).toBe(true);
+
+		const closeBtn = dialog.querySelector<HTMLButtonElement>('.lightbox-close-btn')!;
+		closeBtn.click();
+		await new Promise((r) => setTimeout(r, 30));
+		expect(dialog.open).toBe(false);
 	});
 
 	it('resolves SSOT design tokens (--nav-height, --status-amber-text), .inner-page .content-section layout container, and .alert-error feedback styles', async () => {

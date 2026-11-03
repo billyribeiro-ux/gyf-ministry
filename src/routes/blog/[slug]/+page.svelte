@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import '#lib/styles/inner-page.css';
 	import '#lib/styles/prose.css';
 	import { resolve } from '$app/paths';
@@ -17,8 +16,6 @@
 	let { data, form }: Props = $props();
 
 	let readingProgress = $state(0);
-	let activeHeadingId = $state('');
-	let tocDetailsOpen = $state(true);
 	let copyLinkStatus = $state('');
 	let canNativeShare = $derived(
 		typeof navigator !== 'undefined' && typeof navigator.share === 'function'
@@ -27,6 +24,10 @@
 	// Server (getPublicPostViewBySlug) already runs normalizePostHeadings once (SSOT)
 	// and supplies 1:1 synchronized heading IDs and TOC items.
 	let toc = $derived(data.post?.toc ?? []);
+	let activeHeadingId = $derived(toc[0]?.id ?? '');
+	let tocDetailsOpen = $derived(
+		data.post?.slug && typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+	);
 	let processedContent = $derived(data.post?.content ?? '');
 	let isTocEnabled = $derived.by(() => {
 		const raw = data.post?.customFields;
@@ -64,33 +65,24 @@
 		data.post?.title ?? data.payload?.title ?? 'Grow Your Faith Ministries'
 	);
 
-	$effect(() => {
+	function trackArticlePageview() {
 		const activeSlug = data.post?.slug;
-		if (!activeSlug || typeof window === 'undefined') return;
+		const isPreview = data.post?.isPreview;
+		if (!activeSlug || isPreview || typeof window === 'undefined') return;
 
-		untrack(() => {
-			activeHeadingId = toc[0]?.id ?? '';
-			if (window.innerWidth < 768) {
-				tocDetailsOpen = false;
-			}
+		const path = window.location.pathname;
+		fetch('/api/analytics/pageview', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				path,
+				referrer: document.referrer || undefined
+			}),
+			keepalive: true
+		}).catch((err) => {
+			console.debug('[pageview] Failed to record pageview:', err);
 		});
-
-		// Pageview analytics tracking (Section 10.9)
-		if (data.post && !data.post.isPreview) {
-			const path = window.location.pathname;
-			fetch('/api/analytics/pageview', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					path,
-					referrer: document.referrer || undefined
-				}),
-				keepalive: true
-			}).catch((err) => {
-				console.debug('[pageview] Failed to record pageview:', err);
-			});
-		}
-	});
+	}
 
 	function onScroll() {
 		if (typeof window === 'undefined') return;
@@ -238,7 +230,7 @@
 			</div>
 		{/if}
 
-		<article class="article-container">
+		<article class="article-container" {@attach trackArticlePageview}>
 			<header class="article-header">
 				<nav class="article-breadcrumbs" aria-label="Breadcrumb">
 					<ol>
@@ -646,8 +638,10 @@
 		text-decoration: none;
 		display: inline-flex;
 		align-items: center;
-		min-height: 24px;
-		min-width: 24px;
+		justify-content: center;
+		min-height: 36px;
+		min-width: 36px;
+		padding: 0 0.25rem;
 	}
 
 	.byline-author-link,
@@ -656,7 +650,7 @@
 		text-decoration: none;
 		display: inline-flex;
 		align-items: center;
-		min-height: 24px;
+		min-height: 36px;
 	}
 
 	.byline-author-link:hover,
@@ -684,7 +678,10 @@
 	}
 
 	.article-category-badge {
-		padding: 0.22rem 0.65rem;
+		display: inline-flex;
+		align-items: center;
+		min-height: 36px;
+		padding: 0.25rem 0.75rem;
 		border-radius: 999px;
 		background: var(--color-gold-soft);
 		border: 1px solid rgba(212, 168, 67, 0.38);
@@ -757,7 +754,10 @@
 	}
 
 	.article-tag-chip {
-		padding: 0.2rem 0.55rem;
+		display: inline-flex;
+		align-items: center;
+		min-height: 36px;
+		padding: 0.25rem 0.65rem;
 		border-radius: 6px;
 		background: var(--panel);
 		border: 1px solid var(--line);
@@ -831,7 +831,7 @@
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 		color: var(--acid);
-		min-height: 28px;
+		min-height: 36px;
 		margin: 0 0 0.85rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid var(--line);
@@ -1077,7 +1077,7 @@
 		text-decoration: none;
 		display: inline-flex;
 		align-items: center;
-		min-height: 24px;
+		min-height: 36px;
 		min-width: 24px;
 	}
 
@@ -1105,7 +1105,11 @@
 	}
 
 	.share-btn {
-		padding: 0.38rem 0.8rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 38px;
+		padding: 0.45rem 0.9rem;
 		border-radius: 6px;
 		background: var(--panel);
 		border: 1px solid var(--line-strong);
@@ -1171,6 +1175,9 @@
 	}
 
 	.back-to-blog-link {
+		display: inline-flex;
+		align-items: center;
+		min-height: 38px;
 		color: var(--acid);
 		font-weight: 700;
 		text-decoration: none;

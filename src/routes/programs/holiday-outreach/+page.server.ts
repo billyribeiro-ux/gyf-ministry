@@ -13,7 +13,8 @@ export const actions: Actions = {
 
 		if (!name || !email) {
 			return fail(400, {
-				error: 'Please enter your name and email address to complete your sponsorship pledge.'
+				error: 'Please enter your name and email address to complete your sponsorship pledge.',
+				values: { name, email, tier, city, details: String(data.get('details') ?? '').trim() }
 			});
 		}
 

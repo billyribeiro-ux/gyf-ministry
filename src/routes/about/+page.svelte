@@ -232,11 +232,12 @@
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
 			{#if form?.error}
-				<div class="alert-error" role="alert">{form.error}</div>
+				<div id="speaker-form-error" class="alert-error" role="alert">{form.error}</div>
 			{/if}
 			<form
 				method="POST"
 				action="?/inviteSpeaker"
+				aria-describedby={form?.error ? 'speaker-form-error' : undefined}
 				use:enhance={() => {
 					isSubmitting = true;
 					return async ({ update }) => {
@@ -251,7 +252,10 @@
 						id="speaker-name"
 						name="name"
 						type="text"
+						autocomplete="name"
 						required
+						value={form?.values?.name ?? ''}
+						aria-invalid={form?.error && !form?.values?.name ? 'true' : undefined}
 						placeholder="Pastor / Event Coordinator"
 					/>
 				</div>
@@ -261,7 +265,10 @@
 						id="speaker-email"
 						name="email"
 						type="email"
+						autocomplete="email"
 						required
+						value={form?.values?.email ?? ''}
+						aria-invalid={form?.error && !form?.values?.email ? 'true' : undefined}
 						placeholder="you@church.org"
 					/>
 				</div>
@@ -272,12 +279,18 @@
 							id="speaker-org"
 							name="organization"
 							type="text"
+							autocomplete="organization"
+							value={form?.values?.organization ?? ''}
 							placeholder="Grace Fellowship CT"
 						/>
 					</div>
 					<div class="form-field">
 						<label for="speaker-type">Event Format</label>
-						<select id="speaker-type" name="eventType">
+						<select
+							id="speaker-type"
+							name="eventType"
+							value={form?.values?.eventType ?? 'Womens Conference'}
+						>
 							<option value="Womens Conference">Women’s Ministry Conference</option>
 							<option value="Sunday Service">Church Service / Guest Message</option>
 							<option value="Faith & Business">Faith &amp; Business Summit</option>
@@ -292,6 +305,8 @@
 						name="details"
 						rows="3"
 						required
+						value={form?.values?.details ?? ''}
+						aria-invalid={form?.error && !form?.values?.details ? 'true' : undefined}
 						placeholder="Share your proposed dates, location in CT or nationwide, and audience needs..."
 					></textarea>
 				</div>
@@ -370,13 +385,13 @@
 		padding: 0.35rem 0.75rem;
 		border-radius: 999px;
 		background: var(--color-teal-soft);
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		margin-bottom: 0.85rem;
 	}
 
 	.rhythm-badge.gold {
 		background: var(--color-gold-soft);
-		color: #9a6e12;
+		color: #825b0b;
 	}
 
 	.values-grid {

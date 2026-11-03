@@ -113,12 +113,13 @@
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
 			{#if form?.error}
-				<div class="alert-error" role="alert">{form.error}</div>
+				<div id="friday-form-error" class="alert-error" role="alert">{form.error}</div>
 			{/if}
 
 			<form
 				method="POST"
 				action="?/requestFridaySession"
+				aria-describedby={form?.error ? 'friday-form-error' : undefined}
 				use:enhance={() => {
 					isSubmitting = true;
 					return async ({ update }) => {
@@ -129,16 +130,39 @@
 			>
 				<div class="form-field">
 					<label for="friday-name">Your Name (or Name of Person Referred) *</label>
-					<input id="friday-name" name="name" type="text" required placeholder="Full Name" />
+					<input
+						id="friday-name"
+						name="name"
+						type="text"
+						autocomplete="name"
+						required
+						value={form?.values?.name ?? ''}
+						aria-invalid={form?.error && !form?.values?.name ? 'true' : undefined}
+						placeholder="Full Name"
+					/>
 				</div>
 				<div class="form-grid">
 					<div class="form-field">
 						<label for="friday-email">Email Address</label>
-						<input id="friday-email" name="email" type="email" placeholder="you@example.com" />
+						<input
+							id="friday-email"
+							name="email"
+							type="email"
+							autocomplete="email"
+							value={form?.values?.email ?? ''}
+							placeholder="you@example.com"
+						/>
 					</div>
 					<div class="form-field">
 						<label for="friday-phone">Phone Number</label>
-						<input id="friday-phone" name="phone" type="tel" placeholder="(203) 555-0199" />
+						<input
+							id="friday-phone"
+							name="phone"
+							type="tel"
+							autocomplete="tel"
+							value={form?.values?.phone ?? ''}
+							placeholder="(203) 555-0199"
+						/>
 					</div>
 				</div>
 				<div class="form-grid">
@@ -148,12 +172,18 @@
 							id="friday-city"
 							name="city"
 							type="text"
+							autocomplete="address-level2"
+							value={form?.values?.city ?? ''}
 							placeholder="Waterbury / Wolcott, CT (or Remote)"
 						/>
 					</div>
 					<div class="form-field">
 						<label for="friday-type">How Can We Minister to You?</label>
-						<select id="friday-type" name="sessionType">
+						<select
+							id="friday-type"
+							name="sessionType"
+							value={form?.values?.sessionType ?? '1-on-1 Encouragement Call'}
+						>
 							<option value="1-on-1 Encouragement Call"
 								>1-on-1 Encouragement &amp; Vision Call</option
 							>
@@ -170,6 +200,8 @@
 						name="details"
 						rows="4"
 						required
+						value={form?.values?.details ?? ''}
+						aria-invalid={form?.error && !form?.values?.details ? 'true' : undefined}
 						placeholder="Tell us what season you are walking through and how Courtney can pray for or encourage you this Friday..."
 					></textarea>
 				</div>
@@ -191,9 +223,13 @@
 <style>
 	.friday-grid {
 		display: grid;
-		grid-template-columns: 1.2fr 1fr;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
 		gap: 3rem;
 		align-items: start;
+	}
+
+	.friday-grid > * {
+		min-width: 0;
 	}
 
 	.friday-grid h2 {
@@ -215,7 +251,7 @@
 	}
 
 	.serve-card :global(svg) {
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		flex-shrink: 0;
 		margin-top: 0.2rem;
 	}
@@ -248,7 +284,7 @@
 
 	@media (max-width: 960px) {
 		.friday-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

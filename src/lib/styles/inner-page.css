@@ -10,6 +10,19 @@
 	font-family: var(--font-sans);
 }
 
+.inner-page h1,
+.inner-page h2,
+.inner-page h3,
+.inner-page h4,
+.inner-page h5,
+.inner-page h6 {
+	color: var(--text);
+}
+
+.inner-page :focus-visible {
+	outline-color: var(--acid);
+}
+
 /* ---------- Breadcrumb navigation ---------- */
 .inner-page .breadcrumb-nav {
 	max-width: var(--container-max);
@@ -175,5 +188,10 @@
 
 	.inner-page .content-section {
 		padding: 2.25rem 1.15rem 3.5rem;
+	}
+
+	.inner-page .breadcrumb-list a {
+		min-block-size: 36px;
+		padding-inline: 0.25rem;
 	}
 }

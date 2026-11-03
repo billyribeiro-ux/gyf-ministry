@@ -142,7 +142,7 @@
 	}
 
 	.blog-title-accent {
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		font-style: italic;
 	}
 
@@ -296,7 +296,7 @@
 		gap: 0.45rem;
 		font-size: 0.82rem;
 		font-weight: 600;
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		margin-bottom: 0.65rem;
 	}
 
@@ -319,7 +319,7 @@
 	}
 
 	.blog-body h3 a:hover {
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 	}
 
 	.blog-body p {
@@ -340,6 +340,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
+		min-height: 36px;
 		font-size: 0.92rem;
 		font-weight: 700;
 		color: var(--color-navy);
@@ -350,7 +351,7 @@
 	}
 
 	.blog-read-link:hover {
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		gap: 0.6rem;
 	}
 

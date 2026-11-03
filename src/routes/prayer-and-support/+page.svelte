@@ -1,30 +1,48 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { replaceState } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import type { PageProps } from './$types';
 	import { IconPray, IconJacket, IconSoup, IconHeartHandshake } from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
+	let selectedTabOverride = $state<'prayer' | 'holiday' | null>(null);
 	let activeTab = $derived<'prayer' | 'holiday'>(
-		form?.tab === 'holiday' || page.url.searchParams.get('tab') === 'holiday' ? 'holiday' : 'prayer'
+		selectedTabOverride ??
+			(form?.tab === 'holiday' || page.url.searchParams.get('tab') === 'holiday'
+				? 'holiday'
+				: 'prayer')
 	);
 	let isSubmitting = $state(false);
+
+	function switchTab(nextTab: 'prayer' | 'holiday') {
+		selectedTabOverride = nextTab;
+		if (typeof window !== 'undefined') {
+			if (nextTab === 'holiday') {
+				// oxlint-disable-next-line svelte/no-navigation-without-resolve -- query-string tab target on resolved route
+				replaceState(`${resolve('/prayer-and-support')}?tab=holiday`, page.state);
+			} else {
+				replaceState(resolve('/prayer-and-support'), page.state);
+			}
+		}
+	}
 
 	function handleTabKeydown(event: KeyboardEvent) {
 		const tablist = (event.currentTarget as HTMLElement).parentElement;
 		if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
 			event.preventDefault();
 			const nextTab = activeTab === 'prayer' ? 'holiday' : 'prayer';
-			activeTab = nextTab;
+			switchTab(nextTab);
 			tablist?.querySelector<HTMLButtonElement>(`#tab-${nextTab}`)?.focus();
 		} else if (event.key === 'Home') {
 			event.preventDefault();
-			activeTab = 'prayer';
+			switchTab('prayer');
 			tablist?.querySelector<HTMLButtonElement>('#tab-prayer')?.focus();
 		} else if (event.key === 'End') {
 			event.preventDefault();
-			activeTab = 'holiday';
+			switchTab('holiday');
 			tablist?.querySelector<HTMLButtonElement>('#tab-holiday')?.focus();
 		}
 	}
@@ -73,7 +91,7 @@
 				aria-selected={activeTab === 'prayer'}
 				aria-controls="panel-prayer"
 				class={['tab-btn', { active: activeTab === 'prayer' }]}
-				onclick={() => (activeTab = 'prayer')}
+				onclick={() => switchTab('prayer')}
 				onkeydown={handleTabKeydown}
 			>
 				<IconPray size={20} />
@@ -87,7 +105,7 @@
 				aria-selected={activeTab === 'holiday'}
 				aria-controls="panel-holiday"
 				class={['tab-btn', { active: activeTab === 'holiday' }]}
-				onclick={() => (activeTab = 'holiday')}
+				onclick={() => switchTab('holiday')}
 				onkeydown={handleTabKeydown}
 			>
 				<IconJacket size={20} />
@@ -99,7 +117,7 @@
 			<div class="alert-success" role="status">{form.message}</div>
 		{/if}
 		{#if form?.error}
-			<div class="alert-error" role="alert">{form.error}</div>
+			<div id="portal-form-error" class="alert-error" role="alert">{form.error}</div>
 		{/if}
 
 		{#if activeTab === 'prayer'}
@@ -130,23 +148,49 @@
 							id="prayer-name"
 							name="name"
 							type="text"
+							autocomplete="name"
 							required
+							value={form?.tab === 'prayer' ? (form?.values?.name ?? '') : ''}
+							aria-invalid={form?.tab === 'prayer' && form?.error && !form?.values?.name
+								? 'true'
+								: undefined}
+							aria-describedby={form?.tab === 'prayer' && form?.error
+								? 'portal-form-error'
+								: undefined}
 							placeholder="First & Last Name"
 						/>
 					</div>
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="prayer-email">Email Address (Optional)</label>
-							<input id="prayer-email" name="email" type="email" placeholder="you@example.com" />
+							<input
+								id="prayer-email"
+								name="email"
+								type="email"
+								autocomplete="email"
+								value={form?.tab === 'prayer' ? (form?.values?.email ?? '') : ''}
+								placeholder="you@example.com"
+							/>
 						</div>
 						<div class="form-field">
 							<label for="prayer-phone">Phone Number (Optional)</label>
-							<input id="prayer-phone" name="phone" type="tel" placeholder="(203) 555-0199" />
+							<input
+								id="prayer-phone"
+								name="phone"
+								type="tel"
+								autocomplete="tel"
+								value={form?.tab === 'prayer' ? (form?.values?.phone ?? '') : ''}
+								placeholder="(203) 555-0199"
+							/>
 						</div>
 					</div>
 					<div class="form-field">
 						<label for="prayer-friday">Would you like a Friday follow-up encouragement call?</label>
-						<select id="prayer-friday" name="fridayCall">
+						<select
+							id="prayer-friday"
+							name="fridayCall"
+							value={form?.tab === 'prayer' ? (form?.values?.fridayCall ?? 'yes') : 'yes'}
+						>
 							<option value="yes"
 								>Yes — Please schedule a Friday encouragement follow-up call</option
 							>
@@ -160,6 +204,13 @@
 							name="prayerNeed"
 							rows="5"
 							required
+							value={form?.tab === 'prayer' ? (form?.values?.prayerNeed ?? '') : ''}
+							aria-invalid={form?.tab === 'prayer' && form?.error && !form?.values?.prayerNeed
+								? 'true'
+								: undefined}
+							aria-describedby={form?.tab === 'prayer' && form?.error
+								? 'portal-form-error'
+								: undefined}
 							placeholder="Share your prayer need, buried dream, or family circumstance..."
 						></textarea>
 					</div>
@@ -210,17 +261,52 @@
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="nom-name">Parent / Guardian or Nominator Name *</label>
-							<input id="nom-name" name="name" type="text" required placeholder="Full Name" />
+							<input
+								id="nom-name"
+								name="name"
+								type="text"
+								autocomplete="name"
+								required
+								value={form?.tab === 'holiday' ? (form?.values?.name ?? '') : ''}
+								aria-invalid={form?.tab === 'holiday' && form?.error && !form?.values?.name
+									? 'true'
+									: undefined}
+								aria-describedby={form?.tab === 'holiday' && form?.error
+									? 'portal-form-error'
+									: undefined}
+								placeholder="Full Name"
+							/>
 						</div>
 						<div class="form-field">
 							<label for="nom-phone">Best Contact Phone Number *</label>
-							<input id="nom-phone" name="phone" type="tel" required placeholder="(203) 555-0199" />
+							<input
+								id="nom-phone"
+								name="phone"
+								type="tel"
+								autocomplete="tel"
+								required
+								value={form?.tab === 'holiday' ? (form?.values?.phone ?? '') : ''}
+								aria-invalid={form?.tab === 'holiday' && form?.error && !form?.values?.phone
+									? 'true'
+									: undefined}
+								aria-describedby={form?.tab === 'holiday' && form?.error
+									? 'portal-form-error'
+									: undefined}
+								placeholder="(203) 555-0199"
+							/>
 						</div>
 					</div>
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="nom-email">Email Address</label>
-							<input id="nom-email" name="email" type="email" placeholder="you@example.com" />
+							<input
+								id="nom-email"
+								name="email"
+								type="email"
+								autocomplete="email"
+								value={form?.tab === 'holiday' ? (form?.values?.email ?? '') : ''}
+								placeholder="you@example.com"
+							/>
 						</div>
 						<div class="form-field">
 							<label for="nom-city">Connecticut City / Town *</label>
@@ -228,7 +314,15 @@
 								id="nom-city"
 								name="city"
 								type="text"
+								autocomplete="address-level2"
 								required
+								value={form?.tab === 'holiday' ? (form?.values?.city ?? '') : ''}
+								aria-invalid={form?.tab === 'holiday' && form?.error && !form?.values?.city
+									? 'true'
+									: undefined}
+								aria-describedby={form?.tab === 'holiday' && form?.error
+									? 'portal-form-error'
+									: undefined}
 								placeholder="Waterbury, Wolcott, New Haven, Hartford..."
 							/>
 						</div>
@@ -242,7 +336,7 @@
 								type="number"
 								min="1"
 								max="15"
-								value="4"
+								value={form?.tab === 'holiday' ? (form?.values?.familySize ?? '4') : '4'}
 								required
 							/>
 						</div>
@@ -253,6 +347,13 @@
 								name="coatSizes"
 								type="text"
 								required
+								value={form?.tab === 'holiday' ? (form?.values?.coatSizes ?? '') : ''}
+								aria-invalid={form?.tab === 'holiday' && form?.error && !form?.values?.coatSizes
+									? 'true'
+									: undefined}
+								aria-describedby={form?.tab === 'holiday' && form?.error
+									? 'portal-form-error'
+									: undefined}
 								placeholder="e.g., Girl 7 (Youth M), Boy 10 (Youth L)"
 							/>
 						</div>
@@ -263,6 +364,7 @@
 							id="nom-details"
 							name="details"
 							rows="3"
+							value={form?.tab === 'holiday' ? (form?.values?.details ?? '') : ''}
 							placeholder="Let us know if the family needs Thanksgiving meal delivery, Christmas meal delivery, blankets, or specific winter gear..."
 						></textarea>
 					</div>

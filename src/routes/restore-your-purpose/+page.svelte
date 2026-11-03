@@ -132,7 +132,7 @@
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
 			{#if form?.error}
-				<div class="alert-error" role="alert">{form.error}</div>
+				<div id="guide-form-error" class="alert-error" role="alert">{form.error}</div>
 			{/if}
 			<form
 				method="POST"
@@ -147,7 +147,17 @@
 			>
 				<div class="form-field">
 					<label for="guide-name">First &amp; Last Name *</label>
-					<input id="guide-name" name="name" type="text" required placeholder="Your Name" />
+					<input
+						id="guide-name"
+						name="name"
+						type="text"
+						autocomplete="name"
+						required
+						value={form?.values?.name ?? ''}
+						aria-invalid={form?.error && !form?.values?.name ? 'true' : undefined}
+						aria-describedby={form?.error ? 'guide-form-error' : undefined}
+						placeholder="Your Name"
+					/>
 				</div>
 				<div class="form-field">
 					<label for="guide-email">Email Address *</label>
@@ -155,7 +165,11 @@
 						id="guide-email"
 						name="email"
 						type="email"
+						autocomplete="email"
 						required
+						value={form?.values?.email ?? ''}
+						aria-invalid={form?.error && !form?.values?.email ? 'true' : undefined}
+						aria-describedby={form?.error ? 'guide-form-error' : undefined}
 						placeholder="you@example.com"
 					/>
 				</div>
@@ -167,6 +181,7 @@
 						id="guide-goal"
 						name="visionGoal"
 						rows="3"
+						value={form?.values?.visionGoal ?? ''}
 						placeholder="Share a dream or calling you want to bring back to life..."></textarea>
 				</div>
 				<button
@@ -201,7 +216,7 @@
 
 	.steps-grid {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1.75rem;
 	}
 
@@ -215,7 +230,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		margin-bottom: 0.75rem;
 	}
 
@@ -233,9 +248,13 @@
 
 	.workbook-grid {
 		display: grid;
-		grid-template-columns: 1.15fr 1fr;
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
 		gap: 3rem;
 		align-items: center;
+	}
+
+	.workbook-grid > * {
+		min-width: 0;
 	}
 
 	.workbook-grid h2 {
@@ -244,7 +263,7 @@
 	}
 
 	.workbook-grid h3 {
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		font-size: 1.2rem;
 		margin-bottom: 1rem;
 	}
@@ -266,6 +285,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
+		min-height: 36px;
 		font-weight: 700;
 		color: var(--color-navy);
 	}
@@ -273,7 +293,7 @@
 	@media (max-width: 960px) {
 		.steps-grid,
 		.workbook-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

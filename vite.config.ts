@@ -11,7 +11,8 @@ export default defineConfig({
 	ssr: {
 		// Transform the sanitizer's CJS -> ESM dependency boundary at build time.
 		// Vercel's runtime cannot require htmlparser2's ESM entry directly.
-		noExternal: ['sanitize-html', 'htmlparser2']
+		// In dev mode, Vite's ESModulesEvaluator cannot run raw CJS `require()` inside inlined modules.
+		noExternal: process.env.NODE_ENV === 'production' ? ['sanitize-html', 'htmlparser2'] : []
 	},
 	staged: {
 		'*': 'vp check --fix'

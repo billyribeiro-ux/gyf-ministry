@@ -10,7 +10,8 @@ export const actions: Actions = {
 
 		if (!name || !email) {
 			return fail(400, {
-				error: 'Please enter your name and email address to subscribe.'
+				error: 'Please enter your name and email address to subscribe.',
+				values: { name, email }
 			});
 		}
 

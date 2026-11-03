@@ -132,7 +132,7 @@
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
 			{#if form?.error}
-				<div class="alert-error" role="alert">{form.error}</div>
+				<div id="sub-form-error" class="alert-error" role="alert">{form.error}</div>
 			{/if}
 			<form
 				method="POST"
@@ -147,11 +147,31 @@
 			>
 				<div class="form-field">
 					<label for="sub-name">First &amp; Last Name *</label>
-					<input id="sub-name" name="name" type="text" required placeholder="Your Name" />
+					<input
+						id="sub-name"
+						name="name"
+						type="text"
+						autocomplete="name"
+						required
+						value={form?.values?.name ?? ''}
+						aria-invalid={form?.error && !form?.values?.name ? 'true' : undefined}
+						aria-describedby={form?.error ? 'sub-form-error' : undefined}
+						placeholder="Your Name"
+					/>
 				</div>
 				<div class="form-field">
 					<label for="sub-email">Email Address *</label>
-					<input id="sub-email" name="email" type="email" required placeholder="you@example.com" />
+					<input
+						id="sub-email"
+						name="email"
+						type="email"
+						autocomplete="email"
+						required
+						value={form?.values?.email ?? ''}
+						aria-invalid={form?.error && !form?.values?.email ? 'true' : undefined}
+						aria-describedby={form?.error ? 'sub-form-error' : undefined}
+						placeholder="you@example.com"
+					/>
 				</div>
 				<button
 					type="submit"
@@ -172,7 +192,7 @@
 <style>
 	.articles-grid {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1.75rem;
 	}
 
@@ -207,15 +227,20 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.35rem;
+		min-height: 36px;
 		font-weight: 700;
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 	}
 
 	.subscribe-grid {
 		display: grid;
-		grid-template-columns: 1.2fr 1fr;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
 		gap: 3rem;
 		align-items: center;
+	}
+
+	.subscribe-grid > * {
+		min-width: 0;
 	}
 
 	.subscribe-grid h2 {

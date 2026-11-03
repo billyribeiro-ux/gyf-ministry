@@ -14,7 +14,7 @@
 	} from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
-	let selectedTier = $state('$65');
+	let selectedTier = $derived(form?.values?.tier ?? '$65');
 	let isSubmitting = $state(false);
 
 	const tiers = [
@@ -173,6 +173,7 @@
 						type="button"
 						class={selectedTier === t.amount ? 'btn btn-gold' : 'btn btn-navy'}
 						style="width: 100%"
+						aria-pressed={selectedTier === t.amount}
 						onclick={() => (selectedTier = t.amount)}
 					>
 						{selectedTier === t.amount ? 'Selected Tier ✓' : `Select ${t.amount} Tier`}
@@ -188,7 +189,7 @@
 					<div class="alert-success" role="status">{form.message}</div>
 				{/if}
 				{#if form?.error}
-					<div class="alert-error" role="alert">{form.error}</div>
+					<div id="sponsor-form-error" class="alert-error" role="alert">{form.error}</div>
 				{/if}
 				<form
 					method="POST"
@@ -205,7 +206,17 @@
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="sponsor-name">Your Full Name or Business Name *</label>
-							<input id="sponsor-name" name="name" type="text" required placeholder="Your Name" />
+							<input
+								id="sponsor-name"
+								name="name"
+								type="text"
+								autocomplete="name"
+								required
+								value={form?.values?.name ?? ''}
+								aria-invalid={form?.error && !form?.values?.name ? 'true' : undefined}
+								aria-describedby={form?.error ? 'sponsor-form-error' : undefined}
+								placeholder="Your Name"
+							/>
 						</div>
 						<div class="form-field">
 							<label for="sponsor-email">Email Address (for Receipt &amp; Impact Update) *</label>
@@ -213,7 +224,11 @@
 								id="sponsor-email"
 								name="email"
 								type="email"
+								autocomplete="email"
 								required
+								value={form?.values?.email ?? ''}
+								aria-invalid={form?.error && !form?.values?.email ? 'true' : undefined}
+								aria-describedby={form?.error ? 'sponsor-form-error' : undefined}
 								placeholder="you@example.com"
 							/>
 						</div>
@@ -234,6 +249,8 @@
 								id="sponsor-city"
 								name="city"
 								type="text"
+								autocomplete="address-level2"
+								value={form?.values?.city ?? ''}
 								placeholder="Wolcott / Waterbury, CT"
 							/>
 						</div>
@@ -244,6 +261,7 @@
 							id="sponsor-details"
 							name="details"
 							rows="2"
+							value={form?.values?.details ?? ''}
 							placeholder="Optional encouragement note for a family or specific coat sizes if donating in-kind..."
 						></textarea>
 					</div>
@@ -361,7 +379,7 @@
 
 	.initiatives-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 2rem;
 	}
 
@@ -420,7 +438,7 @@
 
 	.tiers-grid {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1.5rem;
 		margin-bottom: 2.5rem;
 	}
@@ -447,9 +465,13 @@
 
 	.checkout-grid {
 		display: grid;
-		grid-template-columns: 1.35fr 1fr;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
 		gap: 2rem;
 		align-items: start;
+	}
+
+	.checkout-grid > * {
+		min-width: 0;
 	}
 
 	.dropoff-card :global(svg) {
@@ -471,7 +493,7 @@
 		.initiatives-grid,
 		.tiers-grid,
 		.checkout-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

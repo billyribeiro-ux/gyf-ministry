@@ -62,6 +62,25 @@
 </main>
 
 <style>
+	.skip {
+		position: absolute;
+		top: -100px;
+		left: 16px;
+		z-index: 200;
+		padding: 10px 16px;
+		background: var(--acid);
+		color: var(--ink);
+		font-family: var(--font-display);
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.skip:focus-visible {
+		top: 12px;
+		outline: 3px solid var(--text);
+		outline-offset: 2px;
+	}
+
 	.login-page {
 		min-height: 100vh;
 		min-height: 100dvh;

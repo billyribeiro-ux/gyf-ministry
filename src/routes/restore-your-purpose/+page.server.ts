@@ -11,7 +11,8 @@ export const actions: Actions = {
 
 		if (!name || !email) {
 			return fail(400, {
-				error: 'Please enter your name and email address to receive the workbook.'
+				error: 'Please enter your name and email address to receive the workbook.',
+				values: { name, email, visionGoal }
 			});
 		}
 

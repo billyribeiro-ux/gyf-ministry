@@ -14,7 +14,8 @@ export const actions: Actions = {
 
 		if (!name || !details) {
 			return fail(400, {
-				error: 'Please enter your name and how we can encourage or serve you this Friday.'
+				error: 'Please enter your name and how we can encourage or serve you this Friday.',
+				values: { name, email, phone, city, sessionType, details }
 			});
 		}
 

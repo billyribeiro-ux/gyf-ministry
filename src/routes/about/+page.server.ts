@@ -13,7 +13,8 @@ export const actions: Actions = {
 
 		if (!name || !email || !details) {
 			return fail(400, {
-				error: 'Please provide your name, email, and event details.'
+				error: 'Please provide your name, email, and event details.',
+				values: { name, email, organization, eventType, details }
 			});
 		}
 

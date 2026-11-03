@@ -14,7 +14,14 @@ export const actions: Actions = {
 		if (!name || !prayerNeed) {
 			return fail(400, {
 				tab: 'prayer' as const,
-				error: 'Please enter your name and your prayer request.'
+				error: 'Please enter your name and your prayer request.',
+				values: {
+					name,
+					email,
+					phone,
+					fridayCall: fridayCall ? 'yes' : 'no',
+					prayerNeed
+				}
 			});
 		}
 
@@ -47,7 +54,16 @@ export const actions: Actions = {
 		if (!name || !phone || !coatSizes) {
 			return fail(400, {
 				tab: 'holiday' as const,
-				error: 'Please provide contact details and children coat sizes for holiday outreach.'
+				error: 'Please provide contact details and children coat sizes for holiday outreach.',
+				values: {
+					name,
+					email,
+					phone,
+					city,
+					familySize,
+					coatSizes,
+					details
+				}
 			});
 		}
 

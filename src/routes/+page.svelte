@@ -408,7 +408,8 @@
 	.hero-section {
 		position: relative;
 		overflow: hidden;
-		background:
+		background-color: var(--color-navy);
+		background-image:
 			radial-gradient(circle at 82% 22%, rgba(212, 168, 67, 0.16) 0%, transparent 46%),
 			radial-gradient(circle at 14% 88%, rgba(15, 164, 175, 0.14) 0%, transparent 42%),
 			linear-gradient(135deg, #091529 0%, var(--color-navy) 52%, #16305c 100%);
@@ -732,8 +733,9 @@
 		align-items: center;
 		gap: 0.45rem;
 		font-weight: 700;
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 		margin-top: 0.85rem;
+		min-height: 36px;
 		transition:
 			color 0.2s ease,
 			gap 0.2s ease;
@@ -747,7 +749,7 @@
 	/* Carousels */
 	.carousels-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 2rem;
 		align-items: stretch;
 	}
@@ -755,7 +757,7 @@
 	/* Partner Fuel */
 	.partner-fuel-grid {
 		display: grid;
-		grid-template-columns: 1.35fr 1fr;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
 		gap: 3rem;
 		align-items: center;
 	}
@@ -848,7 +850,7 @@
 		.pillars-grid,
 		.carousels-grid,
 		.partner-fuel-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.impact-grid {

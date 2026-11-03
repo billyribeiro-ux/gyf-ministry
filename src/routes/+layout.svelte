@@ -26,9 +26,9 @@
 	} from '@tabler/icons-svelte';
 
 	let { children }: LayoutProps = $props();
-	let mobileMenuOpen = $state(false);
 
 	const currentPath = $derived(page.url.pathname);
+	let mobileMenuOpen = $derived(currentPath ? false : false);
 	const isAdminArea = $derived(currentPath === '/admin' || currentPath.startsWith('/admin/'));
 	const hasBlogMetaTags = $derived(Boolean(page.data.pageMetaTags));
 	const canonicalUrl = $derived(getCanonicalUrl(currentPath));
@@ -51,11 +51,6 @@
 	function isLinkActive(href: string, pathname: string): boolean {
 		return pathname === href || (href !== '/' && pathname.startsWith(href));
 	}
-
-	$effect(() => {
-		void currentPath;
-		mobileMenuOpen = false;
-	});
 </script>
 
 <svelte:head>
@@ -136,7 +131,8 @@
 				<div class="header-actions">
 					<a
 						href={resolve('/partner')}
-						class="btn btn-gold header-cta"
+						class={['btn', 'btn-gold', 'header-cta', { 'is-active': currentPath === '/partner' }]}
+						aria-current={currentPath === '/partner' ? 'page' : undefined}
 						aria-label="Partner &amp; Donate"
 					>
 						<IconHeartHandshake size={18} />
@@ -146,6 +142,7 @@
 						type="button"
 						class="mobile-toggle"
 						aria-expanded={mobileMenuOpen}
+						aria-controls="mobile-primary-nav"
 						aria-label="Toggle navigation menu"
 						onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 					>
@@ -159,7 +156,7 @@
 			</div>
 
 			{#if mobileMenuOpen}
-				<nav class="mobile-nav" aria-label="Mobile Navigation">
+				<nav id="mobile-primary-nav" class="mobile-nav" aria-label="Mobile Navigation">
 					<div class="container mobile-nav-inner">
 						{#each navLinks as link (link.href)}
 							{@const active = isLinkActive(link.href, currentPath)}
@@ -214,7 +211,7 @@
 				</div>
 
 				<div class="footer-col">
-					<h4>Core Pillars &amp; Programs</h4>
+					<h3 class="footer-heading">Core Pillars &amp; Programs</h3>
 					<ul class="footer-links">
 						<li>
 							<a href={resolve('/programs/friday-ministry')}>
@@ -245,7 +242,7 @@
 				</div>
 
 				<div class="footer-col">
-					<h4>Ministry Architecture</h4>
+					<h3 class="footer-heading">Ministry Architecture</h3>
 					<ul class="footer-links">
 						<li><a href={resolve('/')}>Home Hub</a></li>
 						<li><a href={resolve('/about')}>About Courtney Ribeiro</a></li>
@@ -256,7 +253,7 @@
 				</div>
 
 				<div class="footer-col">
-					<h4>Philanthropy &amp; Authority Bridge</h4>
+					<h3 class="footer-heading">Philanthropy &amp; Authority Bridge</h3>
 					<div class="authority-card">
 						<div class="authority-header">
 							<IconBuildingChurch size={18} />
@@ -363,6 +360,8 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.35rem;
+		min-height: 36px;
+		padding: 0.25rem 0.4rem;
 		color: var(--color-gold);
 		font-weight: 700;
 		text-decoration: underline;
@@ -430,7 +429,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
-		color: var(--color-teal);
+		color: var(--color-teal-text);
 	}
 
 	.desktop-nav {
@@ -466,6 +465,11 @@
 	.header-cta {
 		padding: 0.6rem 1.1rem;
 		font-size: 0.88rem;
+		min-height: 44px;
+	}
+
+	.header-cta.is-active {
+		box-shadow: 0 0 0 2px var(--color-navy);
 	}
 
 	.skip-to-content {
@@ -518,6 +522,9 @@
 	}
 
 	.mobile-nav-link {
+		display: flex;
+		align-items: center;
+		min-height: 44px;
 		padding: 0.65rem 0.75rem;
 		font-weight: 600;
 		color: var(--color-navy);
@@ -588,7 +595,7 @@
 		font-weight: 600;
 	}
 
-	.footer-col h4 {
+	.footer-col h3.footer-heading {
 		color: #ffffff;
 		font-size: 1.05rem;
 		margin-bottom: 1.1rem;
@@ -600,7 +607,7 @@
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.65rem;
+		gap: 0.35rem;
 	}
 
 	.footer-links a {
@@ -608,6 +615,8 @@
 		font-size: 0.92rem;
 		display: inline-flex;
 		align-items: center;
+		min-height: 36px;
+		padding: 0.2rem 0;
 		gap: 0.45rem;
 	}
 
@@ -644,6 +653,9 @@
 	}
 
 	.authority-links a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 36px;
 		color: var(--color-gold);
 		font-weight: 700;
 		font-size: 0.84rem;
@@ -686,6 +698,12 @@
 	@media (max-width: 640px) {
 		.footer-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.header-cta {
+			padding: 0.55rem 0.75rem;
+			min-width: 44px;
+			min-height: 44px;
 		}
 
 		.header-cta span {
