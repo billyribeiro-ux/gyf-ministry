@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import type {
 	PostStatus,
 	PostVisibility,
@@ -372,7 +373,7 @@ function parseCustomFieldsJson(raw: string | null | undefined): CustomFieldFormI
 		if (typeof parsed === 'object' && parsed !== null) {
 			return Object.entries(parsed as Record<string, unknown>).map(([key, val]) => ({
 				key,
-				value: typeof val === 'string' ? val : String(val ?? '')
+				value: typeof val === 'string' ? val : textValue(val ?? '')
 			}));
 		}
 	} catch {
@@ -427,27 +428,27 @@ export function hydrateFromFullPost(post: Record<string, unknown>): PostEditorFo
 	]);
 	const hasDisabledTocCustomField = findInternalCf('__enableToc') === 'false';
 	const visibleCustomFields = allCustomFields.filter((cf) => !INTERNAL_CF_KEYS.has(cf.key));
-	const subtitleVal = String(post.subtitle ?? findInternalCf('__subtitle') ?? '');
+	const subtitleVal = textValue(post.subtitle ?? findInternalCf('__subtitle') ?? '');
 	const noarchiveVal = Boolean(post.noarchive ?? findInternalCf('__noarchive') === 'true');
 	const nosnippetVal = Boolean(post.nosnippet ?? findInternalCf('__nosnippet') === 'true');
 	const excludeFromSearchVal = Boolean(
 		post.excludeFromSearch ?? findInternalCf('__excludeFromSearch') === 'true'
 	);
-	const seriesNameVal = String(post.seriesName ?? findInternalCf('__seriesName') ?? '');
-	const customJsonLdVal = String(post.customJsonLd ?? findInternalCf('__customJsonLd') ?? '');
+	const seriesNameVal = textValue(post.seriesName ?? findInternalCf('__seriesName') ?? '');
+	const customJsonLdVal = textValue(post.customJsonLd ?? findInternalCf('__customJsonLd') ?? '');
 
 	return {
 		...empty,
 		id: typeof post.id === 'number' ? post.id : null,
-		title: String(post.title ?? ''),
-		slug: String(post.slug ?? ''),
+		title: textValue(post.title ?? ''),
+		slug: textValue(post.slug ?? ''),
 		slugManuallyEdited: Boolean(post.slug),
 		subtitle: subtitleVal,
-		excerpt: String(post.excerpt ?? ''),
-		content: String(post.content ?? ''),
-		coverImage: String(post.coverImage ?? ''),
-		coverImageAlt: String(post.coverImageAlt ?? ''),
-		coverImageCaption: String(post.coverImageCaption ?? ''),
+		excerpt: textValue(post.excerpt ?? ''),
+		content: textValue(post.content ?? ''),
+		coverImage: textValue(post.coverImage ?? ''),
+		coverImageAlt: textValue(post.coverImageAlt ?? ''),
+		coverImageCaption: textValue(post.coverImageCaption ?? ''),
 		categoryId: primaryCatId,
 		categoryIds: catIds.length > 0 ? catIds : primaryCatId ? [primaryCatId] : [],
 		tagIds: Array.isArray(post.tagIds)
@@ -457,7 +458,7 @@ export function hydrateFromFullPost(post: Record<string, unknown>): PostEditorFo
 			? (post.relatedPostIds as number[]).filter((n) => Number.isInteger(n) && n > 0)
 			: [],
 		authorId: typeof post.authorId === 'number' && post.authorId > 0 ? post.authorId : null,
-		coAuthorIds: String(post.coAuthorIds ?? ''),
+		coAuthorIds: textValue(post.coAuthorIds ?? ''),
 		status: (post.status as PostStatus) || 'draft',
 		visibility: (post.visibility as PostVisibility) || 'public',
 		passwordPlaintext: '',
@@ -475,17 +476,17 @@ export function hydrateFromFullPost(post: Record<string, unknown>): PostEditorFo
 		enableToc: post.enableToc !== false && !hasDisabledTocCustomField,
 		readingTime: typeof post.readingTime === 'number' ? post.readingTime : 1,
 		wordCount: typeof post.wordCount === 'number' ? post.wordCount : 0,
-		metaTitle: String(post.metaTitle ?? ''),
-		metaDescription: String(post.metaDescription ?? ''),
-		focusKeyword: String(post.focusKeyword ?? ''),
+		metaTitle: textValue(post.metaTitle ?? ''),
+		metaDescription: textValue(post.metaDescription ?? ''),
+		focusKeyword: textValue(post.focusKeyword ?? ''),
 		secondaryKeywords: parseJsonStringArray(post.secondaryKeywords as string | null),
-		canonicalUrl: String(post.canonicalUrl ?? ''),
-		ogTitle: String(post.ogTitle ?? ''),
-		ogDescription: String(post.ogDescription ?? ''),
-		ogImage: String(post.ogImage ?? ''),
-		twitterTitle: String(post.twitterTitle ?? ''),
-		twitterDescription: String(post.twitterDescription ?? ''),
-		twitterImage: String(post.twitterImage ?? ''),
+		canonicalUrl: textValue(post.canonicalUrl ?? ''),
+		ogTitle: textValue(post.ogTitle ?? ''),
+		ogDescription: textValue(post.ogDescription ?? ''),
+		ogImage: textValue(post.ogImage ?? ''),
+		twitterTitle: textValue(post.twitterTitle ?? ''),
+		twitterDescription: textValue(post.twitterDescription ?? ''),
+		twitterImage: textValue(post.twitterImage ?? ''),
 		twitterCardType:
 			(post.twitterCardType as TwitterCardType) === 'summary' ? 'summary' : 'summary_large_image',
 		robotsNoindex: noindexVal,
@@ -494,7 +495,7 @@ export function hydrateFromFullPost(post: Record<string, unknown>): PostEditorFo
 		nofollow: nofollowVal,
 		noarchive: noarchiveVal,
 		nosnippet: nosnippetVal,
-		maxImagePreview: String(post.maxImagePreview ?? 'large'),
+		maxImagePreview: textValue(post.maxImagePreview ?? 'large'),
 		maxSnippet: typeof post.maxSnippet === 'number' ? post.maxSnippet : -1,
 		schemaType: (post.schemaType as PostSchemaType) || 'BlogPosting',
 		faqItems: parseFaqItemsJson(post.faqItems as string | null),
@@ -504,17 +505,17 @@ export function hydrateFromFullPost(post: Record<string, unknown>): PostEditorFo
 		template: (post.template as PostTemplate) || 'default',
 		postFormat: formatVal,
 		format: formatVal,
-		language: String(post.language ?? 'en'),
-		translations: String(post.translations ?? ''),
+		language: textValue(post.language ?? 'en'),
+		translations: textValue(post.translations ?? ''),
 		seriesName: seriesNameVal,
 		seriesOrder: typeof post.seriesOrder === 'number' ? post.seriesOrder : null,
-		customCss: String(post.customCss ?? ''),
+		customCss: textValue(post.customCss ?? ''),
 		customFields: visibleCustomFields,
 		publishedAt: toIsoOrEmpty(post.publishedAt as Date | string | null),
 		scheduledAt: toIsoOrEmpty(post.scheduledAt as Date | string | null),
 		expiresAt: toIsoOrEmpty(post.expiresAt as Date | string | null),
-		lastEditedBy: String(post.lastEditedBy ?? ''),
-		revisionNotes: String(post.revisionNotes ?? ''),
+		lastEditedBy: textValue(post.lastEditedBy ?? ''),
+		revisionNotes: textValue(post.revisionNotes ?? ''),
 		expectedUpdatedAt: updatedAtIso || null
 	};
 }

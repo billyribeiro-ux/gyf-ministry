@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { and, eq, inArray, isNull } from 'drizzle-orm';
 import {
@@ -269,8 +270,8 @@ export const load: PageServerLoad = async ({
 			if (Array.isArray(parsedCustom)) {
 				for (const item of parsedCustom) {
 					if (!item || typeof item !== 'object') continue;
-					const k = String((item as Record<string, unknown>).key ?? '');
-					const v = String((item as Record<string, unknown>).value ?? '');
+					const k = textValue((item as Record<string, unknown>).key);
+					const v = textValue((item as Record<string, unknown>).value);
 					if (k === '__subtitle') subtitle = v.trim();
 					else if (k === '__seriesName') seriesName = v.trim();
 					else if (k === '__noarchive') noarchive = v === 'true';
@@ -418,7 +419,7 @@ export const actions: Actions = {
 	unlock: async (event) => {
 		const slug = event.params.slug.trim().toLowerCase();
 		const formData = await event.request.formData();
-		const password = String(formData.get('password') ?? '').trim();
+		const password = textValue(formData.get('password'), '').trim();
 
 		if (!password) {
 			return fail(400, {

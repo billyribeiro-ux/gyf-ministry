@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { fail } from '@sveltejs/kit';
 import { recordMinistrySubmission } from '#lib/server/submissions.js';
 import type { Actions } from './$types';
@@ -5,8 +6,8 @@ import type { Actions } from './$types';
 export const actions: Actions = {
 	subscribeEncouragement: async ({ request }) => {
 		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const email = String(data.get('email') ?? '').trim();
+		const name = textValue(data.get('name'), '').trim();
+		const email = textValue(data.get('email'), '').trim();
 
 		if (!name || !email) {
 			return fail(400, {

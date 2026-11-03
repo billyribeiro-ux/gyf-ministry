@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { fail } from '@sveltejs/kit';
 import { recordMinistrySubmission } from '#lib/server/submissions.js';
 import type { Actions } from './$types';
@@ -5,11 +6,11 @@ import type { Actions } from './$types';
 export const actions: Actions = {
 	submitPartner: async ({ request }) => {
 		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const email = String(data.get('email') ?? '').trim();
-		const partnerWay = String(data.get('partnerWay') ?? 'Monthly Mustard Seed Partner').trim();
-		const amount = String(data.get('amount') ?? '$65/mo').trim();
-		const details = String(data.get('details') ?? '').trim();
+		const name = textValue(data.get('name'), '').trim();
+		const email = textValue(data.get('email'), '').trim();
+		const partnerWay = textValue(data.get('partnerWay'), 'Monthly Mustard Seed Partner').trim();
+		const amount = textValue(data.get('amount'), '$65/mo').trim();
+		const details = textValue(data.get('details'), '').trim();
 
 		if (!name || !email) {
 			return fail(400, {

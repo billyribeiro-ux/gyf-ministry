@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser';
+import { tick } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import ImageControlMenu from './ImageControlMenu.svelte';
 
@@ -106,12 +107,13 @@ describe('ImageControlMenu', () => {
 		});
 		await page.getByRole('button', { name: 'Alt', exact: true }).click();
 		await page.getByLabelText(/Title/).click();
-		await page
+		page
 			.getByLabelText(/Title/)
 			.element()
 			.dispatchEvent(
 				new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
 			);
+		await tick();
 		expect(document.querySelector('.menu-editor')).toBeNull();
 		expect(onEditDetails).toHaveBeenCalledOnce();
 	});
@@ -185,6 +187,7 @@ describe('ImageControlMenu', () => {
 		const other = document.createElement('img');
 		document.body.append(other);
 		await view.rerender({ anchor: other, alt: 'Image B', title: '', caption: '' });
+		await tick();
 		expect(document.querySelector('.menu-editor')).toBeNull();
 		await page.getByRole('button', { name: 'Alt', exact: true }).click();
 		await expect.element(page.getByLabelText(/Alt text/)).toHaveValue('Image B');

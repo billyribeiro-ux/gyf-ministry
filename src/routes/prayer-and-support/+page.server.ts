@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { fail } from '@sveltejs/kit';
 import { recordMinistrySubmission } from '#lib/server/submissions.js';
 import type { Actions } from './$types';
@@ -5,11 +6,11 @@ import type { Actions } from './$types';
 export const actions: Actions = {
 	submitPrayer: async ({ request }) => {
 		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const email = String(data.get('email') ?? '').trim();
-		const phone = String(data.get('phone') ?? '').trim();
+		const name = textValue(data.get('name'), '').trim();
+		const email = textValue(data.get('email'), '').trim();
+		const phone = textValue(data.get('phone'), '').trim();
 		const fridayCall = data.get('fridayCall') === 'yes';
-		const prayerNeed = String(data.get('prayerNeed') ?? '').trim();
+		const prayerNeed = textValue(data.get('prayerNeed'), '').trim();
 
 		if (!name || !prayerNeed) {
 			return fail(400, {
@@ -43,13 +44,13 @@ export const actions: Actions = {
 
 	nominateFamily: async ({ request }) => {
 		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const email = String(data.get('email') ?? '').trim();
-		const phone = String(data.get('phone') ?? '').trim();
-		const city = String(data.get('city') ?? 'Waterbury / Wolcott, CT').trim();
-		const familySize = String(data.get('familySize') ?? '4').trim();
-		const coatSizes = String(data.get('coatSizes') ?? '').trim();
-		const details = String(data.get('details') ?? '').trim();
+		const name = textValue(data.get('name'), '').trim();
+		const email = textValue(data.get('email'), '').trim();
+		const phone = textValue(data.get('phone'), '').trim();
+		const city = textValue(data.get('city'), 'Waterbury / Wolcott, CT').trim();
+		const familySize = textValue(data.get('familySize'), '4').trim();
+		const coatSizes = textValue(data.get('coatSizes'), '').trim();
+		const details = textValue(data.get('details'), '').trim();
 
 		if (!name || !phone || !coatSizes) {
 			return fail(400, {

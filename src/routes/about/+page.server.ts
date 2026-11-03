@@ -1,3 +1,4 @@
+import { textValue } from '#lib/shared/text';
 import { fail } from '@sveltejs/kit';
 import { recordMinistrySubmission } from '#lib/server/submissions.js';
 import type { Actions } from './$types';
@@ -5,11 +6,11 @@ import type { Actions } from './$types';
 export const actions: Actions = {
 	inviteSpeaker: async ({ request }) => {
 		const data = await request.formData();
-		const name = String(data.get('name') ?? '').trim();
-		const email = String(data.get('email') ?? '').trim();
-		const organization = String(data.get('organization') ?? '').trim();
-		const eventType = String(data.get('eventType') ?? '').trim();
-		const details = String(data.get('details') ?? '').trim();
+		const name = textValue(data.get('name'), '').trim();
+		const email = textValue(data.get('email'), '').trim();
+		const organization = textValue(data.get('organization'), '').trim();
+		const eventType = textValue(data.get('eventType'), '').trim();
+		const details = textValue(data.get('details'), '').trim();
 
 		if (!name || !email || !details) {
 			return fail(400, {
