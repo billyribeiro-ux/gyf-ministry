@@ -530,12 +530,19 @@
 		font-size: 0.88rem;
 		border-radius: var(--radius-sm);
 		text-decoration: none;
-		transform: translate(-50%, -200%);
-		transition: transform 0.18s ease;
+		white-space: nowrap;
+		opacity: 0;
+		pointer-events: none;
+		transform: translate(-50%, -250%);
+		transition:
+			transform 0.18s ease,
+			opacity 0.18s ease;
 		box-shadow: var(--shadow-elevated);
 	}
 
 	.skip-to-content:focus-visible {
+		opacity: 1;
+		pointer-events: auto;
 		transform: translate(-50%, 0);
 		outline: 3px solid var(--color-navy);
 		outline-offset: 2px;
@@ -802,6 +809,11 @@
 		font-size: 0.8rem;
 		font-weight: 700;
 		margin-bottom: 0.25rem;
+	}
+
+	.footer-stewardship-pill :global(svg),
+	.rhythm-kicker :global(svg) {
+		flex-shrink: 0;
 	}
 
 	.footer-rhythm-card p {
