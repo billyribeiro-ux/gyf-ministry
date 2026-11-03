@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import migrationSql from '../../../../drizzle/0000_blog_system.sql?raw';
 import { PGlite } from '@electric-sql/pglite';
 import { drizzle as drizzlePglite } from 'drizzle-orm/pglite';
 import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js';
@@ -25,11 +25,6 @@ type DrizzleDb = AppDatabase;
 let dbInstance: DrizzleDb | null = null;
 let pgliteClient: PGlite | null = null;
 let initPromise: Promise<DrizzleDb> | null = null;
-
-function getMigrationSql(): string {
-	const migrationPath = resolve(process.cwd(), 'drizzle/0000_blog_system.sql');
-	return readFileSync(migrationPath, 'utf8');
-}
 
 const BASELINE_SEED_SQL = `
 INSERT INTO authors (
@@ -334,8 +329,10 @@ function createSyncInstance(): DrizzleDb {
 	if (dbInstance) return dbInstance;
 
 	if (isLocalFallbackDbUrl(DATABASE_URL)) {
+		// Under-construction deployments use seeded, per-instance demo data.
+		// Vercel's application filesystem is read-only; this data is not persistent.
 		const dataDir =
-			process.env.VITEST || process.env.NODE_ENV === 'test'
+			process.env.VERCEL === '1' || process.env.VITEST || process.env.NODE_ENV === 'test'
 				? undefined
 				: resolve(process.cwd(), '.local-pgdata');
 		pgliteClient = new PGlite(dataDir);
@@ -357,8 +354,7 @@ export async function ensureDbReady(): Promise<DrizzleDb> {
 		const instance = createSyncInstance();
 		if (pgliteClient) {
 			await pgliteClient.waitReady;
-			const sqlText = getMigrationSql();
-			await pgliteClient.exec(sqlText);
+			await pgliteClient.exec(migrationSql);
 			await pgliteClient.exec(BASELINE_SEED_SQL);
 		}
 		return instance;
