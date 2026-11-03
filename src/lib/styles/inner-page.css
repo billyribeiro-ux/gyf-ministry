@@ -5,6 +5,29 @@
    ========================================================================== */
 
 .inner-page {
+	/* Public editorial surfaces inherit the ministry palette, not studio colors.
+	   Keep these aliases local so the admin editor retains its own theme. */
+	--bg: var(--color-parchment);
+	--bg-soft: var(--color-parchment-alt);
+	--panel: var(--color-surface);
+	--panel2: var(--color-parchment);
+	--line: var(--color-border);
+	--line-strong: color-mix(in srgb, var(--color-navy) 55%, var(--color-surface));
+	--text: var(--color-text);
+	--text-secondary: var(--color-text-muted);
+	--muted: var(--color-text-muted);
+	--lightmuted: var(--color-text-muted);
+	--off: var(--color-text);
+	--off2: var(--color-text);
+	/* Gold remains a surface/accent; darker teal is readable link text on white. */
+	--acid: var(--color-teal-text);
+	--acid2: var(--color-teal-text);
+	--ink: var(--color-navy);
+	--btn-acid-hover: var(--color-navy);
+	--coral: #a92c32;
+	--status-amber-text: #805b12;
+	--font-display: var(--font-heading);
+	--font-sans: var(--font-body);
 	background: var(--bg);
 	color: var(--text);
 	font-family: var(--font-sans);
@@ -16,11 +39,11 @@
 .inner-page h4,
 .inner-page h5,
 .inner-page h6 {
-	color: var(--text);
+	color: var(--color-navy);
 }
 
 .inner-page :focus-visible {
-	outline-color: var(--acid);
+	outline-color: var(--color-teal-text);
 }
 
 /* ---------- Breadcrumb navigation ---------- */
@@ -67,7 +90,7 @@
 	color: var(--acid);
 }
 
-/* ---------- Hero container & dark-surface contrast ---------- */
+/* ---------- Navy hero, consistent with the public ministry pages ---------- */
 .inner-page .page-hero {
 	padding-inline: 1.5rem;
 }
@@ -155,16 +178,16 @@
 }
 
 .inner-page .btn--solid {
-	background: var(--acid);
-	border-color: var(--acid);
-	color: var(--ink);
+	background: var(--color-gold);
+	border-color: var(--color-gold);
+	color: var(--color-navy);
 	box-shadow: inset 0 0 0 1px rgba(17, 21, 26, 0.18);
 }
 
 .inner-page .btn--solid:hover,
 .inner-page .btn--solid:focus-visible {
-	background: var(--btn-acid-hover);
-	border-color: var(--btn-acid-hover);
+	background: var(--color-gold-hover);
+	border-color: var(--color-gold-hover);
 }
 
 .inner-page .btn--outline {
@@ -175,9 +198,9 @@
 
 .inner-page .btn--outline:hover,
 .inner-page .btn--outline:focus-visible {
-	background: var(--acid);
-	border-color: var(--acid);
-	color: var(--ink);
+	background: var(--color-gold);
+	border-color: var(--color-gold);
+	color: var(--color-navy);
 }
 
 @media (max-width: 640px) {
@@ -193,5 +216,237 @@
 	.inner-page .breadcrumb-list a {
 		min-block-size: 36px;
 		padding-inline: 0.25rem;
+	}
+}
+
+/* ---------- Editorial hierarchy, surfaces and responsive controls ---------- */
+.inner-page .page-hero .section-kicker {
+	--kicker-color: var(--color-gold);
+}
+
+.inner-page .page-hero :focus-visible {
+	outline-color: var(--color-gold);
+}
+
+.inner-page .breadcrumb-list [aria-current='page'] {
+	color: var(--color-teal-text);
+}
+
+.inner-page .blog-search-form,
+.inner-page .error-search,
+.inner-page .unlock-input-row {
+	min-width: 0;
+}
+
+.inner-page .blog-search-form .blog-search-input,
+.inner-page .error-search .error-search-input,
+.inner-page .unlock-input-row .unlock-input {
+	min-width: 0;
+	background: var(--color-surface);
+	color: var(--color-text);
+	min-height: 48px;
+	font-size: 1rem;
+}
+
+.inner-page input::placeholder {
+	color: var(--color-text-muted);
+	opacity: 1;
+}
+
+.inner-page .blog-search-form .blog-search-btn,
+.inner-page .error-search .error-search-btn,
+.inner-page .unlock-input-row .unlock-submit-btn,
+.inner-page .service-cta-links .btn-cta-primary {
+	background: var(--color-gold);
+	color: var(--color-navy);
+	min-height: 48px;
+	font-size: 1rem;
+}
+
+.inner-page .blog-search-form .blog-search-btn:hover,
+.inner-page .error-search .error-search-btn:hover,
+.inner-page .unlock-input-row .unlock-submit-btn:hover,
+.inner-page .service-cta-links .btn-cta-primary:hover {
+	background: var(--color-gold-hover);
+}
+
+.inner-page .category-pill-nav .category-pill {
+	min-height: 44px;
+	font-size: 0.94rem;
+	color: var(--color-navy);
+	background: var(--color-surface);
+	border-color: var(--color-border);
+}
+
+.inner-page .category-pill-nav .category-pill.is-active,
+.inner-page .category-pill-nav .category-pill:hover {
+	background: var(--color-gold-soft);
+	border-color: var(--color-gold);
+	color: var(--color-navy);
+}
+
+.inner-page .section-h2 {
+	color: var(--color-navy);
+	font-size: clamp(1.65rem, 3vw, 2.25rem);
+}
+
+.inner-page .blog-post-card {
+	box-shadow: 0 4px 18px rgba(15, 32, 60, 0.045);
+}
+
+.inner-page .blog-post-card:hover,
+.inner-page .blog-post-card:focus-within {
+	border-color: var(--color-teal-text);
+}
+
+.inner-page .blog-post-card .card-body {
+	min-width: 0;
+	padding: clamp(1.25rem, 2vw, 1.75rem);
+	gap: 0.85rem;
+}
+
+.inner-page .blog-post-card .card-meta-top {
+	min-width: 0;
+	font-family: var(--font-body);
+	font-size: 0.82rem;
+}
+
+.inner-page .blog-post-card .card-meta-top > * {
+	min-width: 0;
+	max-width: 100%;
+	overflow-wrap: anywhere;
+}
+
+.inner-page .blog-post-card .card-category-badge {
+	font-size: 0.8rem;
+	text-transform: none;
+	letter-spacing: normal;
+	min-height: 44px;
+}
+
+.inner-page .blog-post-card .card-title {
+	font-family: var(--font-heading);
+	font-size: clamp(1.3rem, 2vw, 1.5rem);
+	line-height: 1.3;
+}
+
+.inner-page .blog-post-card .card-excerpt {
+	font-size: 1rem;
+	line-height: 1.65;
+}
+
+.inner-page .blog-post-card .card-footer {
+	flex-wrap: wrap;
+	font-size: 0.875rem;
+}
+
+.inner-page .blog-post-card .card-read-link {
+	white-space: normal;
+	min-height: 44px;
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+/* A single featured story should fill its section rather than leave two
+   empty grid columns. Multiple featured stories retain the existing grid. */
+.inner-page .featured-grid:has(> .blog-post-card:only-child) {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.inner-page .featured-grid > .blog-post-card:only-child:has(.card-media-link) {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.inner-page .featured-grid > .blog-post-card:only-child .card-media-link {
+	aspect-ratio: auto;
+	min-height: 100%;
+}
+
+.inner-page .featured-grid > .blog-post-card:only-child .card-body {
+	padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.inner-page .featured-grid > .blog-post-card:only-child .card-title {
+	font-size: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.inner-page .pagination-nav {
+	flex-wrap: wrap;
+}
+
+.inner-page .pagination-nav .page-btn,
+.inner-page .taxonomy-sidebar .sidebar-link,
+.inner-page .taxonomy-sidebar .back-all-link,
+.inner-page .back-to-blog-row .back-to-blog-link {
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+}
+
+.inner-page .taxonomy-sidebar .sidebar-link {
+	display: flex;
+	gap: 0.75rem;
+}
+
+.inner-page .taxonomy-sidebar .back-all-link {
+	display: flex;
+	justify-content: center;
+}
+
+.inner-page .taxonomy-breadcrumbs ol {
+	flex-wrap: wrap;
+}
+
+.inner-page .taxonomy-main,
+.inner-page .taxonomy-sidebar,
+.inner-page .article-main-column,
+.inner-page .article-header {
+	min-width: 0;
+}
+
+.inner-page .article-main-column .article-service-cta {
+	background: var(--color-parchment-alt);
+	border-color: var(--color-border);
+}
+
+.inner-page .service-cta-links > a {
+	display: inline-flex;
+	align-items: center;
+}
+
+/* Syntax-highlighted blocks intentionally retain their supplied theme.
+   Non-highlighted code follows the light reading surface. */
+.inner-page .prose-base pre.shiki code {
+	color: inherit;
+}
+
+.inner-page .prose-base pre:not(.shiki) {
+	color: var(--color-text);
+}
+
+@media (max-width: 760px) {
+	.inner-page .featured-grid > .blog-post-card:only-child:has(.card-media-link) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.inner-page .featured-grid > .blog-post-card:only-child .card-media-link {
+		aspect-ratio: 16 / 9;
+		min-height: 0;
+	}
+
+	.inner-page .featured-grid > .blog-post-card:only-child .card-body {
+		padding: 1.5rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.inner-page .unlock-input-row {
+		flex-direction: column;
+	}
+
+	.inner-page .pagination-nav .page-indicator {
+		flex-basis: 100%;
+		text-align: center;
 	}
 }
