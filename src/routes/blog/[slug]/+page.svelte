@@ -2,7 +2,8 @@
 	import '#lib/styles/inner-page.css';
 	import '#lib/styles/prose.css';
 	import { resolve } from '$app/paths';
-	import CaretDownIcon from 'phosphor-svelte/lib/CaretDownIcon';
+	import { IconArrowLeft, IconArrowUpRight, IconChevronDown } from '@tabler/icons-svelte';
+	import { cinematicPhotoReveal, gsapHeroEntrance } from '#lib/attachments/gsap.js';
 	import PostCard from '#lib/components/blog/PostCard.svelte';
 	import SEO from '#lib/components/blog/SEO.svelte';
 	import { SITE_ORIGIN } from '#lib/seo/structured-data';
@@ -16,6 +17,7 @@
 	let { data, form }: Props = $props();
 
 	let readingProgress = $state(0);
+	let isReading = $state(false);
 	let copyLinkStatus = $state('');
 	let canNativeShare = $derived(
 		typeof navigator !== 'undefined' && typeof navigator.share === 'function'
@@ -24,10 +26,7 @@
 	// Server (getPublicPostViewBySlug) already runs normalizePostHeadings once (SSOT)
 	// and supplies 1:1 synchronized heading IDs and TOC items.
 	let toc = $derived(data.post?.toc ?? []);
-	let activeHeadingId = $derived(toc[0]?.id ?? '');
-	let tocDetailsOpen = $derived(
-		data.post?.slug && typeof window !== 'undefined' ? window.innerWidth >= 768 : true
-	);
+	let activeHeadingId = $state('');
 	let processedContent = $derived(data.post?.content ?? '');
 	let isTocEnabled = $derived.by(() => {
 		const raw = data.post?.customFields;
@@ -84,12 +83,29 @@
 		});
 	}
 
-	function onScroll() {
-		if (typeof window === 'undefined') return;
-		const doc = document.documentElement;
-		const scrollTop = window.scrollY || doc.scrollTop;
-		const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
-		readingProgress = Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100));
+	function trackReadingProgress(content: HTMLElement) {
+		const slug = data.post?.slug;
+		if (!slug) return;
+
+		const update = () => {
+			const bounds = content.getBoundingClientRect();
+			const readingLine = Math.min(150, window.innerHeight / 3);
+			readingProgress = Math.min(
+				1,
+				Math.max(0, (readingLine - bounds.top) / Math.max(1, bounds.height))
+			);
+			isReading = bounds.top <= readingLine && bounds.bottom > 0;
+		};
+		const observer = new ResizeObserver(update);
+		observer.observe(content);
+		update();
+		window.addEventListener('scroll', update, { passive: true });
+		window.addEventListener('resize', update);
+		return () => {
+			observer.disconnect();
+			window.removeEventListener('scroll', update);
+			window.removeEventListener('resize', update);
+		};
 	}
 
 	/**
@@ -97,20 +113,23 @@
 	 * panel node changes across client-side post navigations) and keeps the active
 	 * entry visible inside the sticky TOC scroll container via `panel.scrollTop` math.
 	 */
-	function setupTocScrollSpy(panel: HTMLElement) {
+	function setupTocScrollSpy(panel: HTMLDetailsElement) {
 		const items = toc;
-		if (typeof window === 'undefined' || items.length < 3) return;
+		const headings = items.flatMap(({ id }) => {
+			const heading = document.getElementById(id);
+			return heading ? [heading] : [];
+		});
 
-		const headingElements = items
-			.map((item) => document.getElementById(item.id))
-			.filter((element): element is HTMLElement => element !== null);
-
-		if (headingElements.length === 0) return;
+		if (headings.length === 0) return;
+		panel.open = window.matchMedia('(min-width: 768px)').matches;
 
 		const followActiveInPanel = (activeLink: HTMLElement | null) => {
 			if (!activeLink) return;
 			if (panel.scrollHeight <= panel.clientHeight) return;
-			const itemTop = activeLink.offsetTop;
+			const itemTop =
+				activeLink.getBoundingClientRect().top -
+				panel.getBoundingClientRect().top +
+				panel.scrollTop;
 			const itemBottom = itemTop + activeLink.offsetHeight;
 			const viewTop = panel.scrollTop;
 			const viewBottom = viewTop + panel.clientHeight;
@@ -123,16 +142,17 @@
 		};
 
 		const updateActiveHeading = () => {
-			let currentId = items[0]?.id ?? '';
-			for (const item of items) {
-				const el = document.getElementById(item.id);
-				if (el && el.getBoundingClientRect().top <= 150) {
-					currentId = item.id;
+			let currentId = headings[0].id;
+			for (const heading of headings) {
+				if (heading.getBoundingClientRect().top <= 150) {
+					currentId = heading.id;
 				}
 			}
 			activeHeadingId = currentId;
-			if (currentId) {
-				followActiveInPanel(panel.querySelector<HTMLElement>(`[data-toc-id="${currentId}"]`));
+			if (panel.open) {
+				followActiveInPanel(
+					panel.querySelector<HTMLElement>(`[data-toc-id="${CSS.escape(currentId)}"]`)
+				);
 			}
 		};
 
@@ -169,34 +189,21 @@
 	}
 </script>
 
-<svelte:window onscroll={onScroll} />
-
 <SEO schema={data.jsonLdSchema} />
-
-<div
-	class="reading-progress-track"
-	role="progressbar"
-	aria-label="Reading progress"
-	aria-valuemin={0}
-	aria-valuemax={100}
-	aria-valuenow={Math.round(readingProgress)}
->
-	<div class="reading-progress-fill" style={`width: ${readingProgress}%`}></div>
-</div>
 
 <div id="blog-article-page" class="inner-page blog-article-page">
 	{#if data.locked && data.payload}
-		<section class="content-section locked-article-section" aria-labelledby="locked-h1">
-			<nav class="article-breadcrumbs" aria-label="Breadcrumb">
+		<section class="blog-width blog-content" aria-labelledby="locked-h1">
+			<nav class="blog-breadcrumbs" aria-label="Breadcrumb">
 				<ol>
 					<li><a href={resolve('/')}>Home</a></li>
-					<li><a href={resolve('/blog')}>Blog</a></li>
+					<li><a href={resolve('/blog')}>Journal</a></li>
 					<li aria-current="page">{data.payload.title}</li>
 				</ol>
 			</nav>
 
 			<div class="locked-card">
-				<span class="locked-badge">Protected Article</span>
+				<span class="blog-kicker">Protected article</span>
 				<h1 id="locked-h1" class="article-h1">{data.payload.title}</h1>
 				<p class="locked-notice">{data.payload.notice}</p>
 
@@ -224,359 +231,381 @@
 			</div>
 		</section>
 	{:else if data.post}
+		{#if isReading}
+			<div
+				class="reading-progress-track"
+				aria-hidden="true"
+				style:--progress={readingProgress}
+			></div>
+		{/if}
 		{#if data.post.isPreview}
 			<div class="preview-banner" role="status">
-				Draft Preview Mode: This article is not publicly indexed unless published.
+				Draft preview. Publish this article to make it public.
 			</div>
 		{/if}
 
 		<article class="article-container" {@attach trackArticlePageview}>
-			<header class="article-header">
-				<nav class="article-breadcrumbs" aria-label="Breadcrumb">
-					<ol>
-						<li><a href={resolve('/')}>Home</a></li>
-						<li><a href={resolve('/blog')}>Blog</a></li>
-						{#if data.post.category}
-							<li>
-								<a href={resolve('/blog/category/[slug]', { slug: data.post.category.slug })}>
+			<header class="article-header journal-dark-band">
+				<div class="blog-width">
+					<div class="article-header-inner" {@attach gsapHeroEntrance}>
+						<nav class="blog-breadcrumbs" aria-label="Breadcrumb">
+							<ol>
+								<li><a href={resolve('/')}>Home</a></li>
+								<li><a href={resolve('/blog')}>Journal</a></li>
+								<li aria-current="page">Article</li>
+							</ol>
+						</nav>
+
+						<div class="article-meta-badges" data-hero-item>
+							{#if data.post.category}
+								<a
+									href={resolve('/blog/category/[slug]', { slug: data.post.category.slug })}
+									class="article-category-badge"
+								>
 									{data.post.category.name}
 								</a>
-							</li>
-						{/if}
-						<li aria-current="page">{data.post.title}</li>
-					</ol>
-				</nav>
-
-				<div class="article-meta-badges">
-					{#if data.post.category}
-						<a
-							href={resolve('/blog/category/[slug]', { slug: data.post.category.slug })}
-							class="article-category-badge"
-						>
-							{data.post.category.name}
-						</a>
-					{/if}
-					{#if data.post.seriesName}
-						<span class="article-pillar-badge">{data.post.seriesName}</span>
-					{/if}
-					{#if data.post.isPillar}
-						<span class="article-pillar-badge">Cornerstone Guide</span>
-					{/if}
-					<span class="article-reading-time">{data.post.readingTime} min read</span>
-				</div>
-
-				<h1 class="article-h1">{data.post.title}</h1>
-
-				{#if data.post.subtitle}
-					<p class="article-subtitle">{data.post.subtitle}</p>
-				{/if}
-
-				{#if data.post.excerpt}
-					<p class="article-excerpt">{data.post.excerpt}</p>
-				{/if}
-
-				<div class="article-byline-row">
-					{#if data.post.author}
-						<div class="byline-author">
-							<a href={resolve('/about')} class="byline-author-link">
-								<strong>{data.post.author.name}</strong>
-							</a>
-							{#if data.post.author.jobTitle}
-								<span class="byline-role">{data.post.author.jobTitle}</span>
+							{/if}
+							{#if data.post.seriesName}
+								<span class="article-pillar-badge">{data.post.seriesName}</span>
+							{/if}
+							{#if data.post.isPillar}
+								<span class="article-pillar-badge">Cornerstone guide</span>
+							{/if}
+							{#if data.post.readingTime}
+								<span class="article-reading-time">{data.post.readingTime} min read</span>
 							{/if}
 						</div>
-					{/if}
-					{#if data.post.publishedAt}
-						<time class="byline-date" datetime={new Date(data.post.publishedAt).toISOString()}>
-							Published {new Date(data.post.publishedAt).toLocaleDateString('en-US', {
-								month: 'long',
-								day: 'numeric',
-								year: 'numeric',
-								timeZone: 'UTC'
-							})}
-						</time>
-					{/if}
-					{#if data.post.contentUpdatedAt && (!data.post.publishedAt || new Date(data.post.contentUpdatedAt).getTime() - new Date(data.post.publishedAt).getTime() > 60_000)}
-						<time class="byline-date" datetime={new Date(data.post.contentUpdatedAt).toISOString()}>
-							Updated {new Date(data.post.contentUpdatedAt).toLocaleDateString('en-US', {
-								month: 'long',
-								day: 'numeric',
-								year: 'numeric',
-								timeZone: 'UTC'
-							})}
-						</time>
-					{/if}
-				</div>
 
-				{#if data.post.tags.length > 0}
-					<div class="article-tag-list" aria-label="Article tags">
-						{#each data.post.tags as tag (tag.id)}
-							<a href={resolve('/blog/tag/[slug]', { slug: tag.slug })} class="article-tag-chip">
-								#{tag.name}
-							</a>
-						{/each}
+						<h1 class="article-h1" data-hero-item>{data.post.title}</h1>
+
+						{#if data.post.subtitle}
+							<p class="article-subtitle" data-hero-item>{data.post.subtitle}</p>
+						{/if}
+
+						{#if data.post.excerpt}
+							<p class="article-excerpt" data-hero-item>{data.post.excerpt}</p>
+						{/if}
+
+						<div class="article-byline-row" data-hero-item>
+							{#if data.post.author}
+								<div class="byline-author">
+									<a href={resolve('/about')} class="byline-author-link">
+										<strong>{data.post.author.name}</strong>
+									</a>
+									{#if data.post.author.jobTitle}
+										<span class="byline-role">{data.post.author.jobTitle}</span>
+									{/if}
+								</div>
+							{/if}
+							{#if data.post.publishedAt}
+								<time class="byline-date" datetime={new Date(data.post.publishedAt).toISOString()}>
+									Published {new Date(data.post.publishedAt).toLocaleDateString('en-US', {
+										month: 'long',
+										day: 'numeric',
+										year: 'numeric',
+										timeZone: 'UTC'
+									})}
+								</time>
+							{/if}
+							{#if data.post.contentUpdatedAt && (!data.post.publishedAt || new Date(data.post.contentUpdatedAt).getTime() - new Date(data.post.publishedAt).getTime() > 60_000)}
+								<time
+									class="byline-date"
+									datetime={new Date(data.post.contentUpdatedAt).toISOString()}
+								>
+									Updated {new Date(data.post.contentUpdatedAt).toLocaleDateString('en-US', {
+										month: 'long',
+										day: 'numeric',
+										year: 'numeric',
+										timeZone: 'UTC'
+									})}
+								</time>
+							{/if}
+						</div>
 					</div>
-				{/if}
+				</div>
 			</header>
 
 			{#if data.post.coverImage}
-				<figure class="article-cover-figure">
-					<img
-						src={data.post.coverImage}
-						srcset={coverSrcset}
-						sizes={coverSrcset ? '(max-width: 960px) 100vw, 900px' : undefined}
-						alt={data.post.coverImageAlt || data.post.title}
-						width={data.post.coverWidth ?? 1200}
-						height={data.post.coverHeight ?? 675}
-						loading="eager"
-						fetchpriority="high"
-						decoding="async"
-						class="article-cover-img"
-					/>
-					{#if data.post.coverImageCaption}
-						<figcaption class="article-cover-caption">
-							{data.post.coverImageCaption}
-						</figcaption>
-					{/if}
-				</figure>
+				<div class="article-cover-band">
+					<div class="blog-width">
+						<figure class="article-cover-figure">
+							<div class="article-cover-frame journal-photo" {@attach cinematicPhotoReveal}>
+								<img
+									src={data.post.coverImage}
+									srcset={coverSrcset}
+									sizes={coverSrcset ? '(max-width: 974px) 92vw, 896px' : undefined}
+									alt={data.post.coverImageAlt || data.post.title}
+									width={data.post.coverWidth ?? 1200}
+									height={data.post.coverHeight ?? 675}
+									loading="eager"
+									fetchpriority="high"
+									decoding="async"
+									class="article-cover-img"
+									data-cinematic-image
+								/>
+							</div>
+							{#if data.post.coverImageCaption}
+								<figcaption class="article-cover-caption">
+									{data.post.coverImageCaption}
+								</figcaption>
+							{/if}
+						</figure>
+					</div>
+				</div>
 			{/if}
 
-			<div class={['article-body-layout', { 'has-toc': showToc }]}>
-				{#if showToc}
-					<aside class="article-toc-aside" aria-label="Table of contents">
-						<details {@attach setupTocScrollSpy} class="toc-details" bind:open={tocDetailsOpen}>
-							<summary
-								class="toc-summary"
-								onclick={(e) => {
-									if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-										e.preventDefault();
-										tocDetailsOpen = true;
-									}
-								}}
-							>
-								<span>Table of Contents</span>
-								<CaretDownIcon class="toc-caret" size={16} weight="bold" aria-hidden="true" />
-							</summary>
-							<nav aria-label="Article sections">
-								<ol class="toc-list">
-									{#each toc as item (item.id)}
-										<li class={`toc-item toc-level-${item.level}`}>
-											<a
-												href={`#${item.id}`}
-												data-toc-id={item.id}
-												class={['toc-link', { 'toc-link--active': activeHeadingId === item.id }]}
-												aria-current={activeHeadingId === item.id ? 'location' : undefined}
-												onclick={() => {
-													activeHeadingId = item.id;
-													if (typeof window !== 'undefined' && window.innerWidth < 768) {
-														tocDetailsOpen = false;
-													}
-												}}
-											>
-												{item.text}
-											</a>
-										</li>
-									{/each}
-								</ol>
+			<div class="blog-width article-reading">
+				<div class={['article-body-layout', { 'has-toc': showToc }]}>
+					{#if showToc}
+						<aside class="article-toc-aside" aria-label="Table of contents">
+							<details {@attach setupTocScrollSpy} class="toc-details">
+								<summary class="toc-summary">
+									<span>In this article</span>
+									<IconChevronDown class="toc-caret" size={17} aria-hidden="true" />
+								</summary>
+								<nav aria-label="Article sections">
+									<ol class="toc-list">
+										{#each toc as item (item.id)}
+											<li class={`toc-item toc-level-${item.level}`}>
+												<a
+													href={`#${item.id}`}
+													data-toc-id={item.id}
+													class="toc-link"
+													aria-current={activeHeadingId === item.id ? 'location' : undefined}
+													onclick={(event) => {
+														activeHeadingId = item.id;
+														if (window.matchMedia('(max-width: 767px)').matches) {
+															const details = event.currentTarget.closest('details');
+															if (details) details.open = false;
+														}
+													}}
+												>
+													{item.text}
+												</a>
+											</li>
+										{/each}
+									</ol>
+								</nav>
+							</details>
+						</aside>
+					{/if}
+
+					<div class="article-main-column">
+						<div class="prose-base article-prose" {@attach trackReadingProgress}>
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+							{@html processedContent}
+						</div>
+
+						{#if data.post.tags.length > 0}
+							<nav class="article-tag-list" aria-label="Article tags">
+								{#each data.post.tags as tag (tag.id)}
+									<a
+										href={resolve('/blog/tag/[slug]', { slug: tag.slug })}
+										class="article-tag-chip"
+									>
+										#{tag.name}
+									</a>
+								{/each}
 							</nav>
-						</details>
-					</aside>
+						{/if}
+
+						<section class="article-service-cta journal-dark-band" aria-labelledby="service-cta-h2">
+							<span class="blog-kicker">Faith in action</span>
+							<h2 id="service-cta-h2">You don’t have to carry this alone.</h2>
+							<p>
+								Tell us how we can pray for you. You can also talk with us on a Friday or find out
+								how we bring meals and winter coats to Connecticut families.
+							</p>
+							<div class="service-cta-links">
+								<a href={resolve('/prayer-and-support')} class="btn-cta-primary">Request prayer</a>
+								<a href={resolve('/programs/friday-ministry')}>
+									Friday Ministry <IconArrowUpRight size={17} aria-hidden="true" />
+								</a>
+								<a href={resolve('/programs/holiday-outreach')}>
+									Holiday outreach <IconArrowUpRight size={17} aria-hidden="true" />
+								</a>
+							</div>
+						</section>
+
+						{#if data.post.faqList.length > 0}
+							<section class="article-faq-section" aria-labelledby="article-faq-h2">
+								<h2 id="article-faq-h2">Common questions</h2>
+								<div class="faq-accordion">
+									{#each data.post.faqList as faq, idx (faq.question)}
+										<details class="faq-details" open={idx === 0}>
+											<summary class="faq-summary">
+												<h3 class="faq-question">{faq.question}</h3>
+											</summary>
+											<div class="faq-answer">
+												<p>{faq.answer}</p>
+											</div>
+										</details>
+									{/each}
+								</div>
+							</section>
+						{/if}
+
+						{#if data.post.author}
+							<section class="author-bio-box" aria-label="About the author">
+								{#if data.post.author.avatar}
+									<img
+										src={data.post.author.avatar}
+										alt={data.post.author.avatarAlt || data.post.author.name}
+										width="72"
+										height="72"
+										loading="lazy"
+										decoding="async"
+										class="author-avatar"
+									/>
+								{/if}
+								<div class="author-bio-content">
+									<div class="author-bio-header">
+										<h2 class="author-name">
+											<a href={resolve('/about')} class="author-name-link"
+												>{data.post.author.name}</a
+											>
+										</h2>
+										{#if data.post.author.jobTitle}
+											<span class="author-role">{data.post.author.jobTitle}</span>
+										{/if}
+										{#if data.post.author.credentials}
+											<span class="author-creds">
+												({data.post.author.credentials})
+											</span>
+										{/if}
+									</div>
+									{#if data.post.author.bio || data.post.author.shortBio}
+										<p class="author-description">
+											{data.post.author.bio || data.post.author.shortBio}
+										</p>
+									{/if}
+									<div class="author-links">
+										<!-- eslint-disable svelte/no-navigation-without-resolve -- external author profile URLs -->
+										{#if data.post.author.linkedin}
+											<a href={data.post.author.linkedin} target="_blank" rel="noopener noreferrer">
+												LinkedIn (opens in new tab)
+											</a>
+										{/if}
+										{#if data.post.author.twitter}
+											<a href={data.post.author.twitter} target="_blank" rel="noopener noreferrer">
+												X (opens in new tab)
+											</a>
+										{/if}
+										{#if data.post.author.website}
+											<a href={data.post.author.website} target="_blank" rel="noopener noreferrer">
+												Website (opens in new tab)
+											</a>
+										{/if}
+										<!-- eslint-enable svelte/no-navigation-without-resolve -->
+									</div>
+								</div>
+							</section>
+						{/if}
+
+						<section class="article-share-bar" aria-label="Share this article">
+							<span class="share-label">Share this article</span>
+							<div class="share-buttons">
+								<a
+									href={`https://x.com/intent/post?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Share on X (opens in new tab)"
+									class="share-btn"
+								>
+									X
+								</a>
+								<a
+									href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Share on LinkedIn (opens in new tab)"
+									class="share-btn"
+								>
+									LinkedIn
+								</a>
+								<a
+									href={`mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareUrl)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Share via Email (opens in new tab)"
+									class="share-btn"
+								>
+									Email
+								</a>
+								<button type="button" class="share-btn" onclick={handleCopyShareLink}>
+									Copy Link
+								</button>
+								{#if canNativeShare}
+									<button type="button" class="share-btn" onclick={handleNativeShare}>
+										Share
+									</button>
+								{/if}
+							</div>
+							{#if copyLinkStatus}
+								<span class="copy-status" role="status">{copyLinkStatus}</span>
+							{/if}
+						</section>
+
+						{#if data.post.previousPost || data.post.nextPost}
+							<nav class="prev-next-nav" aria-label="Previous and next articles">
+								{#if data.post.previousPost}
+									<a
+										href={resolve('/blog/[slug]', { slug: data.post.previousPost.slug })}
+										class="prev-next-card is-prev"
+									>
+										<span class="pn-label">Previous Article</span>
+										<strong class="pn-title">{data.post.previousPost.title}</strong>
+									</a>
+								{/if}
+								{#if data.post.nextPost}
+									<a
+										href={resolve('/blog/[slug]', { slug: data.post.nextPost.slug })}
+										class="prev-next-card is-next"
+									>
+										<span class="pn-label">Next Article</span>
+										<strong class="pn-title">{data.post.nextPost.title}</strong>
+									</a>
+								{/if}
+							</nav>
+						{/if}
+					</div>
+				</div>
+
+				{#if data.post.relatedPosts.length > 0}
+					<section class="related-articles-section" aria-labelledby="related-h2">
+						<h2 id="related-h2" class="blog-section-title">Keep reading</h2>
+						<div class="posts-grid">
+							{#each data.post.relatedPosts as rel (rel.id)}
+								<PostCard
+									post={{
+										id: rel.id,
+										title: rel.title,
+										slug: rel.slug,
+										excerpt: rel.excerpt,
+										coverImage: rel.coverImage,
+										coverImageAlt: rel.coverImageAlt,
+										readingTime: rel.readingTime,
+										publishedAt: rel.publishedAt,
+										category:
+											rel.categoryName && rel.categorySlug
+												? {
+														name: rel.categoryName,
+														slug: rel.categorySlug
+													}
+												: null
+									}}
+									headingLevel="h3"
+								/>
+							{/each}
+						</div>
+					</section>
 				{/if}
 
-				<div class="article-main-column">
-					<div class="prose-base article-prose">
-						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						{@html processedContent}
-					</div>
-
-					<section class="article-service-cta" aria-labelledby="service-cta-h2">
-						<span class="section-kicker">Faith The Size of a Mustard Seed</span>
-						<h2 id="service-cta-h2">Need Prayer, Friday Mentorship, or Holiday Support?</h2>
-						<p>
-							Every Friday year-round is set aside strictly to minister to those in need, and our
-							annual Thanksgiving through January 4 outreach provides hot meals and winter coats to
-							children across Connecticut.
-						</p>
-						<div class="service-cta-links">
-							<a href={resolve('/programs/friday-ministry')} class="btn-cta-primary">
-								Request a Friday Session
-							</a>
-							<a href={resolve('/partner')} class="btn-cta-secondary"> Partner With Our Mission </a>
-						</div>
-					</section>
-
-					{#if data.post.faqList.length > 0}
-						<section class="article-faq-section" aria-labelledby="article-faq-h2">
-							<h2 id="article-faq-h2">Frequently Asked Questions</h2>
-							<div class="faq-accordion">
-								{#each data.post.faqList as faq, idx (faq.question)}
-									<details class="faq-details" open={idx === 0}>
-										<summary class="faq-summary">
-											<h3 class="faq-question">{faq.question}</h3>
-										</summary>
-										<div class="faq-answer">
-											<p>{faq.answer}</p>
-										</div>
-									</details>
-								{/each}
-							</div>
-						</section>
-					{/if}
-
-					{#if data.post.author}
-						<section class="author-bio-box" aria-label="About the author">
-							{#if data.post.author.avatar}
-								<img
-									src={data.post.author.avatar}
-									alt={data.post.author.avatarAlt || data.post.author.name}
-									width="72"
-									height="72"
-									loading="lazy"
-									decoding="async"
-									class="author-avatar"
-								/>
-							{/if}
-							<div class="author-bio-content">
-								<div class="author-bio-header">
-									<h2 class="author-name">
-										<a href={resolve('/about')} class="author-name-link">{data.post.author.name}</a>
-									</h2>
-									{#if data.post.author.jobTitle}
-										<span class="author-role">{data.post.author.jobTitle}</span>
-									{/if}
-									{#if data.post.author.credentials}
-										<span class="author-creds">
-											({data.post.author.credentials})
-										</span>
-									{/if}
-								</div>
-								{#if data.post.author.bio || data.post.author.shortBio}
-									<p class="author-description">
-										{data.post.author.bio || data.post.author.shortBio}
-									</p>
-								{/if}
-								<div class="author-links">
-									<!-- eslint-disable svelte/no-navigation-without-resolve -- external author profile URLs -->
-									{#if data.post.author.linkedin}
-										<a href={data.post.author.linkedin} target="_blank" rel="noopener noreferrer">
-											LinkedIn (opens in new tab)
-										</a>
-									{/if}
-									{#if data.post.author.twitter}
-										<a href={data.post.author.twitter} target="_blank" rel="noopener noreferrer">
-											X (opens in new tab)
-										</a>
-									{/if}
-									{#if data.post.author.website}
-										<a href={data.post.author.website} target="_blank" rel="noopener noreferrer">
-											Website (opens in new tab)
-										</a>
-									{/if}
-									<!-- eslint-enable svelte/no-navigation-without-resolve -->
-								</div>
-							</div>
-						</section>
-					{/if}
-
-					<section class="article-share-bar" aria-label="Share this article">
-						<span class="share-label">Share Article:</span>
-						<div class="share-buttons">
-							<a
-								href={`https://x.com/intent/post?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`}
-								target="_blank"
-								rel="noopener noreferrer"
-								aria-label="Share on X (opens in new tab)"
-								class="share-btn"
-							>
-								X
-							</a>
-							<a
-								href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-								target="_blank"
-								rel="noopener noreferrer"
-								aria-label="Share on LinkedIn (opens in new tab)"
-								class="share-btn"
-							>
-								LinkedIn
-							</a>
-							<a
-								href={`mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareUrl)}`}
-								target="_blank"
-								rel="noopener noreferrer"
-								aria-label="Share via Email (opens in new tab)"
-								class="share-btn"
-							>
-								Email
-							</a>
-							<button type="button" class="share-btn" onclick={handleCopyShareLink}>
-								Copy Link
-							</button>
-							{#if canNativeShare}
-								<button type="button" class="share-btn" onclick={handleNativeShare}> Share </button>
-							{/if}
-						</div>
-						{#if copyLinkStatus}
-							<span class="copy-status" role="status">{copyLinkStatus}</span>
-						{/if}
-					</section>
-
-					{#if data.post.previousPost || data.post.nextPost}
-						<nav class="prev-next-nav" aria-label="Previous and next articles">
-							{#if data.post.previousPost}
-								<a
-									href={resolve('/blog/[slug]', { slug: data.post.previousPost.slug })}
-									class="prev-next-card is-prev"
-								>
-									<span class="pn-label">Previous Article</span>
-									<strong class="pn-title">{data.post.previousPost.title}</strong>
-								</a>
-							{/if}
-							{#if data.post.nextPost}
-								<a
-									href={resolve('/blog/[slug]', { slug: data.post.nextPost.slug })}
-									class="prev-next-card is-next"
-								>
-									<span class="pn-label">Next Article</span>
-									<strong class="pn-title">{data.post.nextPost.title}</strong>
-								</a>
-							{/if}
-						</nav>
-					{/if}
+				<div class="back-to-blog-row">
+					<a href={resolve('/blog')} class="back-to-blog-link">
+						<IconArrowLeft size={18} aria-hidden="true" /> Back to the journal
+					</a>
 				</div>
-			</div>
-
-			{#if data.post.relatedPosts.length > 0}
-				<section class="related-articles-section" aria-labelledby="related-h2">
-					<h2 id="related-h2" class="section-h2">Related Articles</h2>
-					<div class="related-grid">
-						{#each data.post.relatedPosts as rel (rel.id)}
-							<PostCard
-								post={{
-									id: rel.id,
-									title: rel.title,
-									slug: rel.slug,
-									excerpt: rel.excerpt,
-									coverImage: rel.coverImage,
-									coverImageAlt: rel.coverImageAlt,
-									readingTime: rel.readingTime,
-									publishedAt: rel.publishedAt,
-									category:
-										rel.categoryName && rel.categorySlug
-											? {
-													name: rel.categoryName,
-													slug: rel.categorySlug
-												}
-											: null
-								}}
-								headingLevel="h3"
-							/>
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<div class="back-to-blog-row">
-				<a href={resolve('/blog')} class="back-to-blog-link"> Back to all articles </a>
 			</div>
 		</article>
 	{/if}
@@ -585,232 +614,238 @@
 <style>
 	.reading-progress-track {
 		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
+		inset: 0 0 auto;
 		height: 3px;
-		background: transparent;
 		z-index: 90;
-	}
-
-	.reading-progress-fill {
-		height: 100%;
-		background: var(--acid);
-		transition: width 0.1s linear;
+		pointer-events: none;
+		background: var(--color-accent, #adc8ff);
+		transform: scaleX(var(--progress));
+		transform-origin: left;
 	}
 
 	.preview-banner {
-		background: rgba(222, 195, 161, 0.16);
-		border-bottom: 1px solid var(--status-amber-text);
+		padding: 0.65rem var(--journal-gutter);
+		border-block-end: 1px solid var(--status-amber-text);
+		background: var(--bg-soft);
 		color: var(--status-amber-text);
-		padding: 0.65rem 1.25rem;
+		font-size: 0.9rem;
+		font-weight: 650;
 		text-align: center;
-		font-size: 0.85rem;
-		font-weight: 600;
 	}
 
-	.article-container {
-		max-width: 1280px;
-		margin: 0 auto;
-		padding: 2.5rem 1.5rem 5rem;
-	}
-
-	.article-breadcrumbs ol {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		list-style: none;
-		padding: 0;
-		margin: 0 0 1.25rem;
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: var(--muted);
-	}
-
-	.article-breadcrumbs li + li::before {
-		content: '/';
-		margin-right: 0.5rem;
-		color: var(--line-strong);
-	}
-
-	.article-breadcrumbs a {
-		color: var(--muted);
-		text-decoration: none;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 36px;
-		min-width: 36px;
-		padding: 0 0.25rem;
-	}
-
-	.byline-author-link,
-	.author-name-link {
-		color: var(--text);
-		text-decoration: none;
-		display: inline-flex;
-		align-items: center;
-		min-height: 36px;
-	}
-
-	.byline-author-link:hover,
-	.author-name-link:hover {
-		color: var(--acid);
-	}
-
-	.article-breadcrumbs a:hover {
-		color: var(--acid);
+	.article-reading {
+		padding-block: clamp(2.25rem, 6vw, 5rem) clamp(3rem, 7vw, 6rem);
 	}
 
 	.article-header {
-		max-width: 900px;
-		margin: 0 auto 2rem;
+		padding-block: clamp(1.15rem, 3vw, 2rem) clamp(1.65rem, 4vw, 3.75rem);
 	}
 
-	.article-meta-badges {
+	.article-header-inner {
+		max-width: 56rem;
+		margin-inline: auto;
+	}
+
+	.article-meta-badges,
+	.article-tag-list {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 0.6rem;
-		margin-bottom: 0.85rem;
-		font-family: var(--font-mono);
-		font-size: 0.76rem;
+		gap: 0.25rem 0.85rem;
+	}
+
+	.article-meta-badges {
+		padding-block-start: 0.5rem;
 	}
 
 	.article-category-badge {
 		display: inline-flex;
 		align-items: center;
-		min-height: 36px;
-		padding: 0.25rem 0.75rem;
-		border-radius: 999px;
-		background: var(--color-gold-soft);
-		border: 1px solid rgba(212, 168, 67, 0.38);
-		color: var(--acid);
-		text-decoration: none;
-		font-weight: 700;
-		text-transform: uppercase;
+		min-block-size: 44px;
+		color: var(--accent);
+		font-size: 0.85rem;
+		font-weight: 750;
+		letter-spacing: 0.045em;
+		text-underline-offset: 0.25em;
 	}
 
+	.article-category-badge:hover {
+		color: var(--ink);
+	}
+
+	.article-reading-time,
 	.article-pillar-badge {
-		padding: 0.22rem 0.65rem;
-		border-radius: 999px;
-		background: var(--panel);
-		border: 1px solid var(--line-strong);
-		color: var(--text);
-	}
-
-	.article-reading-time {
 		color: var(--muted);
+		font-size: 0.85rem;
 	}
 
 	.article-h1 {
-		margin: 0 0 1rem;
-		font-family: var(--font-display);
-		font-size: clamp(1.9rem, 3.8vw, 2.85rem);
-		font-weight: 900;
-		line-height: 1.15;
-		color: var(--text);
+		margin: 0.35rem 0 0.95rem;
+		font-size: clamp(2.05rem, 1.1rem + 4.4vw, 5rem);
+		font-weight: 680;
+		letter-spacing: -0.06em;
+		line-height: 1;
+		text-wrap: pretty;
 	}
 
 	.article-subtitle {
-		margin: -0.35rem 0 0.9rem;
-		font-family: var(--font-display);
-		font-size: clamp(1.15rem, 2vw, 1.45rem);
-		font-weight: 700;
-		line-height: 1.35;
+		margin: 0 0 0.75rem;
 		color: var(--text);
+		font-size: clamp(1.15rem, 1rem + 0.75vw, 1.55rem);
+		font-weight: 550;
+		line-height: 1.4;
 	}
 
 	.article-excerpt {
-		margin: 0 0 1.25rem;
-		font-size: 1.12rem;
-		line-height: 1.6;
+		max-width: 64ch;
+		margin: 0 0 clamp(1.4rem, 3vw, 2.3rem);
 		color: var(--muted);
+		font-size: clamp(1.09rem, 1rem + 0.55vw, 1.35rem);
+		line-height: 1.55;
 	}
 
 	.article-byline-row {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 0.85rem 0;
-		border-top: 1px solid var(--line);
-		border-bottom: 1px solid var(--line);
-		font-size: 0.88rem;
+		gap: 0.35rem 1.25rem;
+		padding-block: 0.45rem;
+		border-block-start: 1px solid var(--line);
+		font-size: 0.9rem;
+	}
+
+	.byline-author {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.2rem 0.5rem;
+	}
+
+	.byline-author-link,
+	.author-name-link {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: 44px;
+		color: var(--ink);
+		text-underline-offset: 0.22em;
+	}
+
+	.byline-author-link:hover,
+	.author-name-link:hover {
+		color: var(--accent);
 	}
 
 	.byline-role,
 	.byline-date {
 		color: var(--muted);
-		margin-left: 0.5rem;
 	}
 
 	.article-tag-list {
-		display: flex;
-		flex-wrap: wrap;
+		margin-block-start: 1.75rem;
 		gap: 0.45rem;
-		margin-top: 0.85rem;
 	}
 
 	.article-tag-chip {
 		display: inline-flex;
 		align-items: center;
-		min-height: 36px;
-		padding: 0.25rem 0.65rem;
-		border-radius: 6px;
-		background: var(--panel);
+		min-height: 44px;
+		padding-inline: 0.65rem;
 		border: 1px solid var(--line);
+		border-radius: 0.25rem;
 		color: var(--muted);
+		font-size: 0.86rem;
 		text-decoration: none;
-		font-family: var(--font-mono);
-		font-size: 0.74rem;
+	}
+
+	.article-tag-chip:hover,
+	.share-btn:hover {
+		color: var(--accent);
+		border-color: var(--accent);
 	}
 
 	.article-cover-figure {
-		max-width: 960px;
-		margin: 0 auto 2.5rem;
+		max-width: 56rem;
+		margin: 0 auto;
+	}
+
+	.article-cover-band {
+		background: linear-gradient(to bottom, var(--color-screen, #101116) 52%, var(--bg) 52%);
+	}
+
+	.article-cover-frame {
+		overflow: hidden;
+		aspect-ratio: var(--photo-aspect, 4 / 3);
+		border-radius: 0.4rem;
+		background: var(--color-panel, #1a1d25);
+		box-shadow: 0 24px 55px -36px rgb(21 26 38 / 62%);
 	}
 
 	.article-cover-img {
-		width: 100%;
-		height: auto;
-		aspect-ratio: 16 / 9;
-		object-fit: cover;
-		border-radius: 14px;
-		border: 1px solid var(--line);
 		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 
 	.article-cover-caption {
-		margin-top: 0.55rem;
-		text-align: center;
-		font-size: 0.82rem;
+		margin-block-start: 0.65rem;
 		color: var(--muted);
+		font-size: 0.87rem;
 	}
 
 	.article-body-layout {
 		display: grid;
-		grid-template-columns: minmax(0, 900px);
+		grid-template-columns: minmax(0, 45rem);
 		justify-content: center;
-		gap: 2.5rem;
+		gap: clamp(1.5rem, 4vw, 3.25rem);
 		align-items: start;
 	}
 
-	@media (min-width: 1180px) {
-		.article-body-layout.has-toc {
-			grid-template-columns: clamp(260px, 20vw, 300px) minmax(0, 900px);
-			align-items: stretch;
-		}
+	.article-main-column,
+	.article-toc-aside {
+		min-width: 0;
+	}
 
-		.article-toc-aside {
-			align-self: stretch;
+	.article-prose {
+		font-family: var(--font-body);
+		font-size: clamp(1.0625rem, 1rem + 0.31vw, 1.225rem);
+		line-height: 1.72;
+	}
+
+	.article-prose :global(h2),
+	.article-prose :global(h3) {
+		font-weight: 690;
+		letter-spacing: -0.045em;
+	}
+
+	.article-prose :global(blockquote) {
+		margin-block: 1.85em;
+		padding: 0.95em 1.1em;
+		border: 0;
+		border-inline-start: 3px solid var(--accent);
+		border-radius: 0 0.4rem 0.4rem 0;
+		background: var(--bg-soft);
+		color: var(--ink);
+		font-size: 1.09em;
+		font-style: normal;
+		font-weight: 550;
+		line-height: 1.6;
+	}
+
+	.article-prose :global(blockquote > :last-child) {
+		margin-block-end: 0;
+	}
+
+	@media (min-width: 1080px) {
+		.article-body-layout.has-toc {
+			grid-template-columns: minmax(13rem, 16rem) minmax(0, 45rem);
+			align-items: stretch;
 		}
 
 		.toc-details {
 			position: sticky;
-			top: 96px;
-			max-height: calc(100vh - 120px);
+			inset-block-start: calc(var(--nav-height) + 1rem);
+			max-height: calc(100dvh - var(--nav-height) - 2rem);
 			overflow-y: auto;
 			overscroll-behavior: contain;
 			scrollbar-width: thin;
@@ -818,27 +853,20 @@
 	}
 
 	.toc-details {
+		padding: 0.25rem 0.85rem;
+		border-block: 1px solid var(--line);
 		background: var(--panel);
-		border: 1px solid var(--line);
-		border-radius: 14px;
-		padding: 1.15rem;
 	}
 
 	.toc-summary {
-		font-family: var(--font-display);
-		font-weight: 800;
-		font-size: 0.78rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--acid);
-		min-height: 36px;
-		margin: 0 0 0.85rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 1px solid var(--line);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.75rem;
+		gap: 0.55rem;
+		min-height: 48px;
+		color: var(--ink);
+		font-size: 0.9rem;
+		font-weight: 750;
 		cursor: pointer;
 		list-style: none;
 	}
@@ -849,257 +877,223 @@
 
 	.toc-summary :global(.toc-caret) {
 		flex-shrink: 0;
-		color: var(--muted);
-		transition: transform 0.2s ease;
 	}
 
 	.toc-details[open] .toc-summary :global(.toc-caret) {
 		transform: rotate(180deg);
 	}
 
-	@media (min-width: 768px) {
-		.toc-summary {
-			cursor: default;
-		}
-
-		.toc-summary :global(.toc-caret) {
-			display: none;
-		}
-
-		.toc-details > nav {
-			display: block;
-		}
-	}
-
-	@media (max-width: 767px) {
-		.toc-details:not([open]) .toc-summary {
-			margin-bottom: 0;
-			padding-bottom: 0;
-			border-bottom: none;
-		}
-	}
-
 	.toc-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
+		display: grid;
 		gap: 0.2rem;
-		font-size: 0.84rem;
+		list-style: none;
+		padding: 0.5rem 0;
+		margin: 0;
+		border-block-start: 1px solid var(--line);
 	}
 
-	@media (min-width: 768px) and (max-width: 1179px) {
+	@media (min-width: 768px) and (max-width: 1079px) {
 		.toc-list {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 0.4rem 1rem;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			column-gap: 0.6rem;
 		}
 	}
 
-	.toc-item a {
-		position: relative;
+	.toc-link {
+		display: flex;
+		align-items: center;
+		min-block-size: 44px;
+		padding: 0.4rem 0.6rem;
+		border-inline-start: 2px solid transparent;
 		color: var(--muted);
-		text-decoration: none;
-		display: block;
-		padding: 0.45rem 0.65rem 0.45rem 0.9rem;
-		border-left: 3px solid transparent;
-		border-radius: 0 8px 8px 0;
+		font-size: 0.88rem;
+		font-weight: 650;
 		line-height: 1.35;
-		font-weight: 600;
-		transition:
-			color 0.15s ease,
-			background 0.15s ease,
-			border-color 0.15s ease;
+		text-decoration: none;
 	}
 
-	.toc-item a::before {
-		content: '';
-		position: absolute;
-		inset: 0 auto 0 0;
-		width: 3px;
-		border-radius: 999px;
-		background: transparent;
-	}
-
-	.toc-item a[aria-current='location'],
-	.toc-item a.toc-link--active,
-	.toc-item a:hover {
-		color: var(--text);
-		border-left-color: var(--acid);
-		background: rgba(212, 168, 67, 0.08);
-		font-weight: 700;
-	}
-
-	.toc-item a[aria-current='location']::before,
-	.toc-item a.toc-link--active::before,
-	.toc-item a:hover::before {
-		background: var(--acid);
+	.toc-link[aria-current='location'],
+	.toc-link:hover {
+		border-inline-start-color: var(--accent);
+		background: var(--bg-soft);
+		color: var(--ink);
 	}
 
 	.toc-level-3 {
-		padding-inline-start: 0.85rem;
+		padding-inline-start: 0.6rem;
 	}
 
 	.toc-level-4,
 	.toc-level-5,
 	.toc-level-6 {
-		padding-inline-start: 1.5rem;
-	}
-
-	.article-main-column {
-		max-width: 900px;
-		width: 100%;
+		padding-inline-start: 1rem;
 	}
 
 	.article-service-cta {
-		margin: 3rem 0;
-		padding: 1.75rem;
-		background: var(--panel);
-		border: 1px solid var(--line-strong);
-		border-radius: 14px;
+		margin-block: clamp(2.75rem, 6vw, 4.5rem);
+		padding: clamp(1.35rem, 4vw, 2.6rem);
+		border-radius: 0.4rem;
+		background: radial-gradient(ellipse at 100% 0, #28344d, var(--bg) 80%);
+		color: var(--muted);
 	}
 
 	.article-service-cta h2 {
-		margin: 0.35rem 0 0.65rem;
-		font-family: var(--font-display);
-		font-size: 1.35rem;
+		margin: 0.45rem 0 0.65rem;
+		color: var(--text);
+		font-size: clamp(1.7rem, 1.2rem + 1.75vw, 2.65rem);
+		font-weight: 665;
+		letter-spacing: -0.045em;
+		line-height: 1.1;
+	}
+
+	.article-service-cta p {
+		max-width: 55ch;
+		margin: 0;
 	}
 
 	.service-cta-links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.75rem;
-		margin-top: 1.15rem;
+		gap: 0.55rem 1rem;
+		margin-block-start: 1rem;
 	}
 
-	.btn-cta-primary,
-	.btn-cta-secondary {
-		padding: 0.6rem 1.15rem;
-		border-radius: 8px;
-		font-weight: 700;
-		text-decoration: none;
-		font-size: 0.88rem;
-	}
-
-	.btn-cta-primary {
-		background: var(--acid);
-		color: var(--ink);
-	}
-
-	.btn-cta-secondary {
-		background: var(--bg-soft);
-		border: 1px solid var(--line-strong);
+	.service-cta-links a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25em;
+		min-block-size: 44px;
 		color: var(--text);
+		font-weight: 700;
+		text-underline-offset: 0.23em;
+	}
+
+	.service-cta-links a:hover {
+		color: var(--accent);
+	}
+
+	.service-cta-links a:focus-visible {
+		outline-color: var(--accent);
+	}
+
+	.service-cta-links .btn-cta-primary {
+		padding-inline: 0.9rem;
+		border-radius: 0.25rem;
+		background: var(--accent);
+		color: var(--on-accent);
+		text-decoration: none;
+	}
+
+	.service-cta-links .btn-cta-primary:hover {
+		background: var(--btn-acid-hover);
+		color: var(--on-accent);
 	}
 
 	.article-faq-section {
-		margin: 2.5rem 0;
+		margin-block: 2.5rem;
 	}
 
 	.faq-accordion {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		margin-top: 1rem;
+		margin-block-start: 1rem;
+		border-block-end: 1px solid var(--line);
 	}
 
 	.faq-details {
-		background: var(--panel);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		padding: 0.9rem 1.1rem;
+		padding: 0.35rem 0.4rem;
+		border-block-start: 1px solid var(--line);
 	}
 
 	.faq-summary {
+		min-height: 44px;
+		padding-block: 0.45rem;
+		color: var(--accent);
 		cursor: pointer;
 	}
 
 	.faq-question {
 		display: inline;
 		margin: 0;
-		font-family: var(--font-display);
-		font-size: 1rem;
-		font-weight: 700;
+		font-size: 1.08rem;
+		font-weight: 650;
 	}
 
 	.faq-answer p {
-		margin: 0.65rem 0 0;
+		margin: 0.15rem 0 0.8rem;
 		color: var(--muted);
 		line-height: 1.6;
 	}
 
 	.author-bio-box {
-		margin: 2.5rem 0;
-		padding: 1.35rem;
-		background: var(--panel);
-		border: 1px solid var(--line);
-		border-radius: 12px;
 		display: flex;
 		gap: 1rem;
 		align-items: flex-start;
+		margin-block: 2.5rem;
+		padding: clamp(1.15rem, 3vw, 1.85rem);
+		border-block-start: 1px solid var(--line);
+		background: var(--bg-soft);
 	}
 
 	.author-avatar {
-		width: 72px;
-		height: 72px;
-		aspect-ratio: 1 / 1;
+		width: clamp(2.5rem, 7vw, 4.5rem);
+		height: auto;
+		aspect-ratio: 1;
 		flex-shrink: 0;
 		border-radius: 50%;
 		object-fit: cover;
 	}
 
+	.author-bio-content {
+		min-width: 0;
+	}
+
 	.author-name {
 		margin: 0;
-		font-family: var(--font-display);
-		font-size: 1.1rem;
+		font-size: 1.4rem;
+		font-weight: 500;
 	}
 
 	.author-role,
-	.author-creds {
-		font-size: 0.82rem;
+	.author-creds,
+	.author-description {
 		color: var(--muted);
+		font-size: 0.95rem;
 	}
 
 	.author-description {
-		margin: 0.5rem 0;
-		font-size: 0.9rem;
-		color: var(--muted);
-		line-height: 1.55;
+		margin: 0.4rem 0 0;
+		line-height: 1.56;
 	}
 
 	.author-links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.85rem;
-		font-size: 0.82rem;
+		gap: 0.15rem 0.85rem;
+		font-size: 0.86rem;
 	}
 
 	.author-links a {
-		color: var(--acid);
-		font-weight: 600;
-		text-decoration: none;
 		display: inline-flex;
 		align-items: center;
-		min-height: 36px;
-		min-width: 24px;
+		min-height: 44px;
+		color: var(--acid);
+		font-weight: 650;
+		text-underline-offset: 0.24em;
 	}
 
 	.article-share-bar {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 0.65rem;
-		padding: 1rem 0;
-		border-top: 1px solid var(--line);
-		border-bottom: 1px solid var(--line);
-		margin: 2rem 0;
+		gap: 0.65rem 0.9rem;
+		margin-block: 2rem;
+		padding-block: 1rem;
+		border-block: 1px solid var(--line);
 	}
 
 	.share-label {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
 		color: var(--muted);
+		font-size: 0.9rem;
+		font-weight: 700;
 	}
 
 	.share-buttons {
@@ -1108,154 +1102,151 @@
 		gap: 0.45rem;
 	}
 
-	.share-btn {
+	.share-btn,
+	.unlock-submit-btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 38px;
-		padding: 0.45rem 0.9rem;
-		border-radius: 6px;
-		background: var(--panel);
+		min-height: 44px;
+		padding: 0.35rem 0.85rem;
 		border: 1px solid var(--line-strong);
+		border-radius: 0.25rem;
+		background: var(--panel);
 		color: var(--text);
-		font-family: var(--font-sans);
-		font-size: 0.8rem;
-		font-weight: 600;
+		font: inherit;
+		font-size: 0.9rem;
+		font-weight: 650;
 		text-decoration: none;
 		cursor: pointer;
 	}
 
 	.copy-status {
-		font-size: 0.8rem;
 		color: var(--acid);
+		font-size: 0.9rem;
 	}
 
 	.prev-next-nav {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.75rem), 1fr));
 		gap: 1rem;
-		margin: 2rem 0;
+		margin-block: 2rem;
 	}
 
 	.prev-next-card {
-		padding: 1rem;
-		background: var(--panel);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		text-decoration: none;
 		display: flex;
 		flex-direction: column;
-		gap: 0.3rem;
+		gap: 0.25rem;
+		padding: 1rem;
+		border-block-start: 1px solid var(--line);
+		background: var(--panel);
+		color: var(--ink);
+		text-decoration: none;
+	}
+
+	.prev-next-card:hover {
+		border-color: var(--accent);
+		color: var(--accent);
 	}
 
 	.pn-label {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		text-transform: uppercase;
 		color: var(--muted);
+		font-size: 0.83rem;
 	}
 
 	.pn-title {
-		color: var(--text);
-		font-size: 0.95rem;
+		font-family: var(--font-heading);
+		font-size: 1.16rem;
+		font-weight: 550;
+		line-height: 1.25;
 	}
 
 	.related-articles-section {
-		margin-top: 3.5rem;
-		padding-top: 2rem;
-		border-top: 1px solid var(--line);
-	}
-
-	.related-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-		gap: 1.35rem;
-		margin-top: 1.25rem;
+		gap: 1.25rem;
+		margin-block-start: clamp(2.5rem, 6vw, 5rem);
+		padding-block-start: 1.4rem;
+		border-block-start: 1px solid var(--line);
 	}
 
 	.back-to-blog-row {
-		margin-top: 2.5rem;
+		margin-block-start: 2.5rem;
 		text-align: center;
 	}
 
 	.back-to-blog-link {
 		display: inline-flex;
 		align-items: center;
-		min-height: 38px;
+		gap: 0.5em;
+		min-block-size: 44px;
 		color: var(--acid);
 		font-weight: 700;
-		text-decoration: none;
+		text-underline-offset: 0.24em;
+	}
+
+	.back-to-blog-link:hover {
+		color: var(--accent);
 	}
 
 	.locked-card {
-		max-width: 580px;
-		margin: 2rem auto;
-		padding: 2rem;
+		max-width: 43rem;
+		margin-inline: auto;
+		padding: clamp(1.25rem, 4vw, 2.6rem);
+		border-block-start: 1px solid var(--line);
 		background: var(--panel);
-		border: 1px solid var(--line-strong);
-		border-radius: 14px;
 	}
 
-	.locked-badge {
-		display: inline-block;
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		text-transform: uppercase;
-		color: var(--acid);
-		margin-bottom: 0.5rem;
+	.locked-card .article-h1 {
+		font-size: clamp(2rem, 1.25rem + 3.15vw, 3.65rem);
 	}
 
 	.locked-notice {
+		margin-block: 0 1.25rem;
 		color: var(--muted);
-		line-height: 1.55;
-		margin-bottom: 1.25rem;
 	}
 
 	.unlock-error {
+		margin-block-end: 1rem;
 		padding: 0.65rem 0.9rem;
-		margin-bottom: 1rem;
-		border-radius: 8px;
-		background: rgba(255, 121, 105, 0.14);
 		border: 1px solid var(--coral);
+		background: color-mix(in srgb, var(--coral) 7%, var(--panel));
 		color: var(--coral);
-		font-size: 0.86rem;
+		font-size: 0.92rem;
 	}
 
 	.unlock-label {
 		display: block;
-		font-size: 0.84rem;
-		font-weight: 600;
-		margin-bottom: 0.4rem;
+		margin-block-end: 0.4rem;
+		font-size: 0.93rem;
+		font-weight: 700;
 	}
 
 	.unlock-input-row {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 	}
 
 	.unlock-input {
-		flex: 1;
-		padding: 0.6rem 0.85rem;
-		border-radius: 8px;
-		background: var(--bg-soft);
+		flex: 1 1 12rem;
+		min-width: 0;
+		min-height: 48px;
+		padding-inline: 0.85rem;
 		border: 1px solid var(--line-strong);
+		border-radius: 0.25rem;
+		background: var(--panel);
 		color: var(--text);
-		font-family: var(--font-sans);
+		font: inherit;
 	}
 
 	.unlock-submit-btn {
-		padding: 0.6rem 1.15rem;
-		border-radius: 8px;
-		background: var(--acid);
-		color: var(--ink);
-		font-weight: 700;
-		border: none;
-		cursor: pointer;
+		min-height: 48px;
+		border-color: var(--ink);
+		background: var(--ink);
+		color: var(--panel);
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.reading-progress-fill {
-			transition: none;
-		}
+	.unlock-submit-btn:hover {
+		border-color: var(--accent);
+		background: var(--accent);
 	}
 </style>

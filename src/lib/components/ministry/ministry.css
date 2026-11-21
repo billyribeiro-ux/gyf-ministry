@@ -1,0 +1,108 @@
+main:has(> .ministry-masthead) {
+	background: var(--color-screen, #101116);
+	color: var(--color-soft, #b6bed0);
+}
+
+main:has(> .ministry-masthead) :is(.section-alt, .section-navy) {
+	background: #14161d;
+	border-block: 1px solid var(--color-line, #343946);
+}
+
+main:has(> .ministry-masthead) :is(h2, h3, h4, .form-field label) {
+	color: var(--color-strong, #f5f7fb);
+}
+
+main:has(> .ministry-masthead) h2 {
+	letter-spacing: -0.048em;
+	line-height: 1.08;
+}
+
+main:has(> .ministry-masthead) h3 {
+	letter-spacing: -0.032em;
+}
+
+main:has(> .ministry-masthead) :is(.section, .section-alt, .section-navy) .card {
+	background: var(--color-panel, #1a1d25);
+	border-color: var(--color-line, #343946);
+	box-shadow: none;
+	color: var(--color-soft, #b6bed0);
+}
+
+main:has(> .ministry-masthead) :is(input, select, textarea) {
+	color-scheme: dark;
+}
+
+main:has(> .ministry-masthead) .form-field :is(input, select, textarea) {
+	background: var(--color-screen, #101116);
+	border-color: #626c84;
+	color: var(--color-strong, #f5f7fb);
+}
+
+main:has(> .ministry-masthead) .form-field :is(input, textarea)::placeholder {
+	color: #a6aec2;
+}
+
+main:has(> .ministry-masthead) .form-field [aria-invalid='true'] {
+	border-color: #ff9d9b;
+}
+
+main:has(> .ministry-masthead) .form-field :is(input, select, textarea):focus {
+	outline-color: var(--color-accent, #adc8ff);
+	border-color: var(--color-accent, #adc8ff);
+}
+
+main:has(> .ministry-masthead) :focus-visible {
+	outline-color: var(--color-accent, #adc8ff);
+}
+
+main:has(> .ministry-masthead) :is(p, figcaption) a {
+	color: var(--color-accent, #adc8ff);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.btn.ministry-primary,
+.btn.ministry-secondary {
+	max-inline-size: 100%;
+	border-radius: 3px;
+	padding-inline: clamp(0.9rem, 3vw, 1.45rem);
+	overflow-wrap: anywhere;
+}
+
+.btn.ministry-primary {
+	background: var(--color-accent, #adc8ff);
+	border-color: var(--color-accent, #adc8ff);
+	color: var(--color-on-accent, #101b31);
+}
+
+.btn.ministry-primary:hover {
+	background: #d3e1ff;
+	border-color: #d3e1ff;
+	color: var(--color-on-accent, #101b31);
+}
+
+.btn.ministry-secondary {
+	background: transparent;
+	border-color: #78839b;
+	color: var(--color-strong, #f5f7fb);
+}
+
+.btn.ministry-secondary:hover {
+	background: #232d47;
+	border-color: var(--color-accent, #adc8ff);
+	color: var(--color-strong, #f5f7fb);
+}
+
+:is(.ministry-primary, .ministry-secondary) svg {
+	flex-shrink: 0;
+}
+
+.ministry-kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--color-accent, #adc8ff);
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+}

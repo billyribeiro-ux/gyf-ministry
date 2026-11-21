@@ -1,29 +1,45 @@
-/* Design System, Visual Direction & Layout Specs (Nov 2026 Standard) */
+/* Public ministry and studio design tokens */
+@import '@fontsource-variable/geist/wght.css';
+@import '@fontsource-variable/fraunces/standard.css';
+@import '@fontsource-variable/fraunces/standard-italic.css';
 @import '@fontsource-variable/montserrat/wght.css';
 @import '@fontsource-variable/montserrat/wght-italic.css';
 @import '@fontsource-variable/sofia-sans/wght.css';
 @import '@fontsource-variable/sofia-sans/wght-italic.css';
 
 :root {
-	/* Color Palette & Design Tokens */
-	--color-navy: #0f203c;
-	--color-navy-light: #172e54;
-	--color-navy-dark: #091529;
-	--color-parchment: #faf7f2;
-	--color-parchment-alt: #f3ede2;
-	--color-gold: #d4a843;
-	--color-gold-hover: #c1942e;
-	--color-gold-soft: rgba(212, 168, 67, 0.16);
-	--color-teal: #0fa4af;
-	--color-teal-text: #0a6b72;
-	--color-teal-soft: rgba(15, 164, 175, 0.12);
-	--color-emerald: #22b573;
-	--color-emerald-text: #0f6834;
-	--color-emerald-soft: rgba(34, 181, 115, 0.14);
-	--color-surface: #ffffff;
-	--color-border: #e6e0d6;
-	--color-text: #1e293b;
-	--color-text-muted: #4b5563;
+	--color-screen: #101116;
+	--color-panel: #1a1d25;
+	--color-raised: #222631;
+	--color-strong: #f5f7fb;
+	--color-soft: #b6bed0;
+	--color-line: #343946;
+	--color-accent: #adc8ff;
+	--color-accent-hover: #d3e0ff;
+	--color-on-accent: #101b31;
+
+	/* Existing public component aliases */
+	--color-navy: var(--color-strong);
+	--color-navy-light: var(--color-accent);
+	--color-navy-dark: #0a0b10;
+	--color-parchment: var(--color-screen);
+	--color-parchment-alt: #141720;
+	--color-gold: var(--color-accent);
+	--color-gold-hover: var(--color-accent-hover);
+	--color-gold-soft: rgb(173 200 255 / 13%);
+	--color-teal: var(--color-accent);
+	--color-teal-text: var(--color-accent);
+	--color-teal-soft: rgb(173 200 255 / 12%);
+	--color-emerald: #92d5b0;
+	--color-emerald-text: #b7e7cc;
+	--color-emerald-soft: rgb(146 213 176 / 13%);
+	--color-surface: var(--color-panel);
+	--color-rule: var(--color-line);
+	--color-border: var(--color-line);
+	--color-rust: var(--color-accent);
+	--color-rust-dark: var(--color-accent-hover);
+	--color-text: var(--color-strong);
+	--color-text-muted: var(--color-soft);
 
 	/* Blog & Admin Studio Tokens */
 	--bg: #0b0e12;
@@ -53,11 +69,10 @@
 	--status-amber-border: rgba(245, 158, 11, 0.42);
 
 	/* Typography */
-	--font-heading: 'Playfair Display', 'Fraunces', Georgia, serif;
-	--font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-	--font-display: 'Playfair Display', 'Montserrat Variable', Georgia, serif;
-	--font-sans:
-		'Plus Jakarta Sans', 'Sofia Sans Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-heading: 'Geist Variable', system-ui, sans-serif;
+	--font-body: 'Geist Variable', system-ui, sans-serif;
+	--font-display: 'Fraunces Variable', Georgia, serif;
+	--font-sans: 'Sofia Sans Variable', system-ui, sans-serif;
 	--font-mono: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
 	--tracking-h3: -0.01em;
 
@@ -65,11 +80,12 @@
 	--nav-height: 78px;
 	--container-max: 1240px;
 	--container-narrow: 860px;
-	--radius-sm: 10px;
-	--radius-md: 14px;
-	--radius-lg: 20px;
-	--shadow-card: 0 2px 6px rgba(15, 32, 60, 0.03), 0 14px 34px -12px rgba(15, 32, 60, 0.08);
-	--shadow-elevated: 0 6px 16px rgba(15, 32, 60, 0.06), 0 24px 48px -14px rgba(15, 32, 60, 0.18);
+	--photo-aspect: 4 / 3;
+	--radius-sm: 4px;
+	--radius-md: 7px;
+	--radius-lg: 10px;
+	--shadow-card: 0 12px 34px -25px rgb(0 0 0 / 50%);
+	--shadow-elevated: 0 18px 42px -24px rgb(0 0 0 / 65%);
 	--shadow-md: 0 8px 24px -6px rgba(0, 0, 0, 0.28);
 	--shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.45);
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -102,15 +118,15 @@ body {
 	background-color: var(--color-parchment);
 	color: var(--color-text);
 	font-family: var(--font-body);
-	font-size: 17px;
+	font-size: 16px;
 	line-height: 1.65;
 	overflow-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
 }
 
 :focus-visible {
-	outline: 2px solid var(--color-teal);
-	outline-offset: 3px;
+	outline: 2px solid var(--color-rust);
+	outline-offset: 4px;
 }
 
 .section-navy :focus-visible,
@@ -128,19 +144,19 @@ h5,
 h6 {
 	font-family: var(--font-heading);
 	color: var(--color-navy);
-	line-height: 1.22;
+	line-height: 1.13;
 	margin-top: 0;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.035em;
 }
 
 h1 {
 	font-size: clamp(2.15rem, 4vw, 3.35rem);
-	font-weight: 700;
+	font-weight: 600;
 }
 
 h2 {
 	font-size: clamp(1.75rem, 3vw, 2.5rem);
-	font-weight: 700;
+	font-weight: 600;
 }
 
 h3 {
@@ -196,7 +212,8 @@ a:hover {
 	font-size: 0.98rem;
 	padding: 0.85rem 1.55rem;
 	border-radius: var(--radius-sm);
-	border: 2px solid transparent;
+	min-height: 48px;
+	border: 1px solid transparent;
 	cursor: pointer;
 	text-decoration: none;
 	transition:
@@ -209,19 +226,15 @@ a:hover {
 
 .btn-gold {
 	background-color: var(--color-gold);
-	background-image: linear-gradient(180deg, #dcb24d 0%, var(--color-gold) 100%);
-	color: var(--color-navy);
-	border-color: var(--color-gold);
-	box-shadow: 0 6px 18px -4px rgba(212, 168, 67, 0.38);
+	color: var(--color-on-accent);
+	border-color: var(--color-accent);
 }
 
 .btn-gold:hover {
 	background-color: var(--color-gold-hover);
-	background-image: linear-gradient(180deg, var(--color-gold) 0%, var(--color-gold-hover) 100%);
 	border-color: var(--color-gold-hover);
-	color: var(--color-navy);
+	color: var(--color-on-accent);
 	transform: translateY(-2px);
-	box-shadow: 0 10px 24px -4px rgba(212, 168, 67, 0.5);
 }
 
 .btn-outline-light {
@@ -239,18 +252,16 @@ a:hover {
 }
 
 .btn-navy {
-	background-color: var(--color-navy);
-	color: #ffffff;
-	border-color: var(--color-navy);
-	box-shadow: 0 6px 18px -6px rgba(15, 32, 60, 0.32);
+	background: var(--color-accent);
+	color: var(--color-on-accent);
+	border-color: var(--color-accent);
 }
 
-.btn-navy:hover {
-	background-color: var(--color-navy-light);
-	border-color: var(--color-navy-light);
-	color: #ffffff;
-	transform: translateY(-2px);
-	box-shadow: 0 10px 24px -6px rgba(15, 32, 60, 0.42);
+.btn-navy:hover,
+.btn-navy:focus-visible {
+	background: var(--color-accent-hover);
+	color: var(--color-on-accent);
+	border-color: var(--color-accent-hover);
 }
 
 .btn:disabled,
@@ -273,7 +284,7 @@ a:hover {
 	border-radius: 999px;
 	background: var(--color-gold-soft);
 	color: var(--color-gold);
-	border: 1px solid rgba(212, 168, 67, 0.38);
+	border: 1px solid rgb(173 200 255 / 26%);
 	backdrop-filter: blur(6px);
 }
 
@@ -289,7 +300,7 @@ a:hover {
 	border-radius: 999px;
 	background: var(--color-teal-soft);
 	color: var(--color-teal-text);
-	border: 1px solid rgba(15, 164, 175, 0.28);
+	border: 1px solid rgb(173 200 255 / 25%);
 }
 
 .badge-emerald {
@@ -302,7 +313,7 @@ a:hover {
 	border-radius: 999px;
 	background: var(--color-emerald-soft);
 	color: var(--color-emerald-text);
-	border: 1px solid rgba(34, 181, 115, 0.3);
+	border: 1px solid rgb(173 200 255 / 25%);
 }
 
 /* Cards */
@@ -323,14 +334,10 @@ a:hover {
 .page-hero {
 	position: relative;
 	overflow: hidden;
-	background-color: var(--color-navy);
-	background-image:
-		radial-gradient(circle at 82% 18%, rgba(212, 168, 67, 0.14) 0%, transparent 45%),
-		radial-gradient(circle at 12% 85%, rgba(15, 164, 175, 0.12) 0%, transparent 45%),
-		linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-light) 100%);
+	background: var(--color-panel);
 	color: #ffffff;
 	padding: 4.75rem 0 4.25rem;
-	border-bottom: 4px solid var(--color-gold);
+	border-bottom: 1px solid var(--color-line);
 }
 
 .page-hero h1 {
@@ -363,15 +370,7 @@ a:hover {
 	position: relative;
 	overflow: hidden;
 	padding: 5rem 0;
-	background-color: var(--color-navy);
-	background-image:
-		radial-gradient(circle at 85% 20%, rgba(212, 168, 67, 0.12) 0%, transparent 48%),
-		linear-gradient(
-			135deg,
-			var(--color-navy-dark) 0%,
-			var(--color-navy) 60%,
-			var(--color-navy-light) 100%
-		);
+	background: var(--color-panel);
 	color: #ffffff;
 }
 
@@ -415,8 +414,9 @@ a:hover {
 	padding: 0.75rem 0.95rem;
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius-sm);
-	background: #ffffff;
+	background: var(--color-screen);
 	color: var(--color-text);
+	color-scheme: dark;
 }
 
 .form-field input[aria-invalid='true'],
@@ -435,7 +435,7 @@ a:hover {
 .alert-success {
 	background: var(--color-emerald-soft);
 	border: 1px solid var(--color-emerald);
-	color: #065f46;
+	color: var(--color-emerald-text);
 	padding: 1rem 1.25rem;
 	border-radius: var(--radius-sm);
 	font-weight: 600;
@@ -445,7 +445,7 @@ a:hover {
 .alert-error {
 	background: rgba(255, 121, 105, 0.14);
 	border: 1px solid #dc2626;
-	color: #991b1b;
+	color: #ffd0cd;
 	padding: 1rem 1.25rem;
 	border-radius: var(--radius-sm);
 	font-weight: 600;

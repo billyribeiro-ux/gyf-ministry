@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { resolve } from '$app/paths';
+	import { asset, resolve } from '$app/paths';
 	import { siteConfig } from '#lib/config/site.js';
-	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
+	import { cinematicPhotoReveal, gsapReveal } from '#lib/attachments/gsap.js';
+	import MinistryMasthead from '#lib/components/ministry/MinistryMasthead.svelte';
 	import type { PageProps } from './$types';
 	import {
-		IconCross,
 		IconSeedling,
 		IconHeartHandshake,
 		IconMicrophone,
-		IconCalendarHeart,
 		IconSparkles,
 		IconMountain,
 		IconBuildingChurch
@@ -35,70 +34,76 @@
 	/>
 </svelte:head>
 
-<section class="page-hero" {@attach gsapHeroEntrance}>
-	<div class="container">
-		<div class="eyebrow-badge" data-hero-item>
-			<IconCross size={16} />
-			<span>FOUNDER AUTHORITY &amp; 2014 ORIGIN STORY</span>
-		</div>
-		<h1 data-hero-item>A Calling to Serve: How a Mustard Seed of Faith Became a Movement</h1>
-		<p class="lead" data-hero-item>
-			Founded in 2014 by {siteConfig.founder.name}, Grow Your Faith Ministries bridges executive
-			stewardship with compassionate Christian outreach across Wolcott, Waterbury, New Haven, and
-			Hartford counties.
-		</p>
-	</div>
-</section>
+<MinistryMasthead
+	label="Our story"
+	title="Faith put to work."
+	photo={{
+		src: 'images/courtney-praying-clean.webp',
+		alt: 'Courtney Ribeiro with hands clasped in prayer outdoors',
+		width: 900,
+		height: 900,
+		small: { src: 'images/courtney-praying-540.webp', width: 540 },
+		caption: 'Courtney Ribeiro, founder of Grow Your Faith Ministries',
+		focus: 'center 46%'
+	}}
+	actions={[
+		{ href: '#our-story', label: 'Read our story' },
+		{ href: '#invite-courtney', label: 'Invite Courtney to speak' }
+	]}
+>
+	<p>
+		{siteConfig.founder.name} started Grow Your Faith Ministries in 2014 with a simple conviction. People
+		going through a hard season deserve someone who will listen, pray with them, and show up.
+	</p>
+</MinistryMasthead>
 
 <!-- 1. The Breaking Point That Sparked a Mission (2014) -->
-<section class="section">
-	<div
-		class="container about-grid"
-		{@attach gsapReveal({ selector: '.about-copy, .authority-bio-card', stagger: 0.14 })}
-	>
+<section class="section" id="our-story">
+	<div class="container about-grid" {@attach gsapReveal({ selector: '.about-copy' })}>
 		<div class="about-copy">
-			<span class="badge-teal">The 2014 Origin</span>
-			<h2>The Breaking Point That Sparked a Mission</h2>
+			<h2>It started with listening</h2>
 			<p>
-				There were so many people Courtney Ribeiro met that had lost all hope and their dreams had
-				been shattered. It broke her heart wide open to realize those individuals no longer had
-				faith in themselves to live the life that God truly had designed for them.
+				People Courtney met had stopped dreaming about what came next. Hardship had worn down their
+				confidence, and many wondered whether God still had a purpose for them.
 			</p>
-			<p>
+			<blockquote>
 				“I’ve always had a burning desire to minister to others and share the love of Christ with
 				everyone I meet,” Courtney shares. “It has always been my mission to see others achieve
 				success and live life to their fullest by utilizing their God-given talents.”
-			</p>
+			</blockquote>
 			<p>
-				In 2014, what began as one-on-one encouragement and holiday generosity became <strong
-					>Grow Your Faith Ministries</strong
-				>—a structured Christian outreach dedicated to helping people
-				<strong>restore their dreams, goals, and visions</strong> buried deep inside of them, and teaching
-				them that their lives have meaning and purpose far beyond their current circumstances.
+				She began with one-on-one encouragement and holiday outreach. That work grew into a ministry
+				that helps people rediscover their God-given gifts and take a next step.
 			</p>
 		</div>
 
-		<div class="card authority-bio-card">
-			<img
-				src="/images/courtney-praying-clean.webp"
-				width="900"
-				height="900"
-				alt="Courtney Ribeiro, Founder of Grow Your Faith Ministries and MWC Digital Agency"
-				class="bio-img"
-			/>
-			<div class="bio-body">
-				<span class="badge-emerald">Founder &amp; Ministry Leader</span>
-				<h3>Courtney Ribeiro</h3>
+		<figure class="authority-bio-card">
+			<div class="bio-frame" {@attach cinematicPhotoReveal}>
+				<img
+					src={asset('images/courtney-outreach-car-clean.webp')}
+					srcset="{asset('images/courtney-outreach-car-540w.webp')} 540w, {asset(
+						'images/courtney-outreach-car-clean.webp'
+					)} 900w"
+					sizes="(max-width: 640px) calc(100vw - 2.3rem), (max-width: 780px) calc(100vw - 3rem), (max-width: 1240px) 53vw, 650px"
+					width="900"
+					height="900"
+					alt="Courtney Ribeiro sitting in a car packed with outreach supplies"
+					class="bio-img"
+					loading="lazy"
+					decoding="async"
+					data-cinematic-image
+				/>
+			</div>
+			<figcaption class="bio-body">
 				<p>
-					Executive Founder of <strong>MWC Digital Agency</strong> (<a
+					Courtney also founded <a
 						href={siteConfig.founder.parentOrgUrl}
 						target="_blank"
-						rel="noopener noreferrer">mwcdigitalagency.com</a
-					>) and Christian mentor who has dedicated every Friday and every holiday season since 2014
-					to serving individuals and families in need across Connecticut.
+						rel="noopener noreferrer">MWC Digital Agency</a
+					> and has set aside Fridays and the holiday season for ministry since 2014.
 				</p>
-			</div>
-		</div>
+			</figcaption>
+		</figure>
 	</div>
 </section>
 
@@ -106,39 +111,34 @@
 <section class="section-alt">
 	<div class="container">
 		<div class="section-intro" {@attach gsapReveal({ y: 20 })}>
-			<span class="badge-teal"><IconCalendarHeart size={15} /> The Stewardship Rhythm</span>
-			<h2>Structuring Business Life to Honor God First</h2>
+			<h2>Time set aside for our neighbors</h2>
 			<p>
-				God’s word says that it takes faith the size of a mustard seed to move a mountain. Rather
-				than fitting ministry into leftover margins, Courtney structured her entire professional
-				calendar around two non-negotiable covenants:
+				Courtney sets aside Fridays and the holiday season for ministry. Here’s what that looks like
+				over the course of a year.
 			</p>
 		</div>
 
 		<div class="rhythm-grid" {@attach gsapReveal({ selector: '.card', stagger: 0.14 })}>
 			<div class="card">
-				<div class="rhythm-badge">20% of Every Workweek</div>
-				<h3>Every Friday Year-Round (52 Fridays/Yr)</h3>
+				<div class="rhythm-badge">Every week</div>
+				<h3>Friday Ministry</h3>
 				<p>
-					“God has so abundantly blessed me that I am now able to take Friday off every week to
-					minister to those in need.” Every Friday is protected from commercial agency work for
-					1-on-1 encouragement, prayer, and street/community outreach.
+					Courtney spends Fridays listening, praying, offering one-on-one encouragement, and
+					visiting Connecticut shelters and community centers.
 				</p>
-				<a href={resolve('/programs/friday-ministry')} class="btn btn-navy">
+				<a href={resolve('/programs/friday-ministry')} class="btn ministry-secondary">
 					Explore Friday Ministry →
 				</a>
 			</div>
 
 			<div class="card">
-				<div class="rhythm-badge gold">6 Weeks Every Winter (40 Days)</div>
-				<h3>Thanksgiving Through January 4 Sabbatical</h3>
+				<div class="rhythm-badge">Thanksgiving through January 4</div>
+				<h3>Holiday Outreach</h3>
 				<p>
-					“And, I take off from Thanksgiving to January 4 every year to serve in the community and
-					spend time with friends and family. I serve our community by doing Thanksgiving and
-					Christmas outreach… serving a hot holiday meal and purchasing coats, hats, mittens, and
-					blankets for all the children.”
+					From Thanksgiving through January 4, volunteers share hot meals and give children new
+					coats, hats, mittens, and blankets.
 				</p>
-				<a href={resolve('/programs/holiday-outreach')} class="btn btn-gold">
+				<a href={resolve('/programs/holiday-outreach')} class="btn ministry-primary">
 					View Holiday Outreach →
 				</a>
 			</div>
@@ -150,42 +150,36 @@
 <section class="section">
 	<div class="container">
 		<div class="section-intro" {@attach gsapReveal({ y: 20 })}>
-			<span class="badge-teal">Statement of Faith &amp; Core Values</span>
-			<h2>Four Pillars of Restorative Christian Leadership</h2>
+			<h2>What we believe</h2>
 		</div>
 
 		<div class="values-grid" {@attach gsapReveal({ selector: '.value-card', stagger: 0.1 })}>
 			<div class="card value-card">
 				<IconHeartHandshake size={28} />
-				<h3>Human Dignity</h3>
+				<h3>Everyone has dignity</h3>
 				<p>
-					Every person is created in the image of God with intrinsic worth, regardless of past
-					heartbreak, financial hardship, or temporary setbacks.
+					We believe every person is made in the image of God and deserves to be treated with care.
 				</p>
 			</div>
 			<div class="card value-card">
 				<IconBuildingChurch size={28} />
-				<h3>Tangible Love</h3>
+				<h3>Love takes action</h3>
 				<p>
-					Faith without works is incomplete. We pair spiritual encouragement with hot holiday meals
-					and brand-new winter coats, hats, mittens, and blankets.
+					We pray with our neighbors and help meet practical needs, from a hot holiday meal to a
+					winter coat that fits.
 				</p>
 			</div>
 			<div class="card value-card">
 				<IconSparkles size={28} />
-				<h3>Stewardship of Talents</h3>
+				<h3>Gifts are meant to be shared</h3>
 				<p>
-					We believe marketplace success and client partnerships are blessings meant to underwrite
-					generosity and unlock God-given gifts in others.
+					We use what God has given us to serve others and help them rediscover what they can offer.
 				</p>
 			</div>
 			<div class="card value-card">
 				<IconMountain size={28} />
-				<h3>Mustard-Seed Boldness</h3>
-				<p>
-					Anchored in Matthew 17:20, we teach individuals that even the smallest spark of
-					surrendered faith can move mountains of doubt.
-				</p>
+				<h3>Small faith can move mountains</h3>
+				<p>Matthew 17:20 reminds us that faith the size of a mustard seed can move mountains.</p>
 			</div>
 		</div>
 	</div>
@@ -198,36 +192,29 @@
 		{@attach gsapReveal({ selector: '.speaker-grid > *', stagger: 0.14 })}
 	>
 		<div>
-			<div class="eyebrow-badge">
-				<IconMicrophone size={16} />
-				<span>CHRISTIAN WOMEN IN LEADERSHIP &amp; KEYNOTE SPEAKING</span>
-			</div>
-			<h2>Invite Courtney Ribeiro to Speak</h2>
+			<h2>Invite Courtney to speak</h2>
 			<p>
-				Book Courtney for churches, women’s ministry conferences, Christian entrepreneurship
-				summits, and community leadership events on purpose-driven mentorship, marketplace
-				stewardship, and overcoming shattered dreams through faith.
+				Courtney speaks to churches, women’s ministries, business leaders, and community groups
+				about rebuilding after a setback and making room to serve.
 			</p>
 			<ul class="speaker-topics">
 				<li>
 					<IconSeedling size={18} />
-					<span><strong>Keynote 1:</strong> Mustard-Seed Faith for Mountain-Sized Setbacks</span>
+					<span>Holding on to faith through hard seasons</span>
 				</li>
 				<li>
 					<IconSeedling size={18} />
-					<span
-						><strong>Keynote 2:</strong> The Friday Covenant: Turning Marketplace Success into Ministry</span
-					>
+					<span>Making time to serve while running a business</span>
 				</li>
 				<li>
 					<IconSeedling size={18} />
-					<span><strong>Keynote 3:</strong> Unburying the Vision God Placed Inside You</span>
+					<span>Rediscovering the gifts God gave you</span>
 				</li>
 			</ul>
 		</div>
 
 		<div class="card speaker-form-card">
-			<h3>Speaker &amp; Media Booking Inquiry</h3>
+			<h3>Tell us about your event</h3>
 			{#if form?.success}
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
@@ -312,7 +299,7 @@
 				</div>
 				<button
 					type="submit"
-					class="btn btn-gold"
+					class="btn ministry-primary"
 					style="width: 100%"
 					disabled={isSubmitting}
 					aria-busy={isSubmitting}
@@ -328,47 +315,69 @@
 <style>
 	.about-grid {
 		display: grid;
-		grid-template-columns: 1.3fr 1fr;
-		gap: 3rem;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: clamp(2rem, 4vw, 4rem);
 		align-items: start;
 	}
 
 	.about-copy h2 {
-		margin-top: 0.75rem;
+		max-width: 16ch;
+	}
+
+	.about-copy > p,
+	.about-copy blockquote {
+		max-width: 62ch;
+	}
+
+	.about-copy blockquote {
+		margin: 1.8rem 0;
+		padding-left: 1.15rem;
+		border-left: 2px solid var(--color-accent, #adc8ff);
+		color: var(--color-strong, #f5f7fb);
+		font-family: var(--font-display);
+		font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+		line-height: 1.35;
 	}
 
 	.authority-bio-card {
-		padding: 0;
+		margin: 0;
+	}
+
+	.bio-frame {
+		width: 100%;
+		aspect-ratio: var(--photo-aspect, 4 / 3);
+		background: var(--color-panel);
 		overflow: hidden;
-		border: 2px solid rgba(212, 168, 67, 0.45);
-		box-shadow: var(--shadow-elevated);
 	}
 
 	.bio-img {
 		width: 100%;
-		height: auto;
-		aspect-ratio: 4 / 3.4;
+		height: 100%;
 		object-fit: cover;
-		object-position: center 20%;
+		object-position: center 50%;
 		display: block;
 	}
 
 	.bio-body {
-		padding: 1.75rem;
+		margin-top: 0.7rem;
+		padding-top: 0.55rem;
+		border-top: 1px solid var(--color-line, #343946);
+		font-size: 0.92rem;
+		color: var(--color-soft, #b6bed0);
 	}
 
-	.bio-body h3 {
-		margin: 0.65rem 0 0.5rem;
+	.bio-body p {
+		margin: 0;
+	}
+
+	.bio-body a {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 	}
 
 	.section-intro {
-		text-align: center;
-		max-width: 720px;
-		margin: 0 auto 2.75rem;
-	}
-
-	.section-intro h2 {
-		margin-top: 0.75rem;
+		max-width: 60ch;
+		margin: 0 0 2rem;
 	}
 
 	.rhythm-grid {
@@ -382,26 +391,38 @@
 		font-size: 0.8rem;
 		font-weight: 700;
 		text-transform: uppercase;
-		padding: 0.35rem 0.75rem;
-		border-radius: 999px;
-		background: var(--color-teal-soft);
-		color: var(--color-teal-text);
+		letter-spacing: 0.08em;
+		color: var(--color-accent, #adc8ff);
 		margin-bottom: 0.85rem;
 	}
 
-	.rhythm-badge.gold {
-		background: var(--color-gold-soft);
-		color: #825b0b;
+	.rhythm-grid > .card {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.rhythm-grid .btn {
+		margin-top: auto;
 	}
 
 	.values-grid {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		gap: 1.5rem;
+		gap: 1.25rem;
+	}
+
+	.value-card {
+		padding: 1.2rem 0;
+		border: 0;
+		border-top: 1px solid var(--color-line, #343946);
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
 	}
 
 	.value-card :global(svg) {
-		color: var(--color-gold);
+		color: var(--color-accent, #adc8ff);
 		margin-bottom: 0.75rem;
 	}
 
@@ -410,10 +431,6 @@
 		grid-template-columns: 1.15fr 1fr;
 		gap: 3rem;
 		align-items: center;
-	}
-
-	.speaker-grid h2 {
-		margin-top: 1rem;
 	}
 
 	.speaker-topics {
@@ -433,21 +450,20 @@
 	}
 
 	.speaker-topics li :global(svg) {
-		color: var(--color-gold);
+		color: var(--color-accent, #adc8ff);
 		flex-shrink: 0;
 	}
 
 	.speaker-form-card {
-		color: var(--color-text);
+		color: var(--color-soft, #b6bed0);
 	}
 
 	.speaker-form-card h3 {
-		color: var(--color-navy);
+		color: var(--color-strong, #f5f7fb);
 		margin-bottom: 1.25rem;
 	}
 
 	@media (max-width: 960px) {
-		.about-grid,
 		.rhythm-grid,
 		.speaker-grid {
 			grid-template-columns: 1fr;
@@ -455,6 +471,12 @@
 
 		.values-grid {
 			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (max-width: 780px) {
+		.about-grid {
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 

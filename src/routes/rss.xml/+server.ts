@@ -1,4 +1,5 @@
 import { and, inArray, isNull } from 'drizzle-orm';
+import { siteConfig } from '#lib/config/site.js';
 import { sanitizePostHtml } from '#lib/sanitize-post-html';
 import { ensureDbReady } from '#lib/server/db';
 import { media } from '#lib/server/db/schema';
@@ -43,6 +44,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		}
 
 		const xml = buildRssFeedXml({
+			origin: siteConfig.url,
 			items: postsPage.items.map((p) => {
 				const enc = p.coverImage ? mediaByUrl.get(p.coverImage) : undefined;
 				return {

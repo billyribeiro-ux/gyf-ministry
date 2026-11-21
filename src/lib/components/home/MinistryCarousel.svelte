@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { gsap } from 'gsap';
+	import { cinematicPhotoReveal } from '#lib/attachments/gsap.js';
 	import type { Attachment } from 'svelte/attachments';
 	import {
 		IconArrowsMaximize,
@@ -21,7 +22,7 @@
 	}
 
 	interface Props {
-		badgeText: string;
+		badgeText?: string;
 		badgeVariant?: 'teal' | 'emerald';
 		BadgeIcon?: Icon;
 		title: string;
@@ -70,15 +71,16 @@
 	let pointerSession: PointerSession | null = null;
 
 	const currentSlide = $derived(slides[activeIndex] ?? slides[0]);
+	const canAutoPlay = $derived(autoPlayMs > 0 && slides.length > 1 && !reducedMotion);
 	const isPaused = $derived(
-		isHovered ||
+		!canAutoPlay ||
+			isHovered ||
 			isFocusedWithin ||
 			isManuallyPaused ||
 			isDragging ||
 			isLightboxOpen ||
 			isDocumentHidden ||
-			!isInViewport ||
-			reducedMotion
+			!isInViewport
 	);
 
 	function setProgressVisual(ratio: number) {
@@ -92,7 +94,7 @@
 		if (slides.length <= 1) return;
 		const normalized = ((nextIndex % slides.length) + slides.length) % slides.length;
 		if (normalized === activeIndex) return;
-		previousSlide = currentSlide ?? null;
+		previousSlide ??= currentSlide ?? null;
 		direction = dir ?? (normalized > activeIndex ? 1 : -1);
 		activeIndex = normalized;
 		transitionKey += 1;
@@ -317,90 +319,49 @@
 		};
 	}
 
-	function animateSlide(key: number, dir: 1 | -1): Attachment<HTMLElement> {
+	function animateSlide(key: number, dir: 1 | -1, reduceMotion: boolean): Attachment<HTMLElement> {
 		return (node) => {
-			if (key === 0) return;
-
-			if (
-				typeof window === 'undefined' ||
-				window.matchMedia('(prefers-reduced-motion: reduce)').matches
-			) {
+			if (key === 0 || !node.querySelector('.stage-prev-foreground-wrap')) return;
+			if (reduceMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 				previousSlide = null;
 				return;
 			}
 
-			const prevBg = node.querySelector<HTMLElement>('[data-stage-prev-bg]');
-			const prevFg = node.querySelector<HTMLElement>('[data-stage-prev-fg]');
-			const bg = node.querySelector<HTMLElement>('[data-stage-bg]');
-			const fg = node.querySelector<HTMLElement>('[data-stage-fg]');
-			const caption = node.querySelector<HTMLElement>('[data-stage-caption]');
+			const foreground = node.querySelector<HTMLElement>('[data-stage-fg]');
+			const image = foreground?.querySelector('img');
+			if (!foreground || !image) return;
 
-			const tl = gsap.timeline({
-				defaults: { ease: 'expo.out' },
-				onComplete: () => {
-					previousSlide = null;
-				}
-			});
+			// Leave the previous sharp frame in place while the incoming image decodes.
+			const context = gsap.context(() => {
+				gsap.set(foreground, { opacity: 0 });
+			}, node);
+			let disposed = false;
 
-			if (prevBg) {
-				tl.fromTo(
-					prevBg,
-					{ autoAlpha: 1, scale: 1.14 },
-					{ autoAlpha: 0, scale: 1.08, duration: 0.62, ease: 'power3.out' },
-					0
-				);
+			function startTransition() {
+				if (disposed || key !== transitionKey) return;
+				context.add(() => {
+					const timeline = gsap.timeline({
+						defaults: { ease: 'power3.out' },
+						onComplete() {
+							context.revert();
+							if (key === transitionKey) previousSlide = null;
+						}
+					});
+
+					timeline.fromTo(
+						foreground,
+						{ opacity: 0, x: dir * 18, scale: 1.025 },
+						{ opacity: 1, x: 0, scale: 1, duration: 0.6 },
+						0
+					);
+				});
 			}
 
-			if (prevFg) {
-				tl.fromTo(
-					prevFg,
-					{ autoAlpha: 1, x: 0, scale: 1 },
-					{ autoAlpha: 0, x: -dir * 26, scale: 0.98, duration: 0.56, ease: 'power3.out' },
-					0
-				);
-			}
-
-			if (bg) {
-				tl.fromTo(
-					bg,
-					{ autoAlpha: 0.25, scale: 1.2 },
-					{ autoAlpha: 1, scale: 1.14, duration: 0.68 },
-					0
-				);
-			}
-
-			if (fg) {
-				tl.fromTo(
-					fg,
-					{ autoAlpha: 0, x: dir * 26, scale: 1.03 },
-					{
-						autoAlpha: 1,
-						x: 0,
-						scale: 1,
-						duration: 0.6,
-						clearProps: 'transform,opacity,visibility'
-					},
-					0
-				);
-			}
-
-			if (caption) {
-				tl.fromTo(
-					caption,
-					{ autoAlpha: 0, y: 8 },
-					{
-						autoAlpha: 1,
-						y: 0,
-						duration: 0.44,
-						ease: 'power3.out',
-						clearProps: 'transform,opacity,visibility'
-					},
-					0.06
-				);
-			}
+			void image.decode().then(startTransition, startTransition);
 
 			return () => {
-				tl.kill();
+				disposed = true;
+				context.revert();
 			};
 		};
 	}
@@ -490,7 +451,7 @@
 <svelte:document onvisibilitychange={handleVisibilityChange} />
 
 <section
-	class="card carousel-showcase"
+	class="carousel-showcase"
 	aria-roledescription="carousel"
 	aria-label={title}
 	data-active-index={activeIndex}
@@ -509,12 +470,14 @@
 
 	<div class="carousel-header">
 		<div class="carousel-title-group">
-			<span class={badgeVariant === 'emerald' ? 'badge-emerald' : 'badge-teal'}>
-				{#if BadgeIcon}
-					<BadgeIcon size={14} />
-				{/if}
-				<span>{badgeText}</span>
-			</span>
+			{#if badgeText}
+				<span class={badgeVariant === 'emerald' ? 'badge-emerald' : 'badge-teal'}>
+					{#if BadgeIcon}
+						<BadgeIcon size={14} />
+					{/if}
+					<span>{badgeText}</span>
+				</span>
+			{/if}
 			<h3>{title}</h3>
 			{#if subtitle}
 				<p class="carousel-subtitle">{subtitle}</p>
@@ -522,21 +485,23 @@
 		</div>
 
 		<div class="carousel-controls" role="group" aria-label="Slideshow controls">
-			<button
-				type="button"
-				class={['carousel-icon-btn', 'pause-btn', { 'is-paused': isManuallyPaused }]}
-				aria-label={isManuallyPaused ? 'Resume slideshow' : 'Pause slideshow'}
-				aria-pressed={isManuallyPaused}
-				title={isManuallyPaused ? 'Resume slideshow' : 'Pause slideshow'}
-				onclick={() => (isManuallyPaused = !isManuallyPaused)}
-				onkeydown={handleControlKeydown}
-			>
-				{#if isManuallyPaused}
-					<IconPlayerPlay size={15} />
-				{:else}
-					<IconPlayerPause size={15} />
-				{/if}
-			</button>
+			{#if canAutoPlay}
+				<button
+					type="button"
+					class={['carousel-icon-btn', 'pause-btn', { 'is-paused': isManuallyPaused }]}
+					aria-label={isManuallyPaused ? 'Resume slideshow' : 'Pause slideshow'}
+					aria-pressed={isManuallyPaused}
+					title={isManuallyPaused ? 'Resume slideshow' : 'Pause slideshow'}
+					onclick={() => (isManuallyPaused = !isManuallyPaused)}
+					onkeydown={handleControlKeydown}
+				>
+					{#if isManuallyPaused}
+						<IconPlayerPlay size={15} />
+					{:else}
+						<IconPlayerPause size={15} />
+					{/if}
+				</button>
+			{/if}
 
 			<div class="carousel-nav-pill">
 				<button
@@ -566,94 +531,49 @@
 		</div>
 	</div>
 
-	<!-- Dual-Layer Cinema Stage -->
-	<div
-		id="{uid}-stage"
-		role="group"
-		aria-roledescription="slide"
-		aria-label="Slide {activeIndex + 1} of {slides.length}"
-		class={[
-			'carousel-stage',
-			currentSlide?.aspect === 'portrait' ? 'stage-portrait' : 'stage-landscape',
-			{ 'is-dragging': isDragging }
-		]}
-		{@attach stageInteractions}
-		{@attach animateSlide(transitionKey, direction)}
-	>
-		<!-- Outgoing Crossfade Buffer Layer (Excluded from active test selectors) -->
-		{#if previousSlide}
-			<img
-				src={previousSlide.url}
-				alt=""
-				aria-hidden="true"
-				width={previousSlide.aspect === 'portrait' ? 900 : 1200}
-				height={previousSlide.aspect === 'portrait' ? 1200 : 900}
-				decoding="async"
-				class="stage-prev-ambient-bg"
-				data-stage-prev-bg
-			/>
-			<div class="stage-prev-foreground-wrap" aria-hidden="true" data-stage-prev-fg>
+	<figure class="carousel-figure">
+		<div
+			id="{uid}-stage"
+			role="group"
+			aria-roledescription="slide"
+			aria-label="Slide {activeIndex + 1} of {slides.length}"
+			class={['carousel-stage', { 'is-dragging': isDragging }]}
+			{@attach stageInteractions}
+			{@attach cinematicPhotoReveal}
+			{@attach animateSlide(transitionKey, direction, reducedMotion)}
+		>
+			{#if previousSlide}
+				<div class="stage-prev-foreground-wrap" aria-hidden="true">
+					<img
+						src={previousSlide.url}
+						alt=""
+						width={previousSlide.aspect === 'portrait' ? 900 : 1200}
+						height={previousSlide.aspect === 'portrait' ? 1200 : 900}
+						decoding="async"
+						style:object-position={previousSlide.focus ?? 'center 22%'}
+						class="stage-prev-img"
+					/>
+				</div>
+			{/if}
+
+			<div
+				class="stage-foreground-wrap"
+				style:transform={dragOffsetX !== 0 ? `translate3d(${dragOffsetX}px, 0, 0)` : undefined}
+				data-stage-fg
+			>
 				<img
-					src={previousSlide.url}
-					alt=""
-					width={previousSlide.aspect === 'portrait' ? 900 : 1200}
-					height={previousSlide.aspect === 'portrait' ? 1200 : 900}
+					src={currentSlide?.url}
+					alt={currentSlide?.alt}
+					width={currentSlide?.aspect === 'portrait' ? 900 : 1200}
+					height={currentSlide?.aspect === 'portrait' ? 1200 : 900}
+					loading="lazy"
 					decoding="async"
-					style:object-position={previousSlide.focus ?? 'center 22%'}
-					class={[
-						'stage-prev-img',
-						previousSlide.aspect === 'portrait' ? 'img-portrait' : 'img-landscape'
-					]}
+					draggable="false"
+					style:object-position={currentSlide?.focus ?? 'center 22%'}
+					class="stage-main-img"
+					data-cinematic-image
 				/>
 			</div>
-		{/if}
-
-		<!-- Layer 1: Blurred Ambient Color-Matched Backdrop -->
-		<img
-			src={currentSlide?.url}
-			alt=""
-			aria-hidden="true"
-			width={currentSlide?.aspect === 'portrait' ? 900 : 1200}
-			height={currentSlide?.aspect === 'portrait' ? 1200 : 900}
-			loading="lazy"
-			decoding="async"
-			class="stage-ambient-bg"
-			data-stage-bg
-		/>
-		<div class="stage-vignette" aria-hidden="true"></div>
-
-		<!-- Layer 2: Crisp Foreground Subject Frame -->
-		<div
-			class="stage-foreground-wrap"
-			style:transform={dragOffsetX !== 0 ? `translate3d(${dragOffsetX}px, 0, 0)` : undefined}
-			data-stage-fg
-		>
-			<img
-				src={currentSlide?.url}
-				alt={currentSlide?.alt}
-				width={currentSlide?.aspect === 'portrait' ? 900 : 1200}
-				height={currentSlide?.aspect === 'portrait' ? 1200 : 900}
-				loading="lazy"
-				decoding="async"
-				draggable="false"
-				style:object-position={currentSlide?.focus ?? 'center 22%'}
-				class={[
-					'stage-main-img',
-					currentSlide?.aspect === 'portrait' ? 'img-portrait' : 'img-landscape'
-				]}
-			/>
-		</div>
-
-		<!-- Layer 3: Floating Context Pill & Fullscreen Trigger -->
-		<div class="stage-top-bar">
-			{#if currentSlide?.tag}
-				<span class="stage-tag-pill">
-					<span class="tag-pill-dot" aria-hidden="true"></span>
-					<span>{currentSlide.tag}</span>
-				</span>
-			{:else}
-				<span></span>
-			{/if}
 
 			<button
 				type="button"
@@ -665,39 +585,37 @@
 			>
 				<IconArrowsMaximize size={16} stroke={2.2} />
 			</button>
-		</div>
 
-		<button
-			type="button"
-			class="stage-edge-btn prev"
-			aria-label="Previous slide"
-			onclick={prevSlide}
-			onkeydown={handleControlKeydown}
-		>
-			<IconChevronLeft size={20} stroke={2.3} />
-		</button>
-		<button
-			type="button"
-			class="stage-edge-btn next"
-			aria-label="Next slide"
-			onclick={nextSlide}
-			onkeydown={handleControlKeydown}
-		>
-			<IconChevronRight size={20} stroke={2.3} />
-		</button>
+			<button
+				type="button"
+				class="stage-edge-btn prev"
+				aria-label="Previous slide"
+				onclick={prevSlide}
+				onkeydown={handleControlKeydown}
+			>
+				<IconChevronLeft size={20} stroke={2.3} />
+			</button>
+			<button
+				type="button"
+				class="stage-edge-btn next"
+				aria-label="Next slide"
+				onclick={nextSlide}
+				onkeydown={handleControlKeydown}
+			>
+				<IconChevronRight size={20} stroke={2.3} />
+			</button>
 
-		<div class="stage-caption-bar" data-stage-caption>
-			<span class="stage-caption-index" aria-hidden="true">
-				{String(activeIndex + 1).padStart(2, '0')}
-			</span>
-			<p class="stage-caption-text">{currentSlide?.alt}</p>
+			{#if canAutoPlay}
+				<div class="stage-progress-track" aria-hidden="true">
+					<div class="stage-progress-fill" {@attach bindProgressFill}></div>
+				</div>
+			{/if}
 		</div>
-
-		<!-- Drift-Free Smooth Autoplay Progress Bar -->
-		<div class="stage-progress-track" aria-hidden="true">
-			<div class="stage-progress-fill" {@attach bindProgressFill}></div>
-		</div>
-	</div>
+		<figcaption class="carousel-caption">
+			{#if currentSlide?.tag}<strong>{currentSlide.tag}</strong>{/if}
+			<span>{currentSlide?.alt}</span>
+		</figcaption>
+	</figure>
 
 	<!-- Interactive Thumbnail Filmstrip (WAI-ARIA Roving Tabindex) -->
 	<div
@@ -747,12 +665,14 @@
 			<div class="lightbox-shell">
 				<header class="lightbox-header">
 					<div class="lightbox-title-wrap">
-						<span class={badgeVariant === 'emerald' ? 'badge-emerald' : 'badge-teal'}>
-							{#if BadgeIcon}
-								<BadgeIcon size={14} />
-							{/if}
-							<span>{badgeText}</span>
-						</span>
+						{#if badgeText}
+							<span class={badgeVariant === 'emerald' ? 'badge-emerald' : 'badge-teal'}>
+								{#if BadgeIcon}
+									<BadgeIcon size={14} />
+								{/if}
+								<span>{badgeText}</span>
+							</span>
+						{/if}
 						<span class="lightbox-title">{title}</span>
 					</div>
 
@@ -825,6 +745,7 @@
 								loading="lazy"
 								decoding="async"
 								class="lightbox-thumb-img"
+								style:object-position={slide.focus ?? 'center 25%'}
 							/>
 						</button>
 					{/each}
@@ -852,21 +773,20 @@
 		flex-direction: column;
 		min-width: 0;
 		max-width: 100%;
-		padding: 1.65rem;
-		border-radius: var(--radius-lg);
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		box-shadow: var(--shadow-card);
-		transition:
-			box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-			border-color 0.28s ease;
+		padding: 1rem 0 0;
+		border-top: 1px solid var(--color-rule);
 		outline: none;
 	}
 
-	.carousel-showcase:hover,
-	.carousel-showcase:focus-within {
-		box-shadow: var(--shadow-elevated);
-		border-color: rgba(212, 168, 67, 0.58);
+	@media (width > 750px) {
+		@supports (grid-template-rows: subgrid) {
+			:global(.gallery-grid) > .carousel-showcase {
+				display: grid;
+				grid-row: span 3;
+				grid-template-rows: subgrid;
+				row-gap: 0;
+			}
+		}
 	}
 
 	.carousel-header {
@@ -875,18 +795,18 @@
 		justify-content: space-between;
 		gap: 1rem;
 		margin-bottom: 1.15rem;
-		min-height: 4.65rem;
+		min-height: 2.9rem;
 		flex-wrap: wrap;
 	}
 
 	.carousel-title-group {
-		flex: 1 1 220px;
+		flex: 1 1 min(100%, 13.75rem);
 		min-width: 0;
 	}
 
 	.carousel-title-group h3 {
-		font-size: 1.28rem;
-		margin: 0.45rem 0 0;
+		font-size: clamp(1.25rem, 2.1vw, 1.65rem);
+		margin: 0.2rem 0 0;
 		color: var(--color-navy);
 		line-height: 1.25;
 		letter-spacing: var(--tracking-h3, -0.01em);
@@ -918,8 +838,8 @@
 	}
 
 	.carousel-icon-btn {
-		width: 34px;
-		height: 34px;
+		width: 40px;
+		height: 40px;
 		border-radius: 50%;
 		border: none;
 		background: transparent;
@@ -941,21 +861,25 @@
 	}
 
 	.carousel-icon-btn.pause-btn.is-paused {
-		background: rgba(212, 168, 67, 0.18);
+		background: rgba(173, 200, 255, 0.18);
 		border-color: var(--color-gold);
 		color: var(--color-navy);
 	}
 
 	.carousel-icon-btn:hover {
-		background: var(--color-gold);
-		color: var(--color-navy);
+		background: var(--color-accent);
+		color: var(--color-on-accent);
 		transform: scale(1.04);
 	}
 
 	.carousel-icon-btn:focus-visible,
+	.filmstrip-thumb:focus-visible {
+		outline: 2px solid var(--color-rust);
+		outline-offset: 2px;
+	}
+
 	.stage-edge-btn:focus-visible,
 	.stage-expand-btn:focus-visible,
-	.filmstrip-thumb:focus-visible,
 	.lightbox-close-btn:focus-visible,
 	.lightbox-nav-btn:focus-visible,
 	.lightbox-thumb-btn:focus-visible {
@@ -984,16 +908,13 @@
 		opacity: 0.55;
 	}
 
-	/* Dual-Layer Cinema Stage */
 	.carousel-stage {
 		position: relative;
 		width: 100%;
-		aspect-ratio: 4 / 3;
+		aspect-ratio: var(--photo-aspect, 4 / 3);
 		border-radius: var(--radius-md);
 		overflow: hidden;
-		background: #071122;
-		border: 1px solid rgba(15, 32, 60, 0.16);
-		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+		background: var(--color-navy-dark);
 		user-select: none;
 		touch-action: pan-y;
 		cursor: grab;
@@ -1001,39 +922,6 @@
 
 	.carousel-stage.is-dragging {
 		cursor: grabbing;
-	}
-
-	.stage-prev-ambient-bg,
-	.stage-ambient-bg {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		aspect-ratio: 4 / 3;
-		object-fit: cover;
-		filter: blur(28px) saturate(1.38) brightness(0.46);
-		transform: scale(1.14);
-		pointer-events: none;
-	}
-
-	.stage-prev-ambient-bg {
-		z-index: 0;
-	}
-
-	.stage-ambient-bg {
-		z-index: 1;
-	}
-
-	.stage-vignette {
-		position: absolute;
-		inset: 0;
-		z-index: 1;
-		background: radial-gradient(
-			circle at center,
-			rgba(7, 17, 34, 0.06) 0%,
-			rgba(7, 17, 34, 0.54) 100%
-		);
-		pointer-events: none;
 	}
 
 	.stage-prev-foreground-wrap,
@@ -1062,68 +950,19 @@
 		transition: none;
 	}
 
-	.stage-prev-img.img-landscape,
-	.stage-main-img.img-landscape {
+	.stage-prev-img,
+	.stage-main-img {
+		display: block;
 		width: 100%;
 		height: 100%;
-		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		display: block;
-	}
-
-	.stage-prev-img.img-portrait,
-	.stage-main-img.img-portrait {
-		width: auto;
-		height: 100%;
-		max-width: 100%;
-		aspect-ratio: 3 / 4;
-		object-fit: contain;
-		display: block;
-		border-left: 1px solid rgba(255, 255, 255, 0.2);
-		border-right: 1px solid rgba(255, 255, 255, 0.2);
-		box-shadow: 0 20px 46px rgba(0, 0, 0, 0.6);
-	}
-
-	.stage-top-bar {
-		position: absolute;
-		top: 0.85rem;
-		left: 0.85rem;
-		right: 0.85rem;
-		z-index: 5;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-		pointer-events: none;
-	}
-
-	.stage-tag-pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.42rem;
-		padding: 0.34rem 0.82rem;
-		border-radius: 999px;
-		font-size: 0.74rem;
-		font-weight: 700;
-		letter-spacing: 0.025em;
-		background: rgba(7, 17, 34, 0.84);
-		color: #ffffff;
-		border: 1px solid rgba(212, 168, 67, 0.48);
-		backdrop-filter: blur(10px);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
-	}
-
-	.tag-pill-dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--color-gold);
-		box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.28);
-		flex-shrink: 0;
 	}
 
 	.stage-expand-btn {
-		pointer-events: auto;
+		position: absolute;
+		inset-block-start: 0.85rem;
+		inset-inline-end: 0.85rem;
+		z-index: 5;
 		width: 36px;
 		height: 36px;
 		border-radius: 50%;
@@ -1151,9 +990,9 @@
 	}
 
 	.stage-expand-btn:hover {
-		background: var(--color-gold);
-		border-color: var(--color-gold);
-		color: var(--color-navy);
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: var(--color-on-accent);
 		transform: scale(1.06);
 	}
 
@@ -1197,51 +1036,29 @@
 	}
 
 	.stage-edge-btn:hover {
-		background: var(--color-gold);
-		border-color: var(--color-gold);
-		color: var(--color-navy);
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: var(--color-on-accent);
 		transform: translateY(-50%) scale(1.06);
 	}
 
-	.stage-caption-bar {
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 4;
-		display: flex;
-		align-items: center;
-		gap: 0.65rem;
-		padding: 2.1rem 1rem 0.95rem;
-		background: linear-gradient(
-			180deg,
-			rgba(7, 17, 34, 0) 0%,
-			rgba(7, 17, 34, 0.76) 46%,
-			rgba(7, 17, 34, 0.96) 100%
-		);
-		pointer-events: none;
-	}
-
-	.stage-caption-index {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		font-weight: 700;
-		font-variant-numeric: tabular-nums;
-		color: var(--color-gold);
-		background: rgba(212, 168, 67, 0.16);
-		border: 1px solid rgba(212, 168, 67, 0.42);
-		border-radius: 6px;
-		padding: 0.14rem 0.44rem;
-		flex-shrink: 0;
-	}
-
-	.stage-caption-text {
+	.carousel-figure {
 		margin: 0;
-		font-size: 0.86rem;
-		line-height: 1.45;
-		color: rgba(255, 255, 255, 0.96);
-		font-weight: 500;
-		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+	}
+
+	.carousel-caption {
+		display: grid;
+		align-content: start;
+		gap: 0.1rem;
+		margin-top: 0.55rem;
+		min-height: 2.65em;
+		color: var(--color-text-muted);
+		font-size: 0.94rem;
+		line-height: 1.4;
+	}
+
+	.carousel-caption strong {
+		color: var(--color-navy);
 	}
 
 	.stage-progress-track {
@@ -1302,7 +1119,7 @@
 	.filmstrip-thumb.active {
 		opacity: 1;
 		border-color: var(--color-gold);
-		box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.28);
+		box-shadow: 0 0 0 2px rgba(173, 200, 255, 0.28);
 	}
 
 	.filmstrip-thumb img {
@@ -1319,9 +1136,9 @@
 		max-height: 92vh;
 		margin: auto;
 		padding: 0;
-		border: 1px solid rgba(212, 168, 67, 0.38);
+		border: 1px solid rgba(173, 200, 255, 0.38);
 		border-radius: var(--radius-lg);
-		background: #071122;
+		background: var(--color-screen);
 		color: #ffffff;
 		box-shadow: 0 28px 80px rgba(0, 0, 0, 0.8);
 		overflow: hidden;
@@ -1336,6 +1153,8 @@
 		display: flex;
 		flex-direction: column;
 		max-height: 92vh;
+		overflow-y: auto;
+		overscroll-behavior: contain;
 		padding: 1.25rem 1.5rem 1.35rem;
 		gap: 1rem;
 	}
@@ -1395,9 +1214,9 @@
 
 	.lightbox-close-btn:hover,
 	.lightbox-nav-btn:hover {
-		background: var(--color-gold);
-		border-color: var(--color-gold);
-		color: var(--color-navy);
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: var(--color-on-accent);
 	}
 
 	.lightbox-stage {
@@ -1407,6 +1226,7 @@
 		align-items: center;
 		gap: 1rem;
 		min-height: 0;
+		flex-shrink: 0;
 	}
 
 	.lightbox-figure {
@@ -1451,7 +1271,7 @@
 	.lightbox-thumbs {
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		justify-content: safe center;
 		gap: 0.5rem;
 		overflow-x: auto;
 		padding-bottom: 0.2rem;
@@ -1464,7 +1284,7 @@
 		border-radius: 6px;
 		overflow: hidden;
 		border: 2px solid transparent;
-		background: #091529;
+		background: var(--color-screen);
 		opacity: 0.58;
 		cursor: pointer;
 		flex-shrink: 0;
@@ -1487,10 +1307,6 @@
 	}
 
 	@media (max-width: 640px) {
-		.carousel-showcase {
-			padding: 1.15rem;
-		}
-
 		.carousel-header {
 			min-height: 0;
 		}
@@ -1518,6 +1334,27 @@
 
 		.lightbox-shell {
 			padding: 1rem;
+		}
+
+		.lightbox-stage {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.6rem;
+		}
+
+		.lightbox-figure {
+			grid-area: 1 / 1 / 2 / -1;
+		}
+		.lightbox-img {
+			max-height: 50svh;
+		}
+		.lightbox-nav-btn {
+			grid-row: 2;
+		}
+		.lightbox-nav-btn.prev {
+			justify-self: start;
+		}
+		.lightbox-nav-btn.next {
+			justify-self: end;
 		}
 
 		.lightbox-close-btn,

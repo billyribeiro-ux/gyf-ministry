@@ -1,881 +1,699 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { cinematicPhotoReveal, gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
 	import { siteConfig } from '#lib/config/site.js';
-	import { gsapHeroEntrance, gsapReveal, gsapCounter } from '#lib/attachments/gsap.js';
 	import BlogSection from '#lib/components/home/BlogSection.svelte';
 	import MinistryCarousel from '#lib/components/home/MinistryCarousel.svelte';
-	import type { PageProps } from './$types';
 	import {
-		IconSeedling,
-		IconSoup,
-		IconJacket,
-		IconHeartHandshake,
-		IconPray,
-		IconMountain,
+		IconArrowDown,
 		IconArrowRight,
-		IconSparkles,
+		IconArrowUpRight,
 		IconMapPin,
-		IconCheck,
-		IconShieldCheck,
-		IconCalendarHeart
+		IconSeedling
 	} from '@tabler/icons-svelte';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	const slides1 = siteConfig.legacyPhotos.carousel1;
-	const slides2 = siteConfig.legacyPhotos.carousel2;
+	const programs = [
+		{
+			href: '/programs/friday-ministry',
+			rhythm: 'PRAYER & MENTORSHIP',
+			title: 'Friday Ministry',
+			description:
+				'We set aside Fridays to listen, pray, and talk one-on-one. You can ask for prayer or request a follow-up call.',
+			image: '/images/gallery/carousel1-5.webp',
+			compactImage: '/images/gallery/carousel1-5-560w.webp 560w',
+			width: 1200,
+			height: 900,
+			focus: 'center 30%',
+			action: 'How Friday ministry works'
+		},
+		{
+			href: '/programs/holiday-outreach',
+			rhythm: 'MEALS & WINTER GEAR',
+			title: 'Holiday Outreach',
+			description:
+				'From Thanksgiving through January 4, we serve hot meals and provide coats, hats, mittens, and blankets for local children.',
+			image: '/images/gallery/carousel1-2.webp',
+			compactImage: '/images/gallery/carousel1-2-560w.webp 560w',
+			width: 1200,
+			height: 900,
+			focus: 'center 50%',
+			action: 'Find help or give'
+		},
+		{
+			href: '/restore-your-purpose',
+			rhythm: 'SCRIPTURE & REFLECTION',
+			title: 'Restore Your Purpose',
+			description:
+				'Revisit a dream you set aside. Start with seven days of Scripture and reflection, then choose one step you can take this week.',
+			image: '/images/courtney-outreach-car-clean.webp',
+			compactImage: '/images/courtney-outreach-car-540w.webp 540w',
+			width: 900,
+			height: 900,
+			focus: 'center 24%',
+			action: 'Find the free guide'
+		}
+	] as const;
+
+	const programPhotoSizes =
+		'(max-width: 750px) calc(100vw - 2.3rem), (max-width: 1240px) 29vw, 370px';
+	const mission = siteConfig.routes[0];
 </script>
 
 <svelte:head>
-	<title>Grow Your Faith Ministries | Restoring Hope &amp; Purpose (CT)</title>
-	<meta
-		name="description"
-		content="Founded by Courtney Ribeiro in 2014, Grow Your Faith Ministries restores shattered dreams through weekly Friday mentorship and holiday community outreach."
-	/>
-	<meta property="og:title" content="Grow Your Faith Ministries | Restoring Hope & Purpose (CT)" />
-	<meta
-		property="og:description"
-		content="Founded by Courtney Ribeiro in 2014, Grow Your Faith Ministries restores shattered dreams through weekly Friday mentorship and holiday community outreach."
-	/>
+	<title>{mission.title}</title>
+	<meta name="description" content={mission.description} />
+	<meta property="og:title" content={mission.title} />
+	<meta property="og:description" content={mission.description} />
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<!-- 2. Hero Section (Split 60/40 Layout on Deep Navy #0F203C) -->
-<section class="hero-section" {@attach gsapHeroEntrance}>
+<section class="home-hero" aria-labelledby="home-title" {@attach gsapHeroEntrance}>
+	<figure class="hero-visual">
+		<img
+			src="/images/courtney-editorial-960w.webp"
+			srcset="/images/courtney-editorial-640w.webp 640w, /images/courtney-editorial-960w.webp 960w, /images/courtney-editorial-1536w.webp 1536w"
+			sizes="(max-width: 760px) 100vw, 91vw"
+			width="1536"
+			height="1024"
+			fetchpriority="high"
+			alt="Courtney Ribeiro with her hands clasped in prayer outdoors"
+		/>
+		<figcaption>Courtney Ribeiro, founder <span>·</span> Retouched archival portrait</figcaption>
+	</figure>
 	<div class="container hero-grid">
 		<div class="hero-copy">
-			<div class="eyebrow-badge" data-hero-item>
-				<IconSeedling size={16} />
-				<span>HELPING INDIVIDUALS FIND HOPE SINCE 2014</span>
-			</div>
-
-			<h1 data-hero-item>Restoring Shattered Dreams. Reawakening God-Given Purpose.</h1>
-
-			<p class="hero-subheadline" data-hero-item>
-				Too many people walk through life believing their best days are behind them. At Grow Your
-				Faith Ministries, we step into the gap—combining weekly one-on-one faith restoration with
-				tangible community outreach to prove that your life has meaning far beyond your current
-				circumstances.
+			<p class="eyebrow" data-hero-item>Faith and practical care in Connecticut</p>
+			<h1 id="home-title" data-hero-item>
+				Hope is <span>still <em>ahead.</em></span>
+			</h1>
+			<p class="hero-intro" data-hero-item>
+				When life makes it hard to see what comes next, you can start with a conversation. We offer
+				prayer, Friday mentorship, and practical help for Connecticut families.
 			</p>
-
-			<div class="hero-ctas" data-hero-item>
-				<a href={resolve('/partner')} class="btn btn-gold">
-					<IconHeartHandshake size={20} />
-					<span>Partner With Our Mission</span>
+			<div class="hero-actions" data-hero-item>
+				<a href={resolve('/prayer-and-support')} class="btn action-primary">
+					Ask for prayer <IconArrowUpRight size={18} aria-hidden="true" />
 				</a>
-				<a href={resolve('/prayer-and-support')} class="btn btn-outline-light">
-					<IconPray size={20} />
-					<span>Request Prayer or Mentorship</span>
+				<a href="#our-work" class="text-link">
+					Find support <IconArrowDown size={17} aria-hidden="true" />
 				</a>
 			</div>
+			<p class="hero-location" data-hero-item>
+				<IconMapPin size={16} stroke={1.8} aria-hidden="true" /> Serving Greater Waterbury and Central
+				Connecticut since {siteConfig.foundingYear}
+			</p>
+		</div>
+	</div>
+</section>
 
-			<div class="hero-local-anchor" data-hero-item>
-				<IconMapPin size={17} />
-				<span>
-					Serving Wolcott, Waterbury, New Haven &amp; Hartford Counties in Connecticut + National
-					Faith Mentorship
-				</span>
+<section id="our-work" class="section work-section" aria-labelledby="work-title">
+	<div class="container">
+		<div class="section-mast" {@attach gsapReveal({ y: 14 })}>
+			<div>
+				<p class="eyebrow">Our ministry</p>
+				<h2 id="work-title">Ways we can help</h2>
 			</div>
+			<p>
+				Reach out for prayer, find seasonal help for your family, or take a first step toward
+				something you feel called to do.
+			</p>
 		</div>
 
-		<div class="hero-visual" data-hero-visual>
-			<div class="hero-image-frame">
-				<div class="hero-floating-pill" data-hero-float>
-					<span class="pill-dot" aria-hidden="true"></span>
-					<span>Founded by Courtney Ribeiro • Est. 2014</span>
-				</div>
-				<img
-					src="/images/gyfm-holiday-outreach-hero.webp"
-					width="1200"
-					height="675"
-					fetchpriority="high"
-					alt="Courtney Ribeiro serving in the Connecticut community through Grow Your Faith Ministries"
-					class="hero-img"
-				/>
-				<div class="scripture-overlay">
-					<div class="scripture-icon">
-						<IconMountain size={20} />
+		<div class="work-grid" {@attach gsapReveal({ selector: '.work-card', stagger: 0.07, y: 13 })}>
+			{#each programs as program (program.href)}
+				<article class="work-card">
+					<div class="work-photo" {@attach cinematicPhotoReveal}>
+						<img
+							src={program.image}
+							srcset={`${program.compactImage}, ${program.image} ${program.width}w`}
+							sizes={programPhotoSizes}
+							alt=""
+							width={program.width}
+							height={program.height}
+							loading="lazy"
+							decoding="async"
+							style:object-position={program.focus}
+						/>
 					</div>
-					<blockquote>
-						“Faith the size of a mustard seed moves mountains.”
-						<cite>— Matthew 17:20</cite>
-					</blockquote>
-				</div>
-			</div>
+					<p class="work-rhythm">{program.rhythm}</p>
+					<h3><a href={resolve(program.href)}>{program.title}</a></h3>
+					<p class="work-description">{program.description}</p>
+					<span class="work-action" aria-hidden="true">
+						{program.action}
+						<IconArrowUpRight size={18} />
+					</span>
+				</article>
+			{/each}
 		</div>
 	</div>
 </section>
 
-<!-- 3. Quantified Impact Bar (4-Column Metric Strip) -->
-<section
-	class="impact-strip"
-	aria-label="Quantified Ministry Impact Ledger"
-	{@attach gsapReveal({ selector: '.impact-item', stagger: 0.1, y: 18 })}
->
-	<div class="container impact-grid">
-		<div class="impact-item">
-			<span class="impact-number" {@attach gsapCounter({ start: 2002, end: 2014 })}>2014</span>
-			<span class="impact-label">Year Founded &amp; Serving Continuously (12+ Years Active)</span>
-		</div>
-		<div class="impact-item">
-			<span
-				class="impact-number"
-				{@attach gsapCounter({ start: 0, end: 52, suffix: ' Fridays/Yr' })}>52 Fridays/Yr</span
-			>
-			<span class="impact-label">Dedicated Strictly to Ministry &amp; Mentorship (500+ Served)</span
-			>
-		</div>
-		<div class="impact-item">
-			<span class="impact-number" {@attach gsapCounter({ start: 0, end: 40, suffix: ' Days' })}
-				>40 Days</span
-			>
-			<span class="impact-label"
-				>Annual Holiday Sabbatical (Thanksgiving – Jan 4) for Full-Time Outreach</span
-			>
-		</div>
-		<div class="impact-item">
-			<span class="impact-number" {@attach gsapCounter({ start: 0, end: 100, suffix: '%' })}
-				>100%</span
-			>
-			<span class="impact-label"
-				>Of Outreach Contributions Go Directly to Meals &amp; Children’s Winter Gear</span
-			>
-		</div>
-	</div>
-</section>
-
-<!-- 4. The Heart of the Mission (Editorial Story Block) -->
-<section
-	class="section"
-	{@attach gsapReveal({ selector: '[data-story-reveal]', stagger: 0.14, y: 24 })}
->
-	<div class="container story-grid">
-		<div class="story-media" data-story-reveal>
-			<div class="story-portrait-frame">
+<section class="section story-section" aria-labelledby="story-title">
+	<div class="container story-grid" {@attach gsapReveal({ selector: '[data-story]', y: 16 })}>
+		<figure data-story>
+			<div class="story-photo" {@attach cinematicPhotoReveal}>
 				<img
-					src="/images/courtney-outreach-car-clean.webp"
-					width="900"
-					height="855"
+					src="/images/gallery/carousel1-6.webp"
+					srcset="/images/gallery/carousel1-6-640w.webp 640w, /images/gallery/carousel1-6.webp 1200w"
+					sizes="(max-width: 750px) calc(100vw - 2.3rem), (max-width: 1240px) 45vw, 560px"
+					width="1200"
+					height="900"
+					alt="Grow Your Faith Ministries community members gathered together"
 					loading="lazy"
 					decoding="async"
-					alt="Grow Your Faith Ministries founder Courtney Ribeiro preparing community outreach supplies"
-					class="story-img"
 				/>
-				<div class="story-badge-overlay">
-					<IconSeedling size={16} />
-					<span>Faith in Word &amp; Action • Since 2014</span>
-				</div>
 			</div>
-			<div class="story-caption">
-				<i>With the help and support of clients like you</i> — restoring hope across Connecticut since
-				2014.
-			</div>
-		</div>
-
-		<div class="story-content" data-story-reveal>
-			<span class="badge-teal">
-				<IconSparkles size={15} />
-				<span>The Heart of the Mission</span>
-			</span>
-			<h2 class="story-heading">When Dreams Are Buried, We Help Bring Them Back to Life</h2>
-
-			<blockquote class="founder-quote">
-				<p>
-					“Over the years, I met countless individuals who had lost all hope. Their dreams had been
-					shattered by life’s circumstances, and it broke my heart wide open to realize they no
-					longer had faith in themselves to live the life God truly designed for them.
-				</p>
-				<p>
-					Grow Your Faith Ministries was born in 2014 from a burning desire to share the love of
-					Christ in both word and action. Our mission is simple but urgent: to help you uncover the
-					visions buried deep inside you, ignite your God-given talents, and walk boldly into your
-					calling.”
-				</p>
-				<footer>— <strong>Courtney Ribeiro</strong>, Founder</footer>
-			</blockquote>
-
-			<div class="legacy-highlight">
-				<p>
-					Grow Your Faith Ministries’ main goal is to help people <strong
-						>restore their dreams, goals, and visions</strong
-					>
-					that are buried deep inside of them; to bring them back to life and to
-					<strong
-						>teach them that their lives have meaning and purpose far beyond their current
-						circumstances</strong
-					>.
-				</p>
-			</div>
+			<figcaption>Grow Your Faith Ministries in the community</figcaption>
+		</figure>
+		<div class="story-copy" data-story>
+			<p class="eyebrow">Our story</p>
+			<h2 id="story-title">It started with listening.</h2>
+			<p>
+				Courtney Ribeiro founded Grow Your Faith Ministries in 2014 after meeting people who could
+				no longer see a future for the dreams they once had. She set Fridays aside to listen and
+				pray with people, and the holiday season to serve families across Connecticut.
+			</p>
+			<p>
+				Some people come to us for a meal or a coat. Others are looking for someone to talk with
+				about faith and purpose. Both are part of how we serve.
+			</p>
+			<a href={resolve('/about')} class="text-link">
+				Read Courtney’s story <IconArrowUpRight size={17} aria-hidden="true" />
+			</a>
 		</div>
 	</div>
 </section>
 
-<!-- 5. Three Core Ministry Pillars (3-Card Grid) -->
-<section class="section-alt">
-	<div class="container">
-		<div class="section-header" {@attach gsapReveal({ y: 20 })}>
-			<span class="badge-teal">Three Core Ministry Pillars</span>
-			<h2>Faith in Word and Action Across Every Season</h2>
-			<p>
-				Every pillar of Grow Your Faith Ministries is designed to meet individuals right where they
-				are—spiritually, emotionally, and practically.
-			</p>
-		</div>
-
-		<div
-			class="pillars-grid"
-			{@attach gsapReveal({ selector: '.pillar-card', stagger: 0.12, y: 26 })}
-		>
-			<!-- Card 1 -->
-			<article class="card pillar-card">
-				<div>
-					<div class="pillar-top">
-						<span class="pillar-icon">
-							<IconCalendarHeart size={26} />
-						</span>
-						<span class="badge-teal">Every Friday Year-Round</span>
-					</div>
-					<h3>Weekly Friday Ministry</h3>
-					<p>
-						God has abundantly blessed our work so that every Friday is set aside exclusively to
-						minister to those in need—offering spiritual encouragement, life-purpose coaching, and
-						direct community care.
-					</p>
-				</div>
-				<a href={resolve('/programs/friday-ministry')} class="pillar-link">
-					<span>Explore Friday Ministry</span>
-					<IconArrowRight size={18} />
-				</a>
-			</article>
-
-			<!-- Card 2 -->
-			<article class="card pillar-card featured-pillar">
-				<div>
-					<div class="pillar-top">
-						<span class="pillar-icon gold">
-							<IconJacket size={26} />
-						</span>
-						<span class="badge-emerald">Thanksgiving through January 4</span>
-					</div>
-					<h3>Thanksgiving &amp; Christmas Outreach</h3>
-					<p>
-						Every holiday season, we pause business operations for six weeks to serve hot holiday
-						meals and purchase brand-new coats, hats, mittens, and blankets for children in need.
-					</p>
-				</div>
-				<a href={resolve('/programs/holiday-outreach')} class="pillar-link">
-					<span>Support the Holiday Drive</span>
-					<IconArrowRight size={18} />
-				</a>
-			</article>
-
-			<!-- Card 3 -->
-			<article class="card pillar-card">
-				<div>
-					<div class="pillar-top">
-						<span class="pillar-icon">
-							<IconSeedling size={26} />
-						</span>
-						<span class="badge-teal">Mustard Seed Mentorship</span>
-					</div>
-					<h3>Purpose &amp; Vision Restoration</h3>
-					<p>
-						Practical, faith-rooted guidance designed to help individuals overcome adversity,
-						rediscover their self-worth in Christ, and steward their God-given talents.
-					</p>
-				</div>
-				<a href={resolve('/restore-your-purpose')} class="pillar-link">
-					<span>Start Your Restoration Journey</span>
-					<IconArrowRight size={18} />
-				</a>
-			</article>
-		</div>
+<section class="scripture-band" aria-label="Scripture that guides the ministry">
+	<div class="container scripture-inner" {@attach gsapReveal({ y: 18, duration: 0.75 })}>
+		<IconSeedling size={30} stroke={1.5} aria-hidden="true" />
+		<blockquote>
+			<p>“If you have faith as small as a mustard seed … nothing will be impossible for you.”</p>
+			<cite>Matthew 17:20</cite>
+		</blockquote>
 	</div>
 </section>
 
-<!-- Community Impact Galleries (Preserving all 13 original ministry photos with descriptive local alt attributes) -->
-<section class="section">
+<section class="section gallery-section" aria-labelledby="gallery-title">
 	<div class="container">
-		<div class="section-header" {@attach gsapReveal({ y: 20 })}>
-			<span class="badge-teal">Authentic Ministry Proof</span>
-			<h2>Serving Hot Holiday Meals &amp; Children’s Winter Warmth Since 2014</h2>
+		<div class="section-mast" {@attach gsapReveal({ y: 14 })}>
+			<div>
+				<p class="eyebrow">From the ministry archive</p>
+				<h2 id="gallery-title">Outreach in photographs</h2>
+			</div>
 			<p>
-				God’s word says that it takes faith the size of a mustard seed to move a mountain. Every
-				Friday and every Thanksgiving through January 4, we put that faith to work in our community.
+				See the volunteers, meal tables, and winter outreach that have made this work possible in
+				Connecticut.
 			</p>
 		</div>
-
 		<div
-			class="carousels-grid"
-			{@attach gsapReveal({ selector: '.carousel-showcase', stagger: 0.15, y: 28 })}
+			class="gallery-grid"
+			{@attach gsapReveal({ selector: '.carousel-showcase', y: 13, duration: 0.68, stagger: 0.07 })}
 		>
 			<MinistryCarousel
-				badgeText="Holiday Meals & Service"
-				badgeVariant="teal"
-				BadgeIcon={IconSoup}
-				title="Thanksgiving & Community Meal Outreach"
-				subtitle="Hot holiday meals & hands-on service across Greater Waterbury & Central CT"
-				slides={slides1}
-				autoPlayMs={6000}
+				title="Holiday meals &amp; service"
+				slides={siteConfig.legacyPhotos.carousel1}
+				autoPlayMs={0}
 			/>
-
 			<MinistryCarousel
-				badgeText="Winter Warmth & Care"
-				badgeVariant="emerald"
-				BadgeIcon={IconJacket}
-				title="Children’s Coats, Blankets & Street Ministry"
-				subtitle="Winter coats, hats, mittens & Friday street encouragement in action"
-				slides={slides2}
-				autoPlayMs={6800}
+				title="Winter warmth &amp; street ministry"
+				slides={siteConfig.legacyPhotos.carousel2}
+				autoPlayMs={0}
 			/>
 		</div>
 	</div>
 </section>
 
-<!-- 6. Latest Blog Articles Section (Displaying last few blogs + See All Blogs button) -->
 <BlogSection posts={data.latestPosts} />
 
-<!-- 7. The "Client & Partner Fuel" Section (Bridging MWC Digital Agency & Donors) -->
-<section
-	class="section-navy"
-	{@attach gsapReveal({ selector: '[data-partner-reveal]', stagger: 0.14, y: 24 })}
->
-	<div class="container partner-fuel-grid">
-		<div class="partner-fuel-copy" data-partner-reveal>
-			<div class="eyebrow-badge">
-				<IconShieldCheck size={16} />
-				<span>WITH THE HELP AND SUPPORT OF CLIENTS LIKE YOU</span>
-			</div>
-			<h2>Powered by Faith. Fueled by Clients &amp; Partners Like You.</h2>
-			<p class="partner-lead">
-				Grow Your Faith Ministries thrives because of a unique stewardship model. A portion of time,
-				resources, and revenue from our corporate partners—including <strong
-					>MWC Digital Agency</strong
-				>
-				and our executive coaching clients—directly underwrites our Friday ministry and winter children’s
-				drives. When you partner with us, you put hot meals on tables and warm coats on children’s shoulders.
-			</p>
-
-			<ul class="stewardship-points">
-				<li>
-					<IconCheck size={18} />
-					<span
-						><strong>Zero Overhead Leakage:</strong> Corporate underwriting covers administrative costs
-						so 100% of donor sponsorships go directly to families.</span
-					>
-				</li>
-				<li>
-					<IconCheck size={18} />
-					<span
-						><strong>24 Days Until Thanksgiving 2026:</strong> Our Nov 26 – Jan 4 winter coat and meal
-						drive is actively equipping children across Connecticut.</span
-					>
-				</li>
-			</ul>
-
-			<div class="hero-ctas">
-				<a href={resolve('/partner')} class="btn btn-gold">
-					<IconHeartHandshake size={20} />
-					<span>Become a Monthly Mustard Seed Partner</span>
-				</a>
-				<a href={resolve('/programs/holiday-outreach')} class="btn btn-outline-light">
-					<IconJacket size={20} />
-					<span>Sponsor a Child’s Winter Kit ($65)</span>
-				</a>
-			</div>
+<section class="section partner-section" aria-labelledby="partner-title">
+	<div class="container partner-inner" {@attach gsapReveal({ y: 14 })}>
+		<div>
+			<p class="eyebrow">Support the outreach</p>
+			<h2 id="partner-title">Put a meal on the table.</h2>
 		</div>
-
-		<div class="partner-fuel-card" data-partner-reveal>
-			<div class="prayer-blessing-box">
-				<IconPray size={32} />
-				<h3>A Prayer Over Your Calling</h3>
-				<p>
-					“I pray that you allow God to open your eyes, your heart, and your mind so that you can
-					live the life you’ve been called to live through Him.”
-				</p>
-				<span>— Courtney Ribeiro</span>
-				<hr />
-				<div class="quick-links">
-					<a href={resolve('/about')}>Read Courtney’s 2014 Origin Story →</a>
-					<a href={resolve('/prayer-and-support')}>Submit a Confidential Prayer Request →</a>
-				</div>
-			</div>
+		<div>
+			<p>
+				Sponsor holiday meals or winter gear for a child. Our clients and partners cover operating
+				costs, so outreach contributions go toward meals and supplies.
+			</p>
+			<a href={resolve('/partner')} class="btn action-primary">
+				Explore ways to give <IconArrowRight size={18} aria-hidden="true" />
+			</a>
 		</div>
 	</div>
 </section>
 
 <style>
-	.hero-section {
+	.home-hero {
 		position: relative;
+		isolation: isolate;
+		display: grid;
+		align-items: center;
+		min-height: clamp(37rem, 79svh, 51rem);
 		overflow: hidden;
-		background-color: var(--color-navy);
-		background-image:
-			radial-gradient(circle at 82% 22%, rgba(212, 168, 67, 0.16) 0%, transparent 46%),
-			radial-gradient(circle at 14% 88%, rgba(15, 164, 175, 0.14) 0%, transparent 42%),
-			linear-gradient(135deg, #091529 0%, var(--color-navy) 52%, #16305c 100%);
-		color: #ffffff;
-		padding: 4.75rem 0 5.25rem;
+		background: var(--color-screen);
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.hero-visual {
+		position: absolute;
+		z-index: -1;
+		inset: 0 0 0 9%;
+		margin: 0;
+		color: var(--color-strong);
+		overflow: hidden;
+	}
+
+	.hero-visual img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 52%;
+	}
+
+	.hero-visual::after {
+		position: absolute;
+		z-index: 1;
+		inset: 0;
+		content: '';
+		background:
+			linear-gradient(
+				90deg,
+				var(--color-screen) 0%,
+				rgb(16 17 22 / 91%) 17%,
+				rgb(16 17 22 / 63%) 35%,
+				transparent 64%
+			),
+			linear-gradient(0deg, rgb(16 17 22 / 91%), transparent 35%);
+		pointer-events: none;
+	}
+
+	.hero-visual figcaption {
+		position: absolute;
+		z-index: 2;
+		right: max(1.5rem, calc((100vw - 1192px) / 2));
+		bottom: 1.4rem;
+		max-width: calc(100% - 3rem);
+		color: var(--color-strong);
+		font-size: 0.7rem;
+		text-align: right;
+	}
+
+	.hero-visual figcaption span {
+		padding-inline: 0.2em;
 	}
 
 	.hero-grid {
-		display: grid;
-		grid-template-columns: 1.28fr 1fr;
-		gap: 3.25rem;
-		align-items: center;
+		padding-block: clamp(3rem, 7.5vw, 7rem) 4.5rem;
+	}
+
+	.hero-copy {
+		max-width: 41rem;
+	}
+
+	.eyebrow {
+		margin: 0 0 1rem;
+		color: var(--color-accent);
+		font-size: 0.73rem;
+		font-weight: 660;
+		letter-spacing: 0.12em;
+		line-height: 1.4;
+		text-transform: uppercase;
 	}
 
 	.hero-copy h1 {
-		color: #ffffff;
-		margin-top: 1.05rem;
-		margin-bottom: 1.25rem;
+		margin: 0 0 1.45rem;
+		color: var(--color-strong);
+		font-size: clamp(3.75rem, 8.6vw, 8.75rem);
+		font-weight: 680;
+		line-height: 0.87;
+		letter-spacing: -0.052em;
 	}
 
-	.hero-subheadline {
-		font-size: 1.12rem;
-		color: rgba(255, 255, 255, 0.9);
-		margin-bottom: 2rem;
-		max-width: 640px;
+	.hero-copy h1 > span {
+		display: block;
 	}
 
-	.hero-ctas {
+	.hero-copy em {
+		color: var(--color-accent);
+		font-style: normal;
+	}
+
+	.hero-intro {
+		max-width: 40ch;
+		margin: 0 0 1.65rem;
+		color: #e5e9f4;
+		font-size: clamp(1.02rem, 1.65vw, 1.27rem);
+		line-height: 1.52;
+	}
+
+	.hero-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1rem;
-		margin-bottom: 1.75rem;
-	}
-
-	.hero-local-anchor {
-		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.86rem;
-		color: var(--color-gold);
-		font-weight: 600;
+		gap: 0.6rem 1.35rem;
 	}
 
-	.hero-image-frame {
-		position: relative;
-		border-radius: var(--radius-lg);
-		overflow: hidden;
-		border: 2px solid rgba(212, 168, 67, 0.5);
-		box-shadow:
-			0 24px 60px -15px rgba(0, 0, 0, 0.5),
-			0 0 0 1px rgba(255, 255, 255, 0.08);
-		background: #091529;
+	.action-primary {
+		min-height: 49px;
+		padding: 0.7rem 1rem;
+		background: var(--color-accent);
+		color: var(--color-on-accent);
 	}
 
-	.hero-floating-pill {
-		position: absolute;
-		top: 0.95rem;
-		left: 0.95rem;
-		z-index: 3;
+	.action-primary:hover,
+	.action-primary:focus-visible {
+		background: var(--color-accent-hover);
+		color: var(--color-on-accent);
+	}
+
+	.text-link {
 		display: inline-flex;
+		min-height: 44px;
 		align-items: center;
-		gap: 0.45rem;
-		padding: 0.36rem 0.85rem;
-		border-radius: 999px;
-		background: rgba(9, 21, 41, 0.84);
-		border: 1px solid rgba(212, 168, 67, 0.45);
-		color: #ffffff;
-		font-size: 0.76rem;
-		font-weight: 700;
-		letter-spacing: 0.02em;
-		backdrop-filter: blur(8px);
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+		gap: 0.65rem;
+		color: var(--color-strong);
+		font-size: 0.94rem;
+		font-weight: 650;
+		text-decoration: underline;
+		text-decoration-color: var(--color-accent);
+		text-underline-offset: 0.35em;
 	}
 
-	.pill-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--color-emerald);
-		box-shadow: 0 0 0 3px rgba(34, 181, 115, 0.28);
+	.text-link:hover {
+		color: var(--color-accent);
 	}
 
-	.hero-img {
-		width: 100%;
-		height: auto;
-		display: block;
-		aspect-ratio: 16 / 9;
-		object-fit: cover;
-		object-position: center 22%;
-	}
-
-	.scripture-overlay {
-		background: linear-gradient(90deg, rgba(9, 21, 41, 0.96) 0%, rgba(15, 32, 60, 0.94) 100%);
-		border-top: 1px solid rgba(212, 168, 67, 0.42);
-		padding: 1.2rem 1.4rem;
+	.hero-location {
 		display: flex;
-		align-items: flex-start;
-		gap: 0.85rem;
+		gap: 0.5rem;
+		align-items: center;
+		margin: 1.25rem 0 0;
+		color: var(--color-soft);
+		font-size: 0.76rem;
 	}
 
-	.scripture-icon {
-		color: var(--color-gold);
+	.hero-location :global(svg) {
 		flex-shrink: 0;
+		color: var(--color-accent);
+	}
+
+	.work-section,
+	.gallery-section {
+		padding-block: clamp(3.75rem, 8vw, 7.25rem);
+	}
+
+	#our-work {
+		scroll-margin-top: 1rem;
+	}
+
+	.section-mast {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(15rem, 31ch);
+		align-items: end;
+		gap: 0.65rem 2.5rem;
+		margin-bottom: clamp(2rem, 4.25vw, 3.5rem);
+	}
+
+	.section-mast h2,
+	.story-copy h2,
+	.partner-inner h2 {
+		margin: 0;
+		font-size: clamp(2.25rem, 5.45vw, 4.85rem);
+		font-weight: 630;
+		line-height: 1;
+		letter-spacing: -0.065em;
+		text-wrap: balance;
+	}
+
+	.section-mast > p,
+	.work-description,
+	.story-copy > p:not(.eyebrow),
+	.partner-inner p:last-of-type {
+		color: var(--color-soft);
+		line-height: 1.6;
+	}
+
+	.section-mast > p {
+		margin: 0;
+	}
+
+	.work-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1rem, 2.3vw, 2rem);
+	}
+
+	.work-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		padding: 0 0 1rem;
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.work-photo,
+	.story-photo {
+		overflow: hidden;
+		aspect-ratio: var(--photo-aspect);
+		background: var(--color-panel);
+	}
+
+	.work-photo img,
+	.story-photo img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.work-rhythm {
+		margin: 1.1rem 0 0.35rem;
+		color: var(--color-accent);
+		font-size: 0.72rem;
+		font-weight: 650;
+		letter-spacing: 0.105em;
+		text-transform: uppercase;
+	}
+
+	.work-card h3 {
+		margin: 0 0 0.5rem;
+		font-size: clamp(1.23rem, 2.1vw, 1.75rem);
+		font-weight: 640;
+	}
+
+	.work-card h3 a {
+		color: inherit;
+	}
+
+	.work-card h3 a::after {
+		position: absolute;
+		inset: 0;
+		content: '';
+	}
+
+	.work-card h3 a:focus-visible {
+		outline: none;
+	}
+
+	.work-card h3 a:focus-visible::after {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 5px;
+	}
+
+	.work-description {
+		flex: 1;
+		margin-bottom: 1rem;
+	}
+
+	.work-action {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.6rem;
+		color: var(--color-strong);
+		font-size: 0.9rem;
+		font-weight: 650;
+	}
+
+	.work-card:hover .work-action,
+	.work-card:focus-within .work-action {
+		color: var(--color-accent);
+	}
+
+	.story-section {
+		background: var(--color-panel);
+		border-block: 1px solid var(--color-line);
+	}
+
+	.story-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+		align-items: center;
+		gap: 2rem clamp(2rem, 7vw, 6.1rem);
+	}
+
+	.story-grid figure {
+		margin: 0;
+	}
+
+	.story-grid figcaption {
+		padding-top: 0.6rem;
+		color: var(--color-soft);
+		font-size: 0.75rem;
+	}
+
+	.story-copy h2 {
+		margin-bottom: 1.1rem;
+	}
+
+	.scripture-band {
+		background: #151c2d;
+		color: var(--color-accent);
+	}
+
+	.scripture-inner {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		justify-content: center;
+		gap: clamp(1rem, 3vw, 2rem);
+		max-width: 64rem;
+		padding-block: clamp(2.15rem, 5.8vw, 5rem);
+	}
+
+	.scripture-inner > :global(svg) {
 		margin-top: 0.15rem;
 	}
 
-	.scripture-overlay blockquote {
+	.scripture-inner blockquote {
 		margin: 0;
-		font-family: var(--font-heading);
-		font-style: italic;
-		font-size: 1.02rem;
-		color: #ffffff;
 	}
 
-	.scripture-overlay cite {
-		display: block;
-		font-family: var(--font-body);
+	.scripture-inner p {
+		margin: 0 0 0.6rem;
+		color: var(--color-strong);
+		font-size: clamp(1.33rem, 3.35vw, 2.45rem);
+		font-weight: 530;
+		line-height: 1.16;
+		letter-spacing: -0.035em;
+		text-wrap: balance;
+	}
+
+	.scripture-inner cite {
+		font-size: 0.73rem;
 		font-style: normal;
-		font-size: 0.8rem;
-		font-weight: 700;
-		color: var(--color-gold);
-		margin-top: 0.25rem;
+		font-weight: 650;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 
-	/* Impact Strip */
-	.impact-strip {
-		background: var(--color-surface);
-		border-bottom: 1px solid var(--color-border);
-		padding: 2.4rem 0;
-		box-shadow: 0 10px 28px -14px rgba(15, 32, 60, 0.07);
-	}
-
-	.impact-grid {
+	.gallery-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 1.75rem;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: clamp(1rem, 3vw, 2.75rem);
 	}
 
-	.impact-item {
-		display: flex;
-		flex-direction: column;
-		border-left: 3px solid var(--color-gold);
-		padding-left: 1.15rem;
+	.partner-section {
+		background: var(--color-panel);
+		border-block: 1px solid var(--color-line);
 	}
 
-	.impact-number {
-		font-family: var(--font-heading);
-		font-size: 2rem;
-		font-weight: 700;
-		color: var(--color-navy);
-		line-height: 1.15;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.impact-label {
-		font-size: 0.88rem;
-		color: var(--color-text-muted);
-		font-weight: 500;
-		margin-top: 0.28rem;
-	}
-
-	/* Editorial Story */
-	.story-grid {
+	.partner-inner {
 		display: grid;
-		grid-template-columns: 0.95fr 1.3fr;
-		gap: 3.75rem;
-		align-items: center;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+		gap: 1.5rem 3rem;
+		align-items: end;
 	}
 
-	.story-portrait-frame {
-		position: relative;
-		border-radius: var(--radius-lg);
-		overflow: hidden;
-		border: 2px solid rgba(212, 168, 67, 0.45);
-		box-shadow: var(--shadow-elevated);
-		background: var(--color-navy);
-		aspect-ratio: 4 / 3.8;
+	.partner-inner p:last-of-type {
+		max-width: 47ch;
 	}
 
-	.story-img {
-		width: 100%;
-		height: 100%;
-		aspect-ratio: 4 / 3.8;
-		display: block;
-		object-fit: cover;
-		object-position: center 18%;
-		transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+	@media (prefers-reduced-motion: no-preference) {
+		.hero-visual img {
+			animation: open-frame 1.8s var(--ease-out) both;
+			transform-origin: 71% 54%;
+		}
 	}
 
-	.story-portrait-frame:hover .story-img {
-		transform: scale(1.03);
+	@keyframes open-frame {
+		from {
+			transform: scale(1.09);
+		}
+		to {
+			transform: scale(1);
+		}
 	}
 
-	.story-badge-overlay {
-		position: absolute;
-		bottom: 0.95rem;
-		left: 0.95rem;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		padding: 0.4rem 0.88rem;
-		border-radius: 999px;
-		background: rgba(9, 21, 41, 0.86);
-		color: var(--color-gold);
-		border: 1px solid rgba(212, 168, 67, 0.45);
-		font-size: 0.78rem;
-		font-weight: 700;
-		backdrop-filter: blur(8px);
-	}
-
-	.story-caption {
-		margin-top: 0.85rem;
-		font-size: 0.88rem;
-		color: var(--color-text-muted);
-		text-align: center;
-	}
-
-	.story-heading {
-		margin-top: 0.75rem;
-		margin-bottom: 1.25rem;
-	}
-
-	.founder-quote {
-		margin: 0 0 1.5rem;
-		padding: 1.6rem 1.85rem;
-		background: var(--color-surface);
-		border-left: 4px solid var(--color-gold);
-		border-radius: 0 var(--radius-md) var(--radius-md) 0;
-		box-shadow: var(--shadow-card);
-	}
-
-	.founder-quote p {
-		font-size: 1.03rem;
-		color: var(--color-text);
-	}
-
-	.founder-quote footer {
-		font-size: 0.95rem;
-		color: var(--color-navy);
-		margin-top: 0.5rem;
-	}
-
-	.legacy-highlight {
-		background: rgba(15, 164, 175, 0.08);
-		border: 1px solid rgba(15, 164, 175, 0.25);
-		padding: 1.15rem 1.35rem;
-		border-radius: var(--radius-sm);
-		font-size: 0.96rem;
-	}
-
-	.legacy-highlight p {
-		margin: 0;
-	}
-
-	/* Pillars */
-	.section-header {
-		text-align: center;
-		max-width: 720px;
-		margin: 0 auto 3rem;
-	}
-
-	.section-header h2 {
-		margin-top: 0.75rem;
-		margin-bottom: 0.75rem;
-	}
-
-	.section-header p {
-		color: var(--color-text-muted);
-		margin: 0;
-	}
-
-	.pillars-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1.75rem;
-	}
-
-	.pillar-card {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-	}
-
-	.pillar-card:hover {
-		transform: translateY(-5px);
-		box-shadow: var(--shadow-elevated);
-		border-color: rgba(212, 168, 67, 0.5);
-	}
-
-	.featured-pillar {
-		border: 2px solid var(--color-gold);
-		box-shadow: var(--shadow-elevated);
-	}
-
-	.pillar-top {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		margin-bottom: 1.25rem;
-	}
-
-	.pillar-icon {
-		width: 50px;
-		height: 50px;
-		border-radius: 13px;
-		background: var(--color-navy);
-		color: var(--color-gold);
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: 0 8px 18px -6px rgba(15, 32, 60, 0.35);
-	}
-
-	.pillar-icon.gold {
-		background: var(--color-gold);
-		color: var(--color-navy);
-	}
-
-	.pillar-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		font-weight: 700;
-		color: var(--color-teal-text);
-		margin-top: 0.85rem;
-		min-height: 36px;
-		transition:
-			color 0.2s ease,
-			gap 0.2s ease;
-	}
-
-	.pillar-link:hover {
-		color: var(--color-navy);
-		gap: 0.65rem;
-	}
-
-	/* Carousels */
-	.carousels-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: 2rem;
-		align-items: stretch;
-	}
-
-	/* Partner Fuel */
-	.partner-fuel-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-		gap: 3rem;
-		align-items: center;
-	}
-
-	.partner-fuel-copy h2 {
-		margin-top: 1rem;
-	}
-
-	.partner-lead {
-		color: rgba(255, 255, 255, 0.88);
-		font-size: 1.05rem;
-	}
-
-	.stewardship-points {
-		list-style: none;
-		padding: 0;
-		margin: 1.5rem 0 2rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.85rem;
-	}
-
-	.stewardship-points li {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.65rem;
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 0.95rem;
-	}
-
-	.stewardship-points li :global(svg) {
-		color: var(--color-emerald);
-		flex-shrink: 0;
-		margin-top: 0.25rem;
-	}
-
-	.prayer-blessing-box {
-		background: rgba(255, 255, 255, 0.06);
-		border: 1px solid rgba(212, 168, 67, 0.42);
-		border-radius: var(--radius-lg);
-		padding: 2.35rem;
-		color: #ffffff;
-		backdrop-filter: blur(10px);
-		box-shadow: 0 20px 44px -16px rgba(0, 0, 0, 0.38);
-	}
-
-	.prayer-blessing-box :global(svg) {
-		color: var(--color-gold);
-		margin-bottom: 0.75rem;
-	}
-
-	.prayer-blessing-box p {
-		font-family: var(--font-heading);
-		font-style: italic;
-		font-size: 1.15rem;
-		color: rgba(255, 255, 255, 0.95);
-	}
-
-	.prayer-blessing-box span {
-		font-weight: 700;
-		color: var(--color-gold);
-		font-size: 0.9rem;
-	}
-
-	.prayer-blessing-box hr {
-		border: none;
-		border-top: 1px solid rgba(255, 255, 255, 0.15);
-		margin: 1.5rem 0;
-	}
-
-	.quick-links {
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
-	}
-
-	.quick-links a {
-		color: var(--color-gold);
-		font-weight: 600;
-		font-size: 0.92rem;
-	}
-
-	.quick-links a:hover {
-		color: #ffffff;
-	}
-
-	@media (max-width: 960px) {
-		.hero-grid,
-		.story-grid,
-		.pillars-grid,
-		.carousels-grid,
-		.partner-fuel-grid {
+	@media (max-width: 850px) {
+		.section-mast {
 			grid-template-columns: minmax(0, 1fr);
 		}
 
-		.impact-grid {
-			grid-template-columns: 1fr 1fr;
+		.section-mast > p {
+			max-width: 48ch;
 		}
 	}
 
-	@media (max-width: 560px) {
-		.impact-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.hero-ctas {
-			flex-direction: column;
+	@media (max-width: 760px) {
+		.home-hero {
+			min-height: 0;
 		}
 
-		.hero-ctas .btn {
-			width: 100%;
+		.hero-visual {
+			position: relative;
+			inset: auto;
+			height: clamp(12rem, 55vw, 23rem);
 		}
 
-		.prayer-blessing-box {
-			padding: 1.5rem 1.15rem;
+		.hero-visual img {
+			object-position: 72% 53%;
+		}
+
+		.hero-visual::after {
+			background: linear-gradient(0deg, var(--color-screen), transparent 54%);
+		}
+
+		.hero-visual figcaption {
+			right: 1.15rem;
+			bottom: 0.7rem;
+		}
+
+		.hero-grid {
+			padding-block: 1.05rem 2.6rem;
+		}
+
+		.hero-copy h1 {
+			font-size: clamp(3.1rem, 12.3vw, 6rem);
+		}
+
+		.hero-copy h1 > span {
+			display: inline;
+		}
+
+		.hero-copy .eyebrow {
+			margin-bottom: 0.7rem;
+		}
+
+		.hero-intro {
+			margin-bottom: 1.05rem;
+		}
+
+		.story-grid,
+		.partner-inner,
+		.work-grid,
+		.gallery-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.work-grid,
+		.gallery-grid {
+			gap: 2rem;
 		}
 	}
 </style>

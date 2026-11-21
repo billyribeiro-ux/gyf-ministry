@@ -1,15 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
+	import { gsapReveal } from '#lib/attachments/gsap.js';
+	import MinistryMasthead from '#lib/components/ministry/MinistryMasthead.svelte';
 	import type { PageProps } from './$types';
-	import {
-		IconCalendarHeart,
-		IconPray,
-		IconHeartHandshake,
-		IconSparkles,
-		IconMapPin,
-		IconPhoneCall
-	} from '@tabler/icons-svelte';
+	import { IconPray, IconHeartHandshake, IconSparkles, IconMapPin } from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
 	let isSubmitting = $state(false);
@@ -31,19 +25,24 @@
 	/>
 </svelte:head>
 
-<section class="page-hero" {@attach gsapHeroEntrance}>
-	<div class="container">
-		<div class="eyebrow-badge" data-hero-item>
-			<IconCalendarHeart size={16} />
-			<span>EVERY FRIDAY YEAR-ROUND • 52 FRIDAYS/YR</span>
-		</div>
-		<h1 data-hero-item>Fridays Are For Restoration: Dedicated Weekly Ministry for Those in Need</h1>
-		<p class="lead" data-hero-item>
-			“God has so abundantly blessed me that I am now able to take Friday off every week to minister
-			to those in need.” — Courtney Ribeiro
-		</p>
-	</div>
-</section>
+<MinistryMasthead
+	label="Friday Ministry"
+	title="Someone to talk to on Friday."
+	photo={{
+		src: 'images/gallery/carousel1-6.webp',
+		alt: 'Grow Your Faith Ministries community members gathered for a group photo',
+		width: 1200,
+		height: 900,
+		small: { src: 'images/gallery/carousel1-6-640w.webp', width: 640 },
+		caption: 'From the Grow Your Faith Ministries photo archive'
+	}}
+	actions={[{ href: '#book-friday', label: 'Request a Friday session' }]}
+>
+	<p>
+		If you’re facing a setback or carrying something hard, Courtney sets aside Fridays for free
+		one-on-one conversations, prayer, and visits with Connecticut neighbors.
+	</p>
+</MinistryMasthead>
 
 <!-- Why Every Friday & Who We Serve -->
 <section class="section">
@@ -52,48 +51,39 @@
 		{@attach gsapReveal({ selector: '.friday-grid > *', stagger: 0.14 })}
 	>
 		<div>
-			<span class="badge-teal">Why Every Friday?</span>
-			<h2>A Covenant Commitment to Step Away From Commercial Work</h2>
+			<h2>Courtney keeps Fridays open for you</h2>
 			<p>
-				In a world that measures worth by billable hours, Grow Your Faith Ministries operates on a
-				different kingdom economy. Every single Friday year-round is set aside exclusively to serve
-				the brokenhearted, the stuck, and the hurting.
+				“God has so abundantly blessed me that I am now able to take Friday off every week to
+				minister to those in need,” Courtney says.
 			</p>
 			<p>
-				Whether someone has experienced a devastating career loss, personal heartbreak, or spiritual
-				exhaustion, Friday Ministry exists to remind them that God has not forgotten their name—and
-				their best days are still ahead.
+				You can reach out after a job loss, a change you didn’t expect, or a stretch when your faith
+				feels worn down.
 			</p>
 
-			<h3 style="margin-top: 2rem;">Who We Serve on Fridays</h3>
+			<h3 class="serve-heading">What a Friday session can look like</h3>
 			<div class="serve-list">
-				<div class="card serve-card">
+				<div class="serve-card">
 					<IconSparkles size={24} />
 					<div>
-						<h4>Individuals Navigating Shattered Dreams</h4>
-						<p>
-							Free 1-on-1 Christian life restoration mentorship for people navigating career loss,
-							burnout, or buried personal visions.
-						</p>
+						<h4>One-on-one mentorship</h4>
+						<p>Talk through a setback, name what matters to you, and consider one next step.</p>
 					</div>
 				</div>
-				<div class="card serve-card">
+				<div class="serve-card">
 					<IconPray size={24} />
 					<div>
-						<h4>Prayer &amp; Spiritual Grounding</h4>
-						<p>
-							Dedicated Friday prayer calls and scripture encouragement for individuals and families
-							walking through heavy seasons.
-						</p>
+						<h4>Prayer and encouragement</h4>
+						<p>Ask for a prayer call and Scripture to reflect on during a difficult week.</p>
 					</div>
 				</div>
-				<div class="card serve-card">
+				<div class="serve-card">
 					<IconMapPin size={24} />
 					<div>
-						<h4>Connecticut Street &amp; Community Outreach</h4>
+						<h4>Visits in Connecticut</h4>
 						<p>
-							Direct visits across Wolcott, Waterbury, New Haven, and Hartford counties—supporting
-							shelters, families in transition, and community centers.
+							Courtney visits shelters and community centers and meets with families across Greater
+							Waterbury and Central Connecticut.
 						</p>
 					</div>
 				</div>
@@ -102,11 +92,10 @@
 
 		<!-- How to Connect on a Friday Intake Form -->
 		<div class="card intake-card" id="book-friday">
-			<span class="badge-emerald"><IconPhoneCall size={14} /> Free Weekly Ministry Intake</span>
-			<h3>Request a Friday Session or Refer Someone in Need</h3>
+			<h2>Request a Friday session</h2>
 			<p class="intake-sub">
-				Use this portal to request a 1-on-1 Friday encouragement call, prayer session, or local
-				Connecticut community visit.
+				Ask for a call, prayer session, or local visit. You can also reach out on someone else’s
+				behalf.
 			</p>
 
 			{#if form?.success}
@@ -178,7 +167,7 @@
 						/>
 					</div>
 					<div class="form-field">
-						<label for="friday-type">How Can We Minister to You?</label>
+						<label for="friday-type">What kind of support would help?</label>
 						<select
 							id="friday-type"
 							name="sessionType"
@@ -194,7 +183,7 @@
 					</div>
 				</div>
 				<div class="form-field">
-					<label for="friday-details">Share Your Story or Prayer Need *</label>
+					<label for="friday-details">What would you like Courtney to know? *</label>
 					<textarea
 						id="friday-details"
 						name="details"
@@ -202,18 +191,17 @@
 						required
 						value={form?.values?.details ?? ''}
 						aria-invalid={form?.error && !form?.values?.details ? 'true' : undefined}
-						placeholder="Tell us what season you are walking through and how Courtney can pray for or encourage you this Friday..."
-					></textarea>
+						placeholder="Share as much as you feel comfortable sharing."></textarea>
 				</div>
 				<button
 					type="submit"
-					class="btn btn-gold"
+					class="btn ministry-primary"
 					style="width: 100%"
 					disabled={isSubmitting}
 					aria-busy={isSubmitting}
 				>
 					<IconHeartHandshake size={19} />
-					<span>{isSubmitting ? 'Submitting Request...' : 'Request a Friday Session'}</span>
+					<span>{isSubmitting ? 'Sending request…' : 'Send Friday session request'}</span>
 				</button>
 			</form>
 		</div>
@@ -232,26 +220,29 @@
 		min-width: 0;
 	}
 
-	.friday-grid h2 {
-		margin-top: 0.75rem;
+	.serve-heading {
+		margin: 2rem 0 0.6rem;
 	}
 
 	.serve-list {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		margin-top: 1rem;
 	}
 
 	.serve-card {
 		display: flex;
 		align-items: flex-start;
 		gap: 1rem;
-		padding: 1.35rem;
+		padding-block: 1rem;
+		border-top: 1px solid var(--color-line, #343946);
+	}
+
+	.serve-card > div {
+		min-width: 0;
 	}
 
 	.serve-card :global(svg) {
-		color: var(--color-teal-text);
+		color: var(--color-accent, #adc8ff);
 		flex-shrink: 0;
 		margin-top: 0.2rem;
 	}
@@ -264,21 +255,21 @@
 	.serve-card p {
 		margin: 0;
 		font-size: 0.94rem;
-		color: var(--color-text-muted);
+		color: var(--color-soft, #b6bed0);
 	}
 
 	.intake-card {
-		border-top: 4px solid var(--color-gold);
+		border-top: 2px solid var(--color-accent, #adc8ff);
 	}
 
-	.intake-card h3 {
-		margin-top: 0.75rem;
+	.intake-card h2 {
 		margin-bottom: 0.5rem;
+		font-size: clamp(1.75rem, 3vw, 2.45rem);
 	}
 
 	.intake-sub {
 		font-size: 0.94rem;
-		color: var(--color-text-muted);
+		color: var(--color-soft, #b6bed0);
 		margin-bottom: 1.5rem;
 	}
 

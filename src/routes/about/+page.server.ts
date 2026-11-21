@@ -1,6 +1,9 @@
 import { textValue } from '#lib/shared/text';
 import { fail } from '@sveltejs/kit';
-import { recordMinistrySubmission } from '#lib/server/submissions.js';
+import {
+	ministrySubmissionUnavailable,
+	recordMinistrySubmission
+} from '#lib/server/submissions.js';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -11,15 +14,16 @@ export const actions: Actions = {
 		const organization = textValue(data.get('organization'), '').trim();
 		const eventType = textValue(data.get('eventType'), '').trim();
 		const details = textValue(data.get('details'), '').trim();
+		const values = { name, email, organization, eventType, details };
 
 		if (!name || !email || !details) {
 			return fail(400, {
 				error: 'Please provide your name, email, and event details.',
-				values: { name, email, organization, eventType, details }
+				values
 			});
 		}
 
-		await recordMinistrySubmission({
+		const recorded = await recordMinistrySubmission({
 			type: 'speaker_inquiry',
 			name,
 			email,
@@ -27,6 +31,8 @@ export const actions: Actions = {
 			details,
 			metadata: { organization, eventType }
 		});
+
+		if (!recorded) return fail(503, { error: ministrySubmissionUnavailable, values });
 
 		return {
 			success: true,

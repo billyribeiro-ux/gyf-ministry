@@ -1,368 +1,222 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { gsapReveal } from '#lib/attachments/gsap.js';
-	import {
-		IconBible,
-		IconArrowUpRight,
-		IconArrowRight,
-		IconClock,
-		IconSparkles
-	} from '@tabler/icons-svelte';
+	import { IconArrowUpRight } from '@tabler/icons-svelte';
+	import { cinematicPhotoReveal, gsapReveal } from '#lib/attachments/gsap.js';
+	import { coverSrcsetFromUrl } from '#lib/shared/cover-srcset.js';
 	import type { HomeBlogPostItem } from '#lib/types/blog';
 
-	interface Props {
-		posts: readonly HomeBlogPostItem[];
-	}
+	let { posts }: { posts: readonly HomeBlogPostItem[] } = $props();
 
-	let { posts }: Props = $props();
-
-	function formatDate(iso: string | null): string {
-		if (!iso) return 'Nov 2026';
-		const d = new Date(iso);
-		if (Number.isNaN(d.getTime())) return 'Nov 2026';
-		return d.toLocaleDateString('en-US', {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric'
-		});
-	}
+	const dateFormatter = new Intl.DateTimeFormat('en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+		timeZone: 'America/New_York'
+	});
 </script>
 
-<!-- BLOG SECTION (Modeled after new-revolution-web BlogSection with Grow Your Faith Ministries palette & design) -->
-<section class="section-alt blog-section" id="blog" aria-labelledby="blog-title">
+<section class="section journal-section" id="blog" aria-labelledby="journal-title">
 	<div class="container">
-		<div class="blog-header" {@attach gsapReveal({ y: 20 })}>
-			<div class="blog-heading-group">
-				<span class="badge-teal">
-					<IconBible size={15} />
-					<span>MUSTARD SEED DEVOTIONALS &amp; OUTREACH JOURNAL</span>
-				</span>
-				<h2 id="blog-title">
-					The Latest From <span class="blog-title-accent">Our Ministry Blog</span>
-				</h2>
-				<p class="blog-subcopy">
-					Biblical encouragement for hard times, practical faith-restoration coaching, Friday
-					mentorship reflections, and Connecticut holiday outreach recaps by Courtney Ribeiro.
-				</p>
+		<div class="journal-heading" {@attach gsapReveal({ y: 14 })}>
+			<div>
+				<p class="eyebrow">Scripture for everyday life</p>
+				<h2 id="journal-title">The Mustard Seed Journal</h2>
 			</div>
-
-			<a href={resolve('/blog')} class="btn btn-gold see-all-blogs-btn">
-				<span>See All Blogs</span>
-				<span class="arrow" aria-hidden="true">
-					<IconArrowUpRight size={18} stroke={2.3} />
-				</span>
+			<a href={resolve('/blog')} class="journal-link">
+				Read the journal <IconArrowUpRight size={18} aria-hidden="true" />
 			</a>
 		</div>
 
-		<div class="blog-grid" {@attach gsapReveal({ selector: '.blog-card', stagger: 0.12, y: 26 })}>
-			{#each posts as post, idx (post.id)}
-				<article
-					class={['card', 'blog-card', { 'blog-card-featured': idx === 0 }]}
-					data-post-id={post.id}
-				>
-					<a
-						href={resolve('/blog/[slug]', { slug: post.slug })}
-						class={['blog-cover', `cover-variant-${(idx % 3) + 1}`]}
-						aria-label={`Read "${post.title}"`}
-					>
+		{#if posts.length}
+			<div class="journal-grid">
+				{#each posts as post (post.id)}
+					<article class="journal-post">
 						{#if post.coverImage}
-							<img
-								src={post.coverImage}
-								alt={post.coverImageAlt || post.title}
-								width="800"
-								height="450"
-								loading="lazy"
-								decoding="async"
-								class="blog-cover-img"
-							/>
+							<div class="journal-cover" {@attach cinematicPhotoReveal}>
+								<img
+									src={post.coverImage}
+									srcset={coverSrcsetFromUrl(post.coverImage)}
+									sizes="(max-width: 750px) calc(100vw - 2.3rem), (max-width: 1240px) 29vw, 370px"
+									alt={post.coverImageAlt ?? ''}
+									width="800"
+									height="500"
+									loading="lazy"
+									decoding="async"
+								/>
+							</div>
 						{/if}
-						<div class="blog-cover-gradient" aria-hidden="true"></div>
-						<div class="blog-cover-top">
-							<span class="cover-category-badge">
-								<IconSparkles size={13} />
-								<span>{post.categoryName}</span>
-							</span>
-							<span class="cover-read-pill">
-								<IconClock size={13} />
-								<span>{post.readingTime} min read</span>
-							</span>
-						</div>
-					</a>
-
-					<div class="blog-body">
-						<div class="blog-meta">
-							<span class="blog-author">By {post.authorName}</span>
-							<span class="meta-dot" aria-hidden="true">•</span>
-							<time datetime={post.publishedAt ?? undefined}>{formatDate(post.publishedAt)}</time>
-						</div>
-
+						<p class="journal-category">{post.categoryName}</p>
 						<h3>
-							<a href={resolve('/blog/[slug]', { slug: post.slug })}>
-								{post.title}
-							</a>
+							<a href={resolve('/blog/[slug]', { slug: post.slug })}>{post.title}</a>
 						</h3>
-
-						<p>{post.excerpt}</p>
-
-						<div class="blog-footer">
-							<a href={resolve('/blog/[slug]', { slug: post.slug })} class="blog-read-link">
-								<span>Read Full Article</span>
-								<IconArrowRight size={17} stroke={2.2} />
-							</a>
+						<p class="journal-excerpt">{post.excerpt}</p>
+						<div class="journal-meta">
+							{#if post.publishedAt}
+								<time datetime={post.publishedAt}>
+									{dateFormatter.format(new Date(post.publishedAt))}
+								</time>
+							{/if}
+							<span>{post.readingTime} min read</span>
 						</div>
-					</div>
-				</article>
-			{/each}
-		</div>
+					</article>
+				{/each}
+			</div>
+		{:else}
+			<p class="journal-empty">
+				Explore <a href={resolve('/resources')}>faith and purpose resources</a> for prayer, Scripture
+				reflection, and guidance in a difficult season.
+			</p>
+		{/if}
 	</div>
 </section>
 
 <style>
-	.blog-section {
-		position: relative;
+	.journal-section {
+		background: var(--color-screen);
+		border-top: 1px solid var(--color-rule);
 	}
 
-	.blog-header {
+	.journal-heading {
 		display: flex;
+		align-items: end;
 		justify-content: space-between;
-		align-items: flex-end;
-		gap: 2rem;
-		margin-bottom: 2.75rem;
+		gap: 0.8rem 2rem;
 		flex-wrap: wrap;
+		margin-bottom: clamp(1.6rem, 4vw, 3.25rem);
 	}
 
-	.blog-heading-group {
-		max-width: 680px;
+	.eyebrow,
+	.journal-category {
+		margin-bottom: 0.8rem;
+		color: var(--color-accent);
+		font-size: 0.75rem;
+		font-weight: 750;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 	}
 
-	.blog-heading-group h2 {
-		margin-top: 0.75rem;
-		margin-bottom: 0.65rem;
-		color: var(--color-navy);
-	}
-
-	.blog-title-accent {
-		color: var(--color-teal-text);
-		font-style: italic;
-	}
-
-	.blog-subcopy {
+	.journal-heading h2 {
 		margin: 0;
-		color: var(--color-text-muted);
-		font-size: 1.03rem;
-		line-height: 1.65;
+		font-size: clamp(2.5rem, 5.3vw, 5rem);
+		font-weight: 550;
+		line-height: 1;
+		letter-spacing: -0.055em;
 	}
 
-	.see-all-blogs-btn {
-		flex-shrink: 0;
+	.journal-link {
+		min-height: 44px;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
+		color: var(--color-navy);
+		font-weight: 750;
+		text-decoration: underline;
+		text-decoration-color: var(--color-rust);
+		text-underline-offset: 0.28em;
 	}
 
-	.see-all-blogs-btn .arrow {
-		display: inline-flex;
-		align-items: center;
-		transition: transform 0.18s ease;
-	}
-
-	.see-all-blogs-btn:hover .arrow {
-		transform: translate(2px, -2px);
-	}
-
-	.blog-grid {
+	.journal-grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1.75rem;
+		gap: clamp(1rem, 2.8vw, 2.6rem);
 	}
 
-	.blog-card {
-		padding: 0;
-		overflow: hidden;
+	.journal-post {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-md);
-		box-shadow: var(--shadow-card);
-		transition:
-			transform 0.2s ease,
-			box-shadow 0.2s ease,
-			border-color 0.2s ease;
+		padding-bottom: 0.9rem;
+		border-bottom: 1px solid var(--color-rule);
 	}
 
-	.blog-card:hover {
-		transform: translateY(-4px);
-		box-shadow: var(--shadow-elevated);
-		border-color: var(--color-gold);
-	}
-
-	.blog-card-featured {
-		border-top: 3px solid var(--color-gold);
-	}
-
-	.blog-cover {
-		position: relative;
-		display: block;
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		background: var(--color-navy);
+	.journal-cover {
+		margin-bottom: 1rem;
+		aspect-ratio: var(--photo-aspect);
 		overflow: hidden;
-		text-decoration: none;
+		background: var(--color-parchment-alt);
 	}
 
-	.blog-cover.cover-variant-2 {
-		background: #142b52;
-	}
-
-	.blog-cover.cover-variant-3 {
-		background: #0b3948;
-	}
-
-	.blog-cover-img {
+	.journal-cover img {
+		display: block;
 		width: 100%;
 		height: 100%;
-		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		object-position: center 22%;
-		display: block;
-		transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+		filter: saturate(0.93) contrast(1.04);
+		transition: transform 0.5s var(--ease-out);
 	}
 
-	.blog-card:hover .blog-cover-img {
+	.journal-post:hover img,
+	.journal-post:focus-within img {
 		transform: scale(1.04);
 	}
 
-	.blog-cover-gradient {
+	.journal-category {
+		margin-bottom: 0.38rem;
+		letter-spacing: 0.07em;
+	}
+
+	.journal-post h3 {
+		margin-bottom: 0.5rem;
+		font-size: clamp(1.32rem, 2.15vw, 1.75rem);
+		line-height: 1.18;
+	}
+
+	.journal-post h3 a {
+		color: inherit;
+	}
+
+	.journal-post h3 a::after {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			180deg,
-			rgba(15, 32, 60, 0.58) 0%,
-			rgba(15, 32, 60, 0.12) 55%,
-			rgba(15, 32, 60, 0.72) 100%
-		);
-		pointer-events: none;
+		content: '';
 	}
 
-	.blog-cover-top {
-		position: absolute;
-		top: 0.85rem;
-		left: 0.85rem;
-		right: 0.85rem;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-		z-index: 2;
+	.journal-post h3 a:focus-visible {
+		outline: none;
 	}
 
-	.cover-category-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		padding: 0.3rem 0.7rem;
-		border-radius: 999px;
-		font-size: 0.74rem;
-		font-weight: 700;
-		letter-spacing: 0.03em;
-		background: rgba(15, 32, 60, 0.88);
-		color: var(--color-gold);
-		border: 1px solid rgba(212, 168, 67, 0.45);
-		backdrop-filter: blur(6px);
+	.journal-post h3 a:focus-visible::after {
+		outline: 2px solid var(--color-rust);
+		outline-offset: 5px;
 	}
 
-	.cover-read-pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
-		padding: 0.28rem 0.65rem;
-		border-radius: 999px;
-		font-size: 0.74rem;
-		font-weight: 600;
-		background: rgba(255, 255, 255, 0.92);
-		color: var(--color-navy);
+	.journal-post:hover h3 a,
+	.journal-post:focus-within h3 a,
+	.journal-link:hover {
+		color: var(--color-accent);
 	}
 
-	.blog-body {
-		padding: 1.5rem 1.6rem 1.65rem;
-		display: flex;
-		flex-direction: column;
+	.journal-excerpt {
 		flex: 1;
-	}
-
-	.blog-meta {
-		display: flex;
-		align-items: center;
-		gap: 0.45rem;
-		font-size: 0.82rem;
-		font-weight: 600;
-		color: var(--color-teal-text);
-		margin-bottom: 0.65rem;
-	}
-
-	.meta-dot {
-		color: var(--color-border);
-	}
-
-	.blog-body h3 {
-		font-family: var(--font-heading);
-		font-size: 1.28rem;
-		line-height: 1.32;
-		margin: 0 0 0.75rem;
-		color: var(--color-navy);
-	}
-
-	.blog-body h3 a {
-		color: inherit;
-		text-decoration: none;
-		transition: color 0.15s ease;
-	}
-
-	.blog-body h3 a:hover {
-		color: var(--color-teal-text);
-	}
-
-	.blog-body p {
+		margin-bottom: 0.9rem;
 		color: var(--color-text-muted);
-		font-size: 0.95rem;
-		line-height: 1.62;
-		margin: 0 0 1.35rem;
-		flex: 1;
+		font-size: 0.98rem;
+		line-height: 1.45;
 	}
 
-	.blog-footer {
-		padding-top: 1rem;
-		border-top: 1px solid var(--color-border);
-		margin-top: auto;
-	}
-
-	.blog-read-link {
-		display: inline-flex;
+	.journal-meta {
+		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: 0.4rem;
-		min-height: 36px;
-		font-size: 0.92rem;
-		font-weight: 700;
-		color: var(--color-navy);
-		text-decoration: none;
-		transition:
-			color 0.15s ease,
-			gap 0.15s ease;
+		gap: 0.2rem 1rem;
+		color: var(--color-text-muted);
+		font-size: 0.83rem;
 	}
 
-	.blog-read-link:hover {
-		color: var(--color-teal-text);
-		gap: 0.6rem;
+	.journal-empty {
+		max-width: 56ch;
+		margin: 0;
 	}
 
-	@media (max-width: 960px) {
-		.blog-grid {
+	.journal-empty a {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	@media (max-width: 750px) {
+		.journal-grid {
 			grid-template-columns: 1fr;
-		}
-
-		.blog-header {
-			align-items: flex-start;
+			gap: 2rem;
 		}
 	}
 </style>

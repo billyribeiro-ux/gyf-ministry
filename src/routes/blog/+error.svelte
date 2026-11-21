@@ -2,133 +2,81 @@
 	import '#lib/styles/inner-page.css';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
+	import { IconArrowLeft } from '@tabler/icons-svelte';
+	import SearchForm from '#lib/components/blog/SearchForm.svelte';
 
 	let status = $derived(page.status);
 	let heading = $derived(
 		status === 404
-			? 'Article not found'
+			? 'We couldn’t find that article.'
 			: status === 403
-				? "This post isn't available"
-				: 'Something went wrong on our end'
+				? 'This article is restricted.'
+				: 'The journal is temporarily unavailable.'
 	);
 	let subtext = $derived(
 		status === 404
-			? 'The article or archive you requested may have moved or been unpublished.'
+			? 'Try searching for the title, a topic, or a phrase you remember.'
 			: status === 403
-				? 'This article is restricted to authorized members or editors.'
-				: 'Please try refreshing the page or return to the blog index in a moment.'
+				? 'Access is limited to authorized members or editors.'
+				: 'Try refreshing in a moment or return to the journal.'
 	);
 </script>
 
+<svelte:head>
+	<title>{heading} | Grow Your Faith Ministries</title>
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
 <div id="blog-error-page" class="inner-page blog-error-page">
-	<section class="content-section error-box" aria-labelledby="error-h1">
-		<span class="error-code">HTTP {status}</span>
-		<h1 id="error-h1" class="error-h1">{heading}</h1>
-		<p class="error-sub">{subtext}</p>
-
-		<form method="GET" action={resolve('/blog')} class="error-search" role="search">
-			<label for="error-search-input" class="sr-only">Search the blog</label>
-			<input
-				id="error-search-input"
-				type="search"
-				name="search"
-				placeholder="Search articles..."
-				class="error-search-input"
-			/>
-			<button type="submit" class="error-search-btn">Search</button>
-		</form>
-
-		<div class="error-actions">
-			<a href={resolve('/blog')} class="btn-back-blog">Back to all articles</a>
+	<section class="blog-width blog-content error-content" aria-labelledby="error-h1">
+		<div class="error-inner">
+			<span class="blog-kicker">Mustard Seed Journal</span>
+			<h1 id="error-h1" class="blog-section-title">{heading}</h1>
+			<p>{subtext}</p>
+			{#if status === 404}
+				<SearchForm />
+			{/if}
+			<a href={resolve('/blog')} class="back-link">
+				<IconArrowLeft size={18} aria-hidden="true" />
+				Back to the journal
+			</a>
 		</div>
 	</section>
 </div>
 
 <style>
-	.error-box {
-		max-width: 620px;
-		margin: 4rem auto;
-		padding: 2.5rem;
-		background: var(--panel);
-		border: 1px solid var(--line);
-		border-radius: 14px;
-		text-align: center;
+	.error-content {
+		min-height: 24rem;
 	}
 
-	.error-code {
-		display: inline-block;
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: var(--acid);
-		text-transform: uppercase;
-		margin-bottom: 0.5rem;
+	.error-inner {
+		max-width: 43rem;
+		margin-inline: auto;
+		padding-block-start: clamp(1.35rem, 4vw, 2.5rem);
+		border-block-start: 1px solid var(--line);
 	}
 
-	.error-h1 {
-		margin: 0 0 0.75rem;
-		font-family: var(--font-display);
-		font-size: 2rem;
+	h1 {
+		margin-block-start: 0.65rem;
 	}
 
-	.error-sub {
+	p {
+		margin-block: 0.85rem 1.25rem;
 		color: var(--muted);
-		line-height: 1.6;
-		margin-bottom: 1.5rem;
 	}
 
-	.error-search {
-		display: flex;
-		max-width: 420px;
-		margin: 0 auto 1.5rem;
-		gap: 0.5rem;
-	}
-
-	.error-search-input {
-		flex: 1;
-		padding: 0.6rem 0.85rem;
-		border-radius: 8px;
-		background: var(--bg-soft);
-		border: 1px solid var(--line-strong);
-		color: var(--text);
-		font-family: var(--font-sans);
-	}
-
-	.error-search-btn {
-		padding: 0.6rem 1.1rem;
-		border-radius: 8px;
-		background: var(--acid);
-		color: var(--ink);
-		font-weight: 700;
-		border: none;
-		cursor: pointer;
-	}
-
-	.btn-back-blog {
+	.back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5em;
+		min-block-size: 44px;
+		margin-block-start: 0.75rem;
 		color: var(--acid);
 		font-weight: 700;
-		text-decoration: none;
+		text-underline-offset: 0.24em;
 	}
 
-	.sr-only {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		white-space: nowrap;
-		border: 0;
-	}
-
-	@media (max-width: 480px) {
-		.error-box {
-			padding: 1.75rem 1.15rem;
-			margin: 2rem auto;
-		}
-
-		.error-search {
-			flex-direction: column;
-		}
+	.back-link:hover {
+		color: var(--accent);
 	}
 </style>

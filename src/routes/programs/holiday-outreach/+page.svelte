@@ -1,43 +1,23 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { gsapHeroEntrance, gsapReveal, gsapProgressBar } from '#lib/attachments/gsap.js';
+	import { gsapReveal } from '#lib/attachments/gsap.js';
+	import MinistryMasthead from '#lib/components/ministry/MinistryMasthead.svelte';
 	import type { PageProps } from './$types';
+	import { sponsorshipTiers } from './sponsorship.js';
 	import {
 		IconSoup,
 		IconJacket,
 		IconGift,
 		IconHeartHandshake,
 		IconMapPin,
-		IconCheck,
-		IconCalendarHeart
+		IconCheck
 	} from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
 	let selectedTier = $derived(form?.values?.tier ?? '$65');
 	let isSubmitting = $state(false);
-
-	const tiers = [
-		{
-			amount: '$25',
-			title: 'Warmth & Meal Bundle',
-			badge: 'Essential Care',
-			description: 'Provides a Warm Hat, Mittens & Fleece Blanket Bundle + Hot Holiday Meal.'
-		},
-		{
-			amount: '$65',
-			title: 'Complete Child’s Winter Package',
-			badge: 'Most Popular Impact',
-			description:
-				'Sponsors 1 Complete Child’s Winter Package (New Heavy Winter Coat, Hat, Mittens, Blanket + Holiday Meal).'
-		},
-		{
-			amount: '$250',
-			title: 'Full Family Holiday Sponsorship',
-			badge: 'Family of 4',
-			description: 'Sponsors an Entire Family of 4 for Thanksgiving & Christmas Outreach.'
-		}
-	] as const;
+	const holidayAssistanceHref = `${resolve('/prayer-and-support')}?tab=holiday#support-request`;
 </script>
 
 <svelte:head>
@@ -56,50 +36,35 @@
 	/>
 </svelte:head>
 
-<section class="page-hero" {@attach gsapHeroEntrance}>
-	<div class="container">
-		<div class="eyebrow-badge" data-hero-item>
-			<IconCalendarHeart size={16} />
-			<span>40-DAY SEASON OF SERVICE • NOV 26 – JAN 4</span>
-		</div>
-		<h1 data-hero-item>Warm Meals &amp; Winter Coats: Our Annual Thanksgiving to Jan 4 Outreach</h1>
-		<p class="lead" data-hero-item>
-			“I take off from Thanksgiving to January 4 every year to serve in the community and spend time
-			with friends and family. I serve our community by doing Thanksgiving and Christmas outreach…
-			serving a hot holiday meal and purchasing coats, hats, mittens, and blankets for all the
-			children.” — Courtney Ribeiro
-		</p>
-	</div>
-</section>
+<MinistryMasthead
+	label="Holiday Outreach · Thanksgiving through January 4"
+	title="A warm meal. A winter coat."
+	photo={{
+		src: 'images/gallery/carousel1-2.webp',
+		alt: 'Volunteers stand beside tables of prepared meals at a winter outreach event',
+		width: 1200,
+		height: 900,
+		small: { src: 'images/gallery/carousel1-2-560w.webp', width: 560 },
+		caption: 'Preparing to serve holiday meals in Connecticut'
+	}}
+	actions={[
+		{ href: '#sponsor', label: 'Pledge meals or coats' },
+		{ href: holidayAssistanceHref, label: 'Request holiday assistance' }
+	]}
+>
+	<p>
+		From Thanksgiving through January 4, we serve holiday meals and help children in Connecticut get
+		the winter gear they need. You can ask for help or pledge support here.
+	</p>
+</MinistryMasthead>
 
-<!-- Live 2026 Campaign Progress Tracker -->
-<section class="campaign-tracker" {@attach gsapReveal({ y: 20 })}>
-	<div class="container tracker-card">
-		<div class="tracker-header">
-			<div>
-				<span class="badge-emerald">Active 2026 Campaign • Starts Thanksgiving (Nov 26, 2026)</span>
-				<h2>Connecticut Children’s Winter Warmth &amp; Holiday Meal Goal</h2>
-			</div>
-			<div class="tracker-stats">
-				<strong>100% Direct Allocation</strong>
-				<span>Wolcott • Waterbury • New Haven • Hartford Counties</span>
-			</div>
+<section class="campaign-goal" aria-labelledby="campaign-goal-heading">
+	<div class="container goal-inner">
+		<div>
+			<p>2026 Holiday Outreach</p>
+			<h2 id="campaign-goal-heading">Help us provide 250 winter kits and holiday meals.</h2>
 		</div>
-		<div
-			class="progress-track"
-			role="progressbar"
-			aria-valuenow={74}
-			aria-valuemin={0}
-			aria-valuemax={100}
-		>
-			<div class="progress-fill" style="width: 74%" {@attach gsapProgressBar(74)}></div>
-		</div>
-		<div class="tracker-meta">
-			<span
-				><strong>185 of 250</strong> Children’s Winter Warmth Kits &amp; Family Meals Sponsored</span
-			>
-			<span><strong>65 Kits Needed</strong> Before Christmas Outreach</span>
-		</div>
+		<p>November 26, 2026 through January 4, 2027<br />Greater Waterbury and Central Connecticut</p>
 	</div>
 </section>
 
@@ -113,12 +78,10 @@
 			<div class="init-icon">
 				<IconSoup size={28} />
 			</div>
-			<span class="badge-teal">Initiative 1 • Food Dignity</span>
-			<h3>Hot Holiday Meals (Thanksgiving &amp; Christmas)</h3>
+			<h2>Hot holiday meals</h2>
 			<p>
-				Serving hot, dignified Thanksgiving and Christmas meals to individuals and families facing
-				food insecurity across Greater Waterbury and Central Connecticut. Every meal is prepared and
-				delivered with prayer, warmth, and personal care.
+				We serve hot Thanksgiving and Christmas meals to neighbors in Greater Waterbury and Central
+				Connecticut.
 			</p>
 			<ul class="init-list">
 				<li><IconCheck size={17} /> Traditional hot Thanksgiving &amp; Christmas dinners</li>
@@ -130,15 +93,11 @@
 		</article>
 
 		<article class="card initiative-card">
-			<div class="init-icon gold">
+			<div class="init-icon">
 				<IconJacket size={28} />
 			</div>
-			<span class="badge-emerald">Initiative 2 • New England Winter Protection</span>
-			<h3>Children’s Winter Warmth Packages</h3>
-			<p>
-				Purchasing brand-new heavy winter coats, hats, mittens, and fleece blankets so no child in
-				our Connecticut communities goes cold during the harsh New England winter.
-			</p>
+			<h2>Winter kits for children</h2>
+			<p>Each kit includes a new winter coat, a hat, mittens, and a fleece blanket.</p>
 			<ul class="init-list">
 				<li><IconCheck size={17} /> Brand-new heavy winter coats sized per child</li>
 				<li><IconCheck size={17} /> Matching warm hats, insulated mittens &amp; cozy blankets</li>
@@ -150,41 +109,43 @@
 	</div>
 </section>
 
-<!-- Interactive Sponsorship Tiers & Checkout Form -->
 <section class="section-alt" id="sponsor">
 	<div class="container">
 		<div class="section-intro">
-			<span class="badge-teal">Interactive Sponsorship Tiers</span>
-			<h2>Sponsor a Child’s Winter Package or Family Holiday Meal</h2>
+			<h2>Make a holiday pledge</h2>
 			<p>
-				Select a sponsorship tier below. Because MWC Digital Agency underwrites administrative
-				operations, 100% of your contribution purchases meals and children’s winter gear.
+				Choose an amount below to make a pledge. MWC Digital Agency covers administrative costs, so
+				contributions go directly to meals and children’s winter gear.
 			</p>
 		</div>
 
-		<div class="tiers-grid">
-			{#each tiers as t (t.amount)}
-				<div class={['card', 'tier-card', { selected: selectedTier === t.amount }]}>
-					<span class="badge-teal">{t.badge}</span>
-					<div class="tier-price">{t.amount}</div>
-					<h3>{t.title}</h3>
-					<p>{t.description}</p>
-					<button
-						type="button"
-						class={selectedTier === t.amount ? 'btn btn-gold' : 'btn btn-navy'}
-						style="width: 100%"
-						aria-pressed={selectedTier === t.amount}
-						onclick={() => (selectedTier = t.amount)}
-					>
-						{selectedTier === t.amount ? 'Selected Tier ✓' : `Select ${t.amount} Tier`}
-					</button>
-				</div>
-			{/each}
-		</div>
+		<fieldset class="tiers">
+			<legend>Choose a sponsorship amount</legend>
+			<div class="tiers-grid">
+				{#each sponsorshipTiers as tier (tier.amount)}
+					<label class="card tier-card">
+						<span class="tier-choice">
+							<span class="tier-price">{tier.amount}</span>
+							<input
+								type="radio"
+								name="tier"
+								form="holiday-pledge"
+								value={tier.amount}
+								checked={selectedTier === tier.amount}
+								aria-label={`${tier.amount} for ${tier.title}`}
+								required
+							/>
+						</span>
+						<strong>{tier.title}</strong>
+						<span>{tier.description}</span>
+					</label>
+				{/each}
+			</div>
+		</fieldset>
 
 		<div class="checkout-grid">
 			<div class="card">
-				<h3>Complete Your Holiday Sponsorship Pledge ({selectedTier})</h3>
+				<h3>Your sponsorship details</h3>
 				{#if form?.success}
 					<div class="alert-success" role="status">{form.message}</div>
 				{/if}
@@ -192,8 +153,10 @@
 					<div id="sponsor-form-error" class="alert-error" role="alert">{form.error}</div>
 				{/if}
 				<form
+					id="holiday-pledge"
 					method="POST"
 					action="?/sponsorHoliday"
+					aria-describedby={form?.error ? 'sponsor-form-error' : undefined}
 					use:enhance={() => {
 						isSubmitting = true;
 						return async ({ update }) => {
@@ -202,7 +165,6 @@
 						};
 					}}
 				>
-					<input type="hidden" name="tier" value={selectedTier} />
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="sponsor-name">Your Full Name or Business Name *</label>
@@ -219,7 +181,7 @@
 							/>
 						</div>
 						<div class="form-field">
-							<label for="sponsor-email">Email Address (for Receipt &amp; Impact Update) *</label>
+							<label for="sponsor-email">Email address *</label>
 							<input
 								id="sponsor-email"
 								name="email"
@@ -233,27 +195,16 @@
 							/>
 						</div>
 					</div>
-					<div class="form-grid">
-						<div class="form-field">
-							<label for="sponsor-tier-select">Sponsorship Tier</label>
-							<select id="sponsor-tier-select" bind:value={selectedTier} name="tierSelect">
-								<option value="$25">$25 — Hat, Mittens &amp; Blanket Bundle + Hot Meal</option>
-								<option value="$65">$65 — Complete Child’s Winter Coat Package + Meal</option>
-								<option value="$250">$250 — Entire Family of 4 Holiday Outreach</option>
-								<option value="$500">$500 — Corporate / Client 8-Child Coat Sponsor</option>
-							</select>
-						</div>
-						<div class="form-field">
-							<label for="sponsor-city">Your City / State</label>
-							<input
-								id="sponsor-city"
-								name="city"
-								type="text"
-								autocomplete="address-level2"
-								value={form?.values?.city ?? ''}
-								placeholder="Wolcott / Waterbury, CT"
-							/>
-						</div>
+					<div class="form-field">
+						<label for="sponsor-city">Your City / State</label>
+						<input
+							id="sponsor-city"
+							name="city"
+							type="text"
+							autocomplete="address-level2"
+							value={form?.values?.city ?? ''}
+							placeholder="Wolcott / Waterbury, CT"
+						/>
 					</div>
 					<div class="form-field">
 						<label for="sponsor-details">Optional Note or Dedication</label>
@@ -267,44 +218,35 @@
 					</div>
 					<button
 						type="submit"
-						class="btn btn-gold"
+						class="btn ministry-primary"
 						style="width: 100%"
 						disabled={isSubmitting}
 						aria-busy={isSubmitting}
 					>
 						<IconHeartHandshake size={20} />
-						<span
-							>{isSubmitting
-								? 'Submitting Sponsorship...'
-								: `Confirm ${selectedTier} Holiday Outreach Sponsorship`}</span
-						>
+						<span>{isSubmitting ? 'Sending pledge…' : 'Send sponsorship pledge'}</span>
 					</button>
 				</form>
 			</div>
 
 			<div class="card dropoff-card">
 				<IconGift size={30} />
-				<h3>Drop-Off &amp; In-Kind Coat Drive Option</h3>
+				<h3>Give coats or winter gear</h3>
 				<p>
-					Prefer to purchase brand-new winter coats, hats, mittens, or fleece blankets directly? We
-					coordinate local drop-offs across Wolcott and Waterbury as well as direct shipping from
-					our ministry wishlist.
+					If you’d like to give new winter gear directly, we can arrange a local drop-off in Wolcott
+					or Waterbury.
 				</p>
 				<div class="geo-box">
 					<IconMapPin size={18} />
-					<span><strong>Primary Service Hub:</strong> Wolcott &amp; Greater Waterbury, CT</span>
+					<span><strong>Based in</strong> Wolcott &amp; Greater Waterbury, CT</span>
 				</div>
 				<p style="margin-top: 1rem;">
 					Need to register a family to <strong>receive</strong> Thanksgiving/Christmas meals or children’s
 					coats?
 				</p>
-				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- query-string tab target on resolved route -->
-				<a
-					href={`${resolve('/prayer-and-support')}?tab=holiday`}
-					class="btn btn-navy"
-					style="width: 100%"
-				>
-					Register a Family for Holiday Assistance →
+				<!-- oxlint-disable-next-line svelte/no-navigation-without-resolve -- route resolved above -->
+				<a href={holidayAssistanceHref} class="btn ministry-secondary" style="width: 100%">
+					Request holiday assistance →
 				</a>
 			</div>
 		</div>
@@ -312,69 +254,34 @@
 </section>
 
 <style>
-	.campaign-tracker {
-		margin-top: -2rem;
-		position: relative;
-		z-index: 10;
+	.campaign-goal {
+		background: var(--color-panel, #1a1d25);
+		color: var(--color-strong, #f5f7fb);
+		border-bottom: 1px solid var(--color-line, #343946);
+		padding-block: clamp(1.6rem, 4vw, 3.1rem);
 	}
 
-	.tracker-card {
-		background: var(--color-surface);
-		border: 2px solid var(--color-gold);
-		border-radius: var(--radius-md);
-		padding: 1.75rem 2rem;
-		box-shadow: var(--shadow-elevated);
-	}
-
-	.tracker-header {
+	.goal-inner {
 		display: flex;
-		align-items: center;
+		align-items: end;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 1rem;
-		margin-bottom: 1rem;
+		gap: 1.25rem 2.5rem;
 	}
 
-	.tracker-header h2 {
-		font-size: 1.4rem;
-		margin: 0.4rem 0 0;
+	.goal-inner p,
+	.goal-inner h2 {
+		margin: 0;
+		color: inherit;
 	}
 
-	.tracker-stats {
-		text-align: right;
-		display: flex;
-		flex-direction: column;
-		font-size: 0.88rem;
-		color: var(--color-text-muted);
-	}
-
-	.tracker-stats strong {
-		color: var(--color-navy);
-		font-size: 1rem;
-	}
-
-	.progress-track {
-		width: 100%;
-		height: 14px;
-		background: var(--color-parchment-alt);
-		border-radius: 999px;
-		overflow: hidden;
-		margin-bottom: 0.65rem;
-	}
-
-	.progress-fill {
-		height: 100%;
-		background: linear-gradient(90deg, var(--color-emerald), var(--color-teal));
-		border-radius: 999px;
-	}
-
-	.tracker-meta {
-		display: flex;
-		justify-content: space-between;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		font-size: 0.88rem;
-		color: var(--color-text-muted);
+	.goal-inner div > p {
+		margin-bottom: 0.42rem;
+		color: var(--color-accent, #adc8ff);
+		font-size: 0.79rem;
+		font-weight: 700;
+		letter-spacing: 0.11em;
+		text-transform: uppercase;
 	}
 
 	.initiatives-grid {
@@ -387,21 +294,17 @@
 		width: 54px;
 		height: 54px;
 		border-radius: 12px;
-		background: var(--color-navy);
-		color: var(--color-gold);
+		background: var(--color-raised, #222631);
+		color: var(--color-accent, #adc8ff);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 1rem;
 	}
 
-	.init-icon.gold {
-		background: var(--color-gold);
-		color: var(--color-navy);
-	}
-
-	.initiative-card h3 {
-		margin-top: 0.65rem;
+	.initiative-card h2 {
+		font-size: clamp(1.7rem, 3vw, 2.2rem);
+		margin-bottom: 0.65rem;
 	}
 
 	.init-list {
@@ -422,44 +325,80 @@
 	}
 
 	.init-list li :global(svg) {
-		color: var(--color-emerald);
+		color: var(--color-accent, #adc8ff);
 		flex-shrink: 0;
 	}
 
 	.section-intro {
-		text-align: center;
-		max-width: 720px;
-		margin: 0 auto 2.5rem;
+		max-width: 62ch;
+		margin-bottom: 2rem;
 	}
 
-	.section-intro h2 {
-		margin-top: 0.75rem;
+	.tiers {
+		min-width: 0;
+		padding: 0;
+		margin: 0 0 2rem;
+		border: 0;
+	}
+
+	.tiers legend {
+		margin-bottom: 0.7rem;
+		padding: 0;
+		font-weight: 700;
+		color: var(--color-strong, #f5f7fb);
 	}
 
 	.tiers-grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1.5rem;
-		margin-bottom: 2.5rem;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.8rem;
 	}
 
 	.tier-card {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		transition: all 0.2s ease;
+		gap: 0.35rem;
+		box-shadow: none;
+		padding: clamp(1rem, 2.2vw, 1.6rem);
+		cursor: pointer;
+		color: var(--color-soft, #b6bed0);
+		font-size: 1rem;
+		line-height: 1.45;
 	}
 
-	.tier-card.selected {
-		border: 2px solid var(--color-gold);
-		box-shadow: var(--shadow-elevated);
+	.tier-card strong {
+		color: var(--color-strong, #f5f7fb);
+	}
+
+	.tier-card:has(input:checked) {
+		border-color: var(--color-accent, #adc8ff);
+		box-shadow: inset 0 0 0 1px var(--color-accent, #adc8ff);
+	}
+
+	.tier-card:has(input:focus-visible) {
+		outline: 2px solid var(--color-accent, #adc8ff);
+		outline-offset: 3px;
+	}
+
+	.tier-choice {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.45rem;
+	}
+
+	.tier-choice input {
+		width: 1.15rem;
+		height: 1.15rem;
+		margin: 0;
+		accent-color: var(--color-strong, #f5f7fb);
 	}
 
 	.tier-price {
 		font-family: var(--font-heading);
-		font-size: 2.5rem;
-		font-weight: 700;
-		color: var(--color-navy);
+		font-size: 2.65rem;
+		font-weight: 500;
+		color: var(--color-strong, #f5f7fb);
 		margin: 0.5rem 0;
 	}
 
@@ -475,7 +414,7 @@
 	}
 
 	.dropoff-card :global(svg) {
-		color: var(--color-gold);
+		color: var(--color-accent, #adc8ff);
 		margin-bottom: 0.6rem;
 	}
 
@@ -483,16 +422,31 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: var(--color-parchment);
+		background: var(--color-screen, #101116);
 		padding: 0.85rem 1rem;
 		border-radius: var(--radius-sm);
 		font-size: 0.9rem;
 	}
 
 	@media (max-width: 960px) {
-		.initiatives-grid,
 		.tiers-grid,
+		.initiatives-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.checkout-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 560px) {
+		.initiatives-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 360px) {
+		.tiers-grid {
 			grid-template-columns: minmax(0, 1fr);
 		}
 	}

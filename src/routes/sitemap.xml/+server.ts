@@ -1,3 +1,4 @@
+import { siteConfig } from '#lib/config/site.js';
 import {
 	computeWeakOrStrongEtag,
 	createFeedErrorResponse,
@@ -6,16 +7,11 @@ import {
 import { listPublicCategoriesWithCounts } from '#lib/server/services/categories';
 import { listSitemapBlogEntries } from '#lib/server/services/posts';
 import { listPublicTagsWithCounts } from '#lib/server/services/tags';
-import {
-	absoluteUrl,
-	DEFAULT_FEED_ORIGIN,
-	escapeXml,
-	resolvePostModifiedDate
-} from '#lib/shared/seo/rss';
+import { absoluteUrl, escapeXml, resolvePostModifiedDate } from '#lib/shared/seo/rss';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ request }) => {
-	const baseUrl = DEFAULT_FEED_ORIGIN;
+	const baseUrl = siteConfig.url;
 
 	try {
 		const pageModules = import.meta.glob('/src/routes/**/+page.svelte');

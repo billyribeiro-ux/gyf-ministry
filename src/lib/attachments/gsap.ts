@@ -1,14 +1,7 @@
 import { gsap } from 'gsap';
 import type { Attachment } from 'svelte/attachments';
 
-function prefersReducedMotion(): boolean {
-	if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-		return true;
-	}
-	return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-export interface RevealOptions {
+interface RevealOptions {
 	y?: number;
 	delay?: number;
 	duration?: number;
@@ -16,212 +9,154 @@ export interface RevealOptions {
 	selector?: string;
 }
 
-/**
- * Orchestrated hero section entrance using GSAP.
- * Animates `[data-hero-item]` elements in a staggered cascade and `[data-hero-visual]`
- * with a refined editorial scale reveal.
- */
-export const gsapHeroEntrance: Attachment<HTMLElement> = (node) => {
-	if (prefersReducedMotion()) return;
+function withMotion(setup: () => (() => void) | undefined): (() => void) | undefined {
+	const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+	if (preference.matches) return;
 
-	const ctx = gsap.context(() => {
-		const copyItems = node.querySelectorAll<HTMLElement>('[data-hero-item]');
-		const visual = node.querySelector<HTMLElement>('[data-hero-visual]');
-		const floatingBadge = node.querySelector<HTMLElement>('[data-hero-float]');
+	let stop = setup();
+	if (!stop) return;
 
-		const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+	function cleanup() {
+		preference.removeEventListener('change', onPreferenceChange);
+		stop?.();
+		stop = undefined;
+	}
 
-		if (copyItems.length > 0) {
-			tl.fromTo(
-				copyItems,
-				{ autoAlpha: 0, y: 22 },
-				{
-					autoAlpha: 1,
-					y: 0,
-					duration: 0.72,
-					stagger: 0.09,
-					clearProps: 'transform,opacity,visibility'
-				},
-				0
-			);
-		}
+	function onPreferenceChange(event: MediaQueryListEvent) {
+		if (event.matches) cleanup();
+	}
 
-		if (visual) {
-			tl.fromTo(
-				visual,
-				{ autoAlpha: 0, y: 24, scale: 0.965 },
-				{
-					autoAlpha: 1,
-					y: 0,
-					scale: 1,
-					duration: 0.92,
-					clearProps: 'transform,opacity,visibility'
-				},
-				0.14
-			);
-		}
+	preference.addEventListener('change', onPreferenceChange);
+	return cleanup;
+}
 
-		if (floatingBadge) {
-			gsap.to(floatingBadge, {
-				y: -4,
-				duration: 2.8,
-				repeat: -1,
-				yoyo: true,
-				ease: 'sine.inOut',
-				delay: 1.1
-			});
-		}
+function play(node: HTMLElement, build: () => gsap.core.Timeline): (() => void) | undefined {
+	if (node.matches(':focus-within')) return;
+
+	const context = gsap.context(() => {
+		build().eventCallback('onComplete', cleanup);
 	}, node);
 
-	return () => {
-		ctx.revert();
-	};
+	function cleanup() {
+		node.removeEventListener('focusin', cleanup);
+		context.revert();
+	}
+
+	// Finish immediately when a visitor tabs into the animated region.
+	node.addEventListener('focusin', cleanup, { once: true });
+	return cleanup;
+}
+
+/** Stagger the masthead copy while keeping every line readable from the first frame. */
+export const gsapHeroEntrance: Attachment<HTMLElement> = (node) => {
+	const copy = node.querySelectorAll<HTMLElement>('[data-hero-item]');
+	if (!copy.length) return;
+
+	return withMotion(() =>
+		play(node, () =>
+			gsap.timeline().from(copy, {
+				y: 14,
+				duration: 0.62,
+				stagger: 0.065,
+				ease: 'power3.out'
+			})
+		)
+	);
 };
 
-/**
- * Scroll-triggered GSAP reveal attachment for sections, cards, and grids.
- * Respects `prefers-reduced-motion` and cleans up IntersectionObserver + tweens on destroy.
- */
+/** Open an aperture over a featured photograph and settle its crop after it enters view. */
+export const cinematicPhotoReveal: Attachment<HTMLElement> = (frame) => {
+	if (typeof IntersectionObserver === 'undefined') return;
+
+	const photo =
+		frame instanceof HTMLImageElement
+			? frame
+			: (frame.querySelector<HTMLImageElement>('img[data-cinematic-image]') ??
+				frame.querySelector('img'));
+	if (!photo) return;
+
+	return withMotion(() => {
+		let active = true;
+		let stop: (() => void) | undefined;
+
+		const reveal = () => {
+			if (!active || !photo.naturalWidth) return;
+			stop = play(frame, () =>
+				gsap
+					.timeline()
+					.fromTo(
+						photo,
+						{ clipPath: 'inset(7% 32% 9% 0%)' },
+						{ clipPath: 'inset(0% 0% 0% 0%)', duration: 0.92, ease: 'power3.inOut' },
+						0
+					)
+					.fromTo(
+						photo,
+						{ scale: 1.085, yPercent: 2.4 },
+						{ scale: 1, yPercent: 0, duration: 1.22, ease: 'power3.out' },
+						0
+					)
+			);
+		};
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return;
+				observer.disconnect();
+				if (photo.complete) reveal();
+				else void photo.decode().then(reveal, () => {});
+			},
+			{ rootMargin: '0px 0px -40px 0px', threshold: 0.08 }
+		);
+
+		observer.observe(frame);
+		return () => {
+			active = false;
+			observer.disconnect();
+			stop?.();
+		};
+	});
+};
+
+/** Add a brief scroll cue to content that is already visible and available to readers. */
 export function gsapReveal(options: RevealOptions = {}): Attachment<HTMLElement> {
 	return (node) => {
-		if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') return;
+		if (typeof IntersectionObserver === 'undefined') return;
 
-		const { y = 26, delay = 0, duration = 0.72, stagger = 0.1, selector } = options;
+		const { y = 18, delay = 0, duration = 0.7, stagger = 0.075, selector } = options;
+		const targets = selector ? [...node.querySelectorAll<HTMLElement>(selector)] : [node];
+		if (!targets.length) return;
 
-		const targets = selector ? Array.from(node.querySelectorAll<HTMLElement>(selector)) : [node];
+		return withMotion(() => {
+			const cleanups: (() => void)[] = [];
+			const observer = new IntersectionObserver(
+				(entries) => {
+					const visible = entries.filter((entry) => entry.isIntersecting);
+					if (!visible.length) return;
 
-		if (targets.length === 0) return;
+					const entering = visible.map(({ target }) => target);
+					for (const target of entering) observer.unobserve(target);
 
-		gsap.set(targets, { opacity: 0, y });
-
-		let tween: gsap.core.Tween | null = null;
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						tween = gsap.to(targets, {
-							opacity: 1,
-							y: 0,
+					const stop = play(node, () =>
+						gsap.timeline().from(entering, {
+							y: gsap.utils.clamp(-24, 24, y),
 							duration,
 							delay,
-							stagger: targets.length > 1 ? stagger : 0,
-							ease: 'power3.out',
-							overwrite: 'auto',
-							clearProps: 'transform,opacity'
-						});
-						observer.disconnect();
-						break;
-					}
-				}
-			},
-			{
-				threshold: 0.12,
-				rootMargin: '0px 0px -36px 0px'
-			}
-		);
-
-		observer.observe(node);
-
-		return () => {
-			observer.disconnect();
-			tween?.kill();
-		};
-	};
-}
-
-export interface CounterOptions {
-	end: number;
-	start?: number;
-	prefix?: string;
-	suffix?: string;
-	duration?: number;
-}
-
-/**
- * Animates a numeric impact counter when scrolled into view.
- */
-export function gsapCounter(options: CounterOptions): Attachment<HTMLElement> {
-	return (node) => {
-		const { end, start = 0, prefix = '', suffix = '', duration = 1.45 } = options;
-		const finalLabel = `${prefix}${end}${suffix}`;
-
-		if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
-			node.textContent = finalLabel;
-			return;
-		}
-
-		let tween: gsap.core.Tween | null = null;
-		const state = { val: start };
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						tween = gsap.to(state, {
-							val: end,
-							duration,
-							ease: 'power2.out',
-							onUpdate() {
-								node.textContent = `${prefix}${Math.round(state.val)}${suffix}`;
-							},
-							onComplete() {
-								node.textContent = finalLabel;
-							}
-						});
-						observer.disconnect();
-						break;
-					}
-				}
-			},
-			{ threshold: 0.25 }
-		);
-
-		observer.observe(node);
-
-		return () => {
-			observer.disconnect();
-			tween?.kill();
-		};
-	};
-}
-
-/**
- * Smoothly animates a progress bar width from 0% to target percentage when visible.
- */
-export function gsapProgressBar(percent: number): Attachment<HTMLElement> {
-	return (node) => {
-		const clamped = Math.max(0, Math.min(100, percent));
-		if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
-			node.style.width = `${clamped}%`;
-			return;
-		}
-
-		gsap.set(node, { width: '0%' });
-		let tween: gsap.core.Tween | null = null;
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						tween = gsap.to(node, {
-							width: `${clamped}%`,
-							duration: 1.35,
+							stagger: Math.min(stagger, 0.09),
 							ease: 'power3.out'
-						});
-						observer.disconnect();
-						break;
-					}
-				}
-			},
-			{ threshold: 0.2 }
-		);
+						})
+					);
+					if (stop) cleanups.push(stop);
+				},
+				{ rootMargin: '0px 0px -24px 0px' }
+			);
 
-		observer.observe(node);
-
-		return () => {
-			observer.disconnect();
-			tween?.kill();
-		};
+			for (const target of targets) observer.observe(target);
+			return () => {
+				observer.disconnect();
+				observer.takeRecords();
+				for (const cleanup of cleanups) cleanup();
+			};
+		});
 	};
 }

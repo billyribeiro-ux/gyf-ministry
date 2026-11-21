@@ -1,44 +1,36 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
+	import { gsapReveal } from '#lib/attachments/gsap.js';
+	import MinistryMasthead from '#lib/components/ministry/MinistryMasthead.svelte';
 	import type { PageProps } from './$types';
-	import {
-		IconBible,
-		IconSeedling,
-		IconMountain,
-		IconSparkles,
-		IconJacket,
-		IconMailOpened,
-		IconArrowRight
-	} from '@tabler/icons-svelte';
+	import { IconBible, IconMailOpened, IconArrowRight } from '@tabler/icons-svelte';
 
 	let { form }: PageProps = $props();
 	let isSubmitting = $state(false);
 
 	const devotionals = [
 		{
-			category: 'Biblical Foundation • Matthew 17:20',
-			title: 'Faith the Size of a Mustard Seed: What It Actually Means When Your Dreams Are Buried',
+			category: 'Matthew 17:20',
+			title: 'Faith the size of a mustard seed',
 			excerpt:
-				'God’s word says that it takes faith the size of a mustard seed to move a mountain. Discover why small, surrendered obedience in hard times unlocks supernatural restoration.',
+				'A reflection on Matthew 17:20 and what a little faith can look like when hope feels far away.',
 			readTime: '6 min read',
 			slug: 'faith-the-size-of-a-mustard-seed-matthew-17-20'
 		},
 		{
 			category: 'Purpose & Calling',
-			title: 'Rebuilding Shattered Dreams After Failure: How to Use Your God-Given Talents Again',
+			title: 'Rebuilding your vision after a setback',
 			excerpt:
-				'When life’s circumstances break your heart wide open, it is easy to believe your calling has expired. Here is our 3-step Friday mentorship framework to bring buried visions back to life.',
+				'Three questions to help you revisit a dream you set aside and decide what to do next.',
 			readTime: '6 min read',
 			slug: 'how-to-rebuild-your-vision-after-a-shattered-season'
 		},
 		{
-			category: 'Christian Stewardship & Community Impact',
-			title:
-				'Stewarding Your God-Given Talents in Business and Life (Why We Pause From Thanksgiving to Jan 4)',
+			category: 'Christian stewardship',
+			title: 'Putting your God-given gifts to work',
 			excerpt:
-				'Inside our unique stewardship model funding weekly Friday ministry and our 40-day holiday sabbatical serving hot meals and equipping children across Wolcott and Waterbury with winter gear.',
+				'See how Courtney makes room for Friday ministry and holiday outreach, and consider where you could make room to serve.',
 			readTime: '6 min read',
 			slug: 'stewarding-your-god-given-talents-in-business-and-life'
 		}
@@ -61,73 +53,68 @@
 	/>
 </svelte:head>
 
-<section class="page-hero" {@attach gsapHeroEntrance}>
-	<div class="container">
-		<div class="eyebrow-badge" data-hero-item>
-			<IconBible size={16} />
-			<span>DEVOTIONALS, FAITH RESTORATION &amp; OUTREACH RECAPS</span>
-		</div>
-		<h1 data-hero-item>Mustard Seed Faith Devotionals &amp; Community Impact Hub</h1>
-		<p class="lead" data-hero-item>
-			Practical Christian encouragement for hard times, biblical wisdom on stewarding your God-given
-			talents, and real-time updates from our Friday and holiday outreach in Connecticut.
-		</p>
-	</div>
-</section>
+<MinistryMasthead
+	label="Faith resources"
+	title="A place to pause and reflect."
+	actions={[
+		{ href: '#devotionals', label: 'Read a devotional' },
+		{ href: '#friday-encouragement', label: 'Join Friday encouragement' }
+	]}
+>
+	<p>
+		Read a devotional, revisit a dream you set aside, or reflect on how you can use your gifts to
+		serve a neighbor.
+	</p>
+</MinistryMasthead>
 
-<section class="section">
+<section class="section" id="devotionals" aria-labelledby="devotionals-heading">
 	<div class="container">
+		<h2 id="devotionals-heading">Read at your own pace</h2>
 		<div class="articles-grid" {@attach gsapReveal({ selector: '.article-card', stagger: 0.12 })}>
-			{#each devotionals as article (article.title)}
-				<article class="card article-card">
+			{#each devotionals as article, index (article.slug)}
+				<article class="card article-card" class:featured={index === 0}>
 					<div>
-						<span class="badge-teal">{article.category}</span>
-						<h2>{article.title}</h2>
+						<p class="article-category">{article.category}</p>
+						<h3>{article.title}</h3>
 						<p>{article.excerpt}</p>
 					</div>
 					<div class="article-footer">
 						<span class="read-time">{article.readTime}</span>
-						<a href={resolve('/blog/[slug]', { slug: article.slug })} class="article-link">
-							<span>Read Full Devotional</span>
-							<IconArrowRight size={17} />
+						<a
+							href={resolve('/blog/[slug]', { slug: article.slug })}
+							class="article-link"
+							aria-label={`Read devotional “${article.title}”`}
+						>
+							<span>Read devotional</span>
+							<IconArrowRight size={17} aria-hidden="true" />
 						</a>
 					</div>
 				</article>
 			{/each}
 		</div>
-		<div style="text-align: center; margin-top: 2.5rem;">
-			<a href={resolve('/blog')} class="btn btn-gold">
+		<div class="blog-link">
+			<a href={resolve('/blog')} class="btn ministry-primary">
 				<IconBible size={19} />
-				<span>Browse All Devotionals &amp; Articles on the Blog</span>
+				<span>Browse all devotionals</span>
 				<IconArrowRight size={18} />
 			</a>
 		</div>
 	</div>
 </section>
 
-<!-- Subscribe to Weekly Friday Encouragement -->
-<section class="section-navy">
+<!-- Sign up for Friday encouragement -->
+<section class="section-navy" id="friday-encouragement">
 	<div class="container subscribe-grid">
-		<div>
-			<div class="eyebrow-badge">
-				<IconSeedling size={16} />
-				<span>EVERY FRIDAY MORNING</span>
-			</div>
-			<h2>Subscribe to Weekly Friday Encouragement</h2>
+		<div {@attach gsapReveal()}>
+			<h2>Get Friday encouragement by email</h2>
 			<p>
-				Receive a short, faith-building devotional from Courtney Ribeiro every Friday morning—along
-				with prayer prompts and updates on our Thanksgiving through January 4 children’s winter coat
-				and meal outreach.
+				Sign up for devotionals from Courtney Ribeiro, prayer prompts, and updates on the ministry’s
+				holiday meal and winter coat outreach.
 			</p>
-			<div class="topic-tags">
-				<span><IconMountain size={15} /> Mustard Seed Faith</span>
-				<span><IconSparkles size={15} /> God-Given Talents</span>
-				<span><IconJacket size={15} /> CT Outreach Updates</span>
-			</div>
 		</div>
 
 		<div class="card sub-card">
-			<h3>Join the Friday Encouragement List</h3>
+			<h3>Leave your name and email</h3>
 			{#if form?.success}
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
@@ -137,6 +124,7 @@
 			<form
 				method="POST"
 				action="?/subscribeEncouragement"
+				aria-describedby={form?.error ? 'sub-form-error' : undefined}
 				use:enhance={() => {
 					isSubmitting = true;
 					return async ({ update }) => {
@@ -175,14 +163,13 @@
 				</div>
 				<button
 					type="submit"
-					class="btn btn-gold"
+					class="btn ministry-primary"
 					style="width: 100%"
 					disabled={isSubmitting}
 					aria-busy={isSubmitting}
 				>
 					<IconMailOpened size={19} />
-					<span>{isSubmitting ? 'Subscribing...' : 'Subscribe to Weekly Friday Encouragement'}</span
-					>
+					<span>{isSubmitting ? 'Sending request…' : 'Sign up for Friday encouragement'}</span>
 				</button>
 			</form>
 		</div>
@@ -192,34 +179,55 @@
 <style>
 	.articles-grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1.75rem;
+		grid-template-columns: minmax(0, 1.16fr) minmax(0, 1fr);
+		gap: 1rem;
 	}
 
 	.article-card {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		box-shadow: none;
 	}
 
-	.article-card h2 {
-		font-size: 1.35rem;
-		margin-top: 0.85rem;
-		margin-bottom: 0.75rem;
+	.article-card.featured {
+		grid-row: span 2;
+		background: var(--color-raised, #222631);
+		border-color: var(--color-line, #343946);
+	}
+
+	.article-card h3 {
+		font-size: clamp(1.45rem, 2.4vw, 2rem);
+		margin-bottom: 0.7rem;
+	}
+
+	.featured h3 {
+		font-size: clamp(2.3rem, 5.2vw, 4.4rem);
+		max-width: 12ch;
+	}
+
+	.article-category {
+		margin: 0 0 0.55rem;
+		color: var(--color-accent, #adc8ff);
+		font-size: 0.79rem;
+		font-weight: 750;
+		letter-spacing: 0.11em;
+		text-transform: uppercase;
 	}
 
 	.article-footer {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding-top: 1.25rem;
-		margin-top: 1rem;
-		border-top: 1px solid var(--color-border);
+		flex-wrap: wrap;
+		gap: 0.4rem 1rem;
+		padding-top: 0.55rem;
+		border-top: 1px solid var(--color-line, #343946);
 	}
 
 	.read-time {
 		font-size: 0.84rem;
-		color: var(--color-text-muted);
+		color: var(--color-soft, #b6bed0);
 		font-weight: 600;
 	}
 
@@ -227,9 +235,27 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.35rem;
-		min-height: 36px;
+		min-height: 44px;
 		font-weight: 700;
-		color: var(--color-teal-text);
+		color: var(--color-accent, #adc8ff);
+	}
+
+	.blog-link {
+		margin-top: 2rem;
+	}
+
+	.blog-link .btn {
+		max-inline-size: 100%;
+		padding-inline: clamp(0.8rem, 4vw, 1.55rem);
+	}
+
+	.blog-link span {
+		min-inline-size: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.blog-link :global(svg) {
+		flex: 0 0 auto;
 	}
 
 	.subscribe-grid {
@@ -243,42 +269,28 @@
 		min-width: 0;
 	}
 
-	.subscribe-grid h2 {
-		margin-top: 0.85rem;
-	}
-
-	.topic-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-		margin-top: 1.5rem;
-	}
-
-	.topic-tags span {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
-		font-size: 0.85rem;
-		font-weight: 600;
-		padding: 0.4rem 0.85rem;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--color-gold);
-	}
-
 	.sub-card {
-		color: var(--color-text);
+		color: var(--color-soft, #b6bed0);
 	}
 
 	.sub-card h3 {
-		color: var(--color-navy);
+		color: var(--color-strong, #f5f7fb);
 		margin-bottom: 1.15rem;
 	}
 
-	@media (max-width: 960px) {
-		.articles-grid,
+	@media (max-width: 800px) {
 		.subscribe-grid {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 660px) {
+		.articles-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.article-card.featured {
+			grid-row: auto;
 		}
 	}
 </style>

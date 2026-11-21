@@ -1,5 +1,4 @@
 import '../../../app.css';
-import '#lib/styles/inner-page.css';
 import '#lib/styles/prose.css';
 import { describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser';
@@ -15,11 +14,11 @@ const SAMPLE_SLIDES = [
 		alt: 'Courtney Ribeiro serving families in Connecticut'
 	},
 	{
-		url: '/images/gallery/carousel1-2.webp',
-		tag: 'Thanksgiving Meal Preparation',
+		url: '/images/gallery/carousel2-2.webp',
+		tag: 'Holiday Gifts for Children',
 		aspect: 'portrait' as const,
-		focus: 'center 28%',
-		alt: 'Preparing hot holiday meals for local families'
+		focus: 'center 24%',
+		alt: 'Children show holiday gifts they received'
 	},
 	{
 		url: '/images/gallery/carousel1-3.webp',
@@ -31,7 +30,7 @@ const SAMPLE_SLIDES = [
 ];
 
 describe('MinistryCarousel - Enterprise Grade Functionality, A11y & CLS Prevention', () => {
-	it('ensures all lazy-loaded images (ambient backdrop, foreground, thumbnails) have explicit width and height attributes', async () => {
+	it('reserves space for the foreground photo and lazy-loaded thumbnails', async () => {
 		await render(MinistryCarousel, {
 			badgeText: 'OUTREACH ARCHIVE',
 			title: 'Faith in Action Gallery',
@@ -39,20 +38,13 @@ describe('MinistryCarousel - Enterprise Grade Functionality, A11y & CLS Preventi
 			slides: SAMPLE_SLIDES
 		});
 
-		// 1. Ambient backdrop image
-		const ambientImg = document.querySelector<HTMLImageElement>('.stage-ambient-bg');
-		expect(ambientImg).not.toBeNull();
-		expect(ambientImg?.getAttribute('loading')).toBe('lazy');
-		expect(ambientImg?.getAttribute('width')).toBe('1200');
-		expect(ambientImg?.getAttribute('height')).toBe('900');
-
-		// 2. Foreground main image
-		const foregroundImg = document.querySelector<HTMLImageElement>('.stage-main-img');
-		expect(foregroundImg).not.toBeNull();
+		const stage = document.querySelector<HTMLElement>('.carousel-stage')!;
+		const foregroundImg = stage.querySelector<HTMLImageElement>('.stage-main-img');
+		expect(stage.querySelectorAll('img')).toHaveLength(1);
+		expect(foregroundImg?.getAttribute('loading')).toBe('lazy');
 		expect(foregroundImg?.getAttribute('width')).toBe('1200');
 		expect(foregroundImg?.getAttribute('height')).toBe('900');
 
-		// 3. Filmstrip thumbnail images
 		const thumbImgs = document.querySelectorAll<HTMLImageElement>('.filmstrip-thumb img');
 		expect(thumbImgs.length).toBe(SAMPLE_SLIDES.length);
 		for (const thumb of thumbImgs) {
@@ -88,6 +80,31 @@ describe('MinistryCarousel - Enterprise Grade Functionality, A11y & CLS Preventi
 			expect(rect.width).toBeLessThanOrEqual(vp.width);
 			expect(rect.width).toBeGreaterThan(0);
 		}
+	});
+
+	it('fills the same 4:3 stage with landscape and portrait photos', async () => {
+		await page.viewport(390, 844);
+		await render(MinistryCarousel, {
+			title: 'Outreach gallery',
+			slides: SAMPLE_SLIDES,
+			autoPlayMs: 0
+		});
+
+		const stage = document.querySelector<HTMLElement>('.carousel-stage')!;
+		const image = stage.querySelector<HTMLImageElement>('.stage-main-img')!;
+		const size = [stage.clientWidth, stage.clientHeight];
+		expect(size[0]! / size[1]!).toBeCloseTo(4 / 3, 2);
+		expect([image.clientWidth, image.clientHeight]).toEqual(size);
+
+		await page.getByRole('button', { name: 'Next outreach photo' }).click();
+		await expect.poll(() => image.getAttribute('src')).toBe(SAMPLE_SLIDES[1]!.url);
+		expect([image.clientWidth, image.clientHeight]).toEqual(size);
+		expect(getComputedStyle(image).objectFit).toBe('cover');
+		expect(getComputedStyle(image).objectPosition).toBe('50% 24%');
+
+		await page.getByRole('button', { name: 'Expand photo in fullscreen view' }).click();
+		const fullscreen = document.querySelector<HTMLImageElement>('dialog[open] .lightbox-img')!;
+		expect(getComputedStyle(fullscreen).objectFit).toBe('contain');
 	});
 
 	it('implements W3C WAI-ARIA roving tabindex on filmstrip tabs, keyboard navigation, and wrap-around slide controls', async () => {
@@ -198,7 +215,20 @@ describe('MinistryCarousel - Enterprise Grade Functionality, A11y & CLS Preventi
 		expect(dialog.open).toBe(false);
 	});
 
-	it('resolves SSOT design tokens (--nav-height, --status-amber-text), .inner-page .content-section layout container, and .alert-error feedback styles', async () => {
+	it('announces visitor-controlled slides and omits playback controls when autoplay is disabled', async () => {
+		await render(MinistryCarousel, {
+			title: 'Outreach gallery',
+			slides: SAMPLE_SLIDES,
+			autoPlayMs: 0
+		});
+
+		const gallery = document.querySelector<HTMLElement>('.carousel-showcase')!;
+		expect(gallery.querySelector('.pause-btn')).toBeNull();
+		expect(gallery.querySelector('.stage-progress-track')).toBeNull();
+		expect(gallery.querySelector('[aria-live]')?.getAttribute('aria-live')).toBe('polite');
+	});
+
+	it('resolves shared navigation and status tokens, public section width, and form feedback styles', async () => {
 		await page.viewport(1280, 800);
 		const rootStyles = getComputedStyle(document.documentElement);
 		expect(rootStyles.getPropertyValue('--nav-height').trim()).toBe('78px');
@@ -206,17 +236,17 @@ describe('MinistryCarousel - Enterprise Grade Functionality, A11y & CLS Preventi
 		expect(rootStyles.getPropertyValue('--tracking-h3').trim()).toBe('-0.01em');
 
 		const host = document.createElement('div');
-		host.className = 'inner-page';
+		host.className = 'section';
 		host.innerHTML = `
-			<section class="content-section">
+			<div class="container">
 				<div class="alert-error" role="alert">Validation error</div>
 				<div class="prose-base"><h2 id="sample-h2">Heading</h2></div>
-			</section>
+			</div>
 		`;
 		document.body.appendChild(host);
 
 		try {
-			const contentSection = host.querySelector<HTMLElement>('.content-section')!;
+			const contentSection = host.querySelector<HTMLElement>('.container')!;
 			const sectionStyles = getComputedStyle(contentSection);
 			expect(sectionStyles.maxWidth).toBe('1240px');
 			expect(parseFloat(sectionStyles.paddingLeft)).toBeGreaterThanOrEqual(18);

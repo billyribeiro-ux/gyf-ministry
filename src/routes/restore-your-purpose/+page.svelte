@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { gsapHeroEntrance, gsapReveal } from '#lib/attachments/gsap.js';
+	import { gsapReveal } from '#lib/attachments/gsap.js';
+	import MinistryMasthead from '#lib/components/ministry/MinistryMasthead.svelte';
 	import type { PageProps } from './$types';
 	import {
 		IconSeedling,
 		IconCross,
 		IconSparkles,
-		IconBible,
 		IconMountain,
 		IconDownload,
 		IconArrowRight
@@ -15,6 +15,58 @@
 
 	let { form }: PageProps = $props();
 	let isSubmitting = $state(false);
+
+	const reflections = [
+		{
+			title: 'Begin with a mustard seed',
+			scripture: 'Matthew 17:20',
+			prompt: 'Name one hope you are ready to bring to God in prayer.'
+		},
+		{
+			title: 'Make room for what hurts',
+			scripture: 'Psalm 34:18',
+			prompt:
+				'Write down a setback you are still carrying. What would it feel like to share it with God?'
+		},
+		{
+			title: 'Remember who made you',
+			scripture: 'Ephesians 2:10',
+			prompt:
+				'Recall a time you used a gift to help someone. What did that experience show you about how God made you?'
+		},
+		{
+			title: 'Ask for wisdom',
+			scripture: 'James 1:5',
+			prompt: 'Name one decision you are facing. What guidance do you want to ask God for?'
+		},
+		{
+			title: 'Put a gift to work',
+			scripture: '1 Peter 4:10',
+			prompt: 'Choose one talent you can use to care for a neighbor this week.'
+		},
+		{
+			title: 'Let someone walk with you',
+			scripture: 'Galatians 6:2',
+			prompt: 'Who could listen, pray with you, or help you follow through on your next step?'
+		},
+		{
+			title: 'Take one faithful step',
+			scripture: 'Philippians 1:6',
+			prompt:
+				'Choose one small action you can take in the next seven days. Make time for it and pray as you begin.'
+		}
+	];
+
+	const guideText = [
+		'The Seven-Day Mustard Seed Reflection Guide',
+		'Grow Your Faith Ministries',
+		'Read the Scripture each day, spend a few minutes in prayer, and write down where it leads you.',
+		...reflections.map(
+			({ title, scripture, prompt }, index) =>
+				`Day ${index + 1}. ${title}\n${scripture}\n\n${prompt}\n\n______________________________\n\n______________________________`
+		)
+	].join('\n\n');
+	const guideDownload = `data:text/plain;charset=utf-8,${encodeURIComponent(guideText)}`;
 </script>
 
 <svelte:head>
@@ -33,30 +85,29 @@
 	/>
 </svelte:head>
 
-<section class="page-hero" {@attach gsapHeroEntrance}>
-	<div class="container">
-		<div class="eyebrow-badge" data-hero-item>
-			<IconSeedling size={16} />
-			<span>FAITH &amp; VISION RESTORATION HUB</span>
-		</div>
-		<h1 data-hero-item>Your Circumstances Do Not Define Your Calling</h1>
-		<p class="lead" data-hero-item>
-			Grow Your Faith Ministries’ main goal is to help people restore their dreams, goals, and
-			visions that are buried deep inside of them; to bring them back to life and to teach them that
-			their lives have meaning and purpose far beyond their current circumstances.
-		</p>
-	</div>
-</section>
+<MinistryMasthead
+	label="Restore Your Purpose"
+	title="Begin again with a little faith."
+	actions={[
+		{ href: '#vision-guide', label: 'Start the seven-day guide' },
+		{ href: resolve('/programs/friday-ministry'), label: 'Find personal encouragement' }
+	]}
+>
+	<p>
+		If a setback left you unsure what comes next, this seven-day guide gives you space to read
+		Scripture, pray, and choose one step forward.
+	</p>
+</MinistryMasthead>
 
-<!-- The Mustard Seed Framework (3 Steps to Restoration) -->
+<!-- Three ways to take a next step -->
 <section class="section">
 	<div class="container">
 		<div class="section-intro" {@attach gsapReveal({ y: 20 })}>
-			<span class="badge-teal"><IconMountain size={15} /> Matthew 17:20 Blueprint</span>
-			<h2>The Mustard Seed Framework (3 Steps to Restoration)</h2>
+			<span class="ministry-kicker"><IconMountain size={15} /> Matthew 17:20</span>
+			<h2>Three ways to take a next step</h2>
 			<p>
-				When life’s hardships shatter your confidence, rebuilding doesn’t start with willpower—it
-				starts with a mustard seed of surrendered faith in the One who designed you.
+				Jesus used the mustard seed to teach what small faith can do. Start with the step you can
+				take today.
 			</p>
 		</div>
 
@@ -66,12 +117,8 @@
 				<div class="step-icon">
 					<IconSeedling size={28} />
 				</div>
-				<h3>Unbury the Vision</h3>
-				<p>
-					Identifying the dreams, goals, and God-given visions that life’s setbacks,
-					disappointments, or heartbreak convinced you to abandon. What God planted in your spirit
-					was not meant to stay buried.
-				</p>
+				<h3>Name what you still hope for</h3>
+				<p>Think of a hope or goal you put aside. What part of it still matters to you?</p>
 			</article>
 
 			<article class="card step-card">
@@ -79,11 +126,10 @@
 				<div class="step-icon">
 					<IconCross size={28} />
 				</div>
-				<h3>Reclaim Your Identity in Christ</h3>
+				<h3>Remember how God sees you</h3>
 				<p>
-					Shifting from self-doubt and past regret to unshakeable faith in the Designer who gave you
-					your specific talents. Your value is anchored in Christ’s love—not your current
-					circumstances.
+					Take a moment to remember that God loves you and knows you, even when life has gone
+					differently than you hoped.
 				</p>
 			</article>
 
@@ -92,42 +138,60 @@
 				<div class="step-icon">
 					<IconSparkles size={28} />
 				</div>
-				<h3>Steward Your Gifts</h3>
+				<h3>Use one gift this week</h3>
 				<p>
-					Turning restored faith into daily discipline, purposeful work, and compassionate service
-					to others—living life to the fullest by utilizing your God-given talents.
+					Choose something you already know how to do and offer it to someone who could use your
+					help.
 				</p>
 			</article>
 		</div>
 	</div>
 </section>
 
-<!-- Lead Magnet / Free Resource -->
 <section class="section-alt" id="vision-guide">
 	<div class="container workbook-grid">
-		<div>
-			<span class="badge-emerald"><IconBible size={15} /> Free Ministry Resource</span>
-			<h2>Download the Mustard Seed Vision Guide</h2>
-			<h3>“The 7-Day Mustard Seed Restoration Devotional &amp; Vision Workbook”</h3>
+		<div class="guide" {@attach gsapReveal()}>
+			<h2>The seven-day mustard seed reflection guide</h2>
 			<p>
-				Written by founder Courtney Ribeiro, this practical 7-day devotional and goal-restoration
-				workbook walks you through scripture reflections, prayer prompts, and vision-mapping
-				exercises to bring buried dreams back to life.
+				Read the Scripture each day, spend a few minutes in prayer, and write down where it leads
+				you.
+			</p>
+			<ol class="reflections">
+				{#each reflections as reflection, index (reflection.scripture)}
+					<li>
+						<span class="reflection-day">Day {index + 1}</span>
+						<div>
+							<h3>{reflection.title}</h3>
+							<p class="scripture">{reflection.scripture}</p>
+							<p>{reflection.prompt}</p>
+						</div>
+					</li>
+				{/each}
+			</ol>
+			<a
+				class="btn ministry-secondary"
+				href={guideDownload}
+				download="mustard-seed-reflection-guide.txt"
+			>
+				<IconDownload size={19} aria-hidden="true" />
+				Download the reflection guide
+			</a>
+		</div>
+
+		<div class="card guide-follow-up">
+			<h3>Ask for encouragement</h3>
+			<p>
+				Leave your contact details if you would like to hear from the ministry as you work through
+				the guide.
 			</p>
 			<div class="need-more-box">
-				<p>
-					<strong>Need personal 1-on-1 encouragement right now?</strong> Every Friday is dedicated to
-					free spiritual mentorship and vision restoration calls.
-				</p>
+				<p>Every Friday, Courtney sets aside time for free spiritual mentorship.</p>
 				<a href={resolve('/programs/friday-ministry')} class="pillar-link">
-					<span>Request a 1-on-1 Friday Mentorship Session</span>
+					<span>Request a Friday session</span>
 					<IconArrowRight size={18} />
 				</a>
 			</div>
-		</div>
 
-		<div class="card">
-			<h3>Get Instant Access to the 7-Day Workbook</h3>
 			{#if form?.success}
 				<div class="alert-success" role="status">{form.message}</div>
 			{/if}
@@ -137,6 +201,7 @@
 			<form
 				method="POST"
 				action="?/downloadGuide"
+				aria-describedby={form?.error ? 'guide-form-error' : undefined}
 				use:enhance={() => {
 					isSubmitting = true;
 					return async ({ update }) => {
@@ -174,9 +239,7 @@
 					/>
 				</div>
 				<div class="form-field">
-					<label for="guide-goal"
-						>What dream or goal are you asking God to restore? (Optional)</label
-					>
+					<label for="guide-goal">What would you like encouragement with? (Optional)</label>
 					<textarea
 						id="guide-goal"
 						name="visionGoal"
@@ -186,17 +249,12 @@
 				</div>
 				<button
 					type="submit"
-					class="btn btn-gold"
+					class="btn ministry-primary"
 					style="width: 100%"
 					disabled={isSubmitting}
 					aria-busy={isSubmitting}
 				>
-					<IconDownload size={19} />
-					<span
-						>{isSubmitting
-							? 'Preparing Workbook...'
-							: 'Download the Mustard Seed Vision Guide'}</span
-					>
+					<span>{isSubmitting ? 'Sending request…' : 'Request encouragement'}</span>
 				</button>
 			</form>
 		</div>
@@ -222,7 +280,7 @@
 
 	.step-card {
 		position: relative;
-		border-top: 4px solid var(--color-gold);
+		border-top: 2px solid var(--color-accent, #adc8ff);
 	}
 
 	.step-num {
@@ -230,7 +288,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
-		color: var(--color-teal-text);
+		color: var(--color-accent, #adc8ff);
 		margin-bottom: 0.75rem;
 	}
 
@@ -238,8 +296,8 @@
 		width: 50px;
 		height: 50px;
 		border-radius: 12px;
-		background: var(--color-navy);
-		color: var(--color-gold);
+		background: var(--color-raised, #222631);
+		color: var(--color-accent, #adc8ff);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -250,29 +308,61 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
 		gap: 3rem;
-		align-items: center;
+		align-items: start;
 	}
 
 	.workbook-grid > * {
 		min-width: 0;
 	}
 
-	.workbook-grid h2 {
-		margin-top: 0.75rem;
-		margin-bottom: 0.35rem;
+	.guide h2 {
+		max-width: 22ch;
+		margin-bottom: 0.6rem;
 	}
 
-	.workbook-grid h3 {
-		color: var(--color-teal-text);
-		font-size: 1.2rem;
-		margin-bottom: 1rem;
+	.reflections {
+		margin: 1.5rem 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.reflections li {
+		display: grid;
+		grid-template-columns: 3.3rem minmax(0, 1fr);
+		gap: 1rem;
+		padding-block: 0.95rem;
+		border-top: 1px solid var(--color-line, #343946);
+	}
+
+	.reflections li:last-child {
+		border-bottom: 1px solid var(--color-line, #343946);
+	}
+
+	.reflection-day {
+		padding-top: 0.15rem;
+		color: var(--color-accent, #adc8ff);
+		font-size: 0.79rem;
+		font-weight: 750;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.reflections h3,
+	.reflections p {
+		margin: 0;
+	}
+
+	.reflections .scripture {
+		margin-block: 0.15rem 0.2rem;
+		color: var(--color-accent, #adc8ff);
+		font-weight: 650;
+		font-size: 0.9rem;
 	}
 
 	.need-more-box {
-		margin-top: 1.5rem;
-		padding: 1.25rem;
-		background: var(--color-surface);
-		border-left: 4px solid var(--color-teal);
+		margin-bottom: 1.25rem;
+		padding: 0.9rem 1rem;
+		background: var(--color-screen, #101116);
 		border-radius: var(--radius-sm);
 	}
 
@@ -287,7 +377,11 @@
 		gap: 0.4rem;
 		min-height: 36px;
 		font-weight: 700;
-		color: var(--color-navy);
+		color: var(--color-strong, #f5f7fb);
+	}
+
+	.guide-follow-up h3 {
+		margin-bottom: 0.5rem;
 	}
 
 	@media (max-width: 960px) {
